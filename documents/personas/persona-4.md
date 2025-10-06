@@ -31,6 +31,20 @@ Emily has a busy professional and personal life. She frequently purchases applia
 ## User Story
 "I want to store my receipts and warranties digitally, but I need to know my information is safe and private. Convenience is great, but privacy comes first."
 
+## Pre-Conditions
+1. Emily has access to the **app’s home page** via a web browser or mobile device.
+2. She has a **stable internet connection**.
+3. She has a **valid email address** to register and receive verification.
+4. The app’s **registration service** and **email verification system** are functioning properly.
+
+## Post-Conditions
+1. Emily’s **account is successfully created** and stored securely in the app’s database.
+2. Her email address is verified, confirming account authenticity.
+3. Two-Factor Authentication is activated.
+4. Emily is logged into her new account and taken to her personalized dashboard.
+5. The system is ready to accept document uploads and other interactions.
+6. Emily is confident her data is private, having seen clear privacy assurances during the flow.
+
 ## Interaction Flow: Emily registers an Account
 
 1. ### Emily lands on the home page.
@@ -39,18 +53,23 @@ Emily has a busy professional and personal life. She frequently purchases applia
 2. ### Click "Get Started"
    - System Feedback: Opens registration page with a clean, simple form and privacy agreement with link to privacy policy
 3. ### Registration Form
-   - Fields:
-     - Full Name
-     - Email Address
-     - Strong Password (with password strength indicator)
-     - Optional: Two-Factor Authentication setup (emphasized as enhancing privacy and security)
+   - Emily fills out the form and clicks agree to privacy agreement
+      - Fields:
+        - Full Name
+        - Email Address
+        - Strong Password (with password strength indicator)
+        - Optional: Two-Factor Authentication setup
+   - System sends a verification email
+   - Emily navigates to her email
 4. ### Verification Step
-   - Email verification
    - Emily clicks the link in her email to verify her account
    - The link directs her to the apps dashboard where she is already logged in with a welcome overlay
 5. ### Welcome
-   - Guide through setup with simple instructions with skip option
+   - Guide through setup with simple instructions with skip option is displayed
    - Emily clicks skip
+   - System closes welcome overlay
 6. ### Dashboard
-   - Option to immediately upload her first document
-   - Clear buttons for Upload, Create Folder, Search Documents, and Settings (including security settings)
+   - Option to immediately upload her first document displayed in middle of dashboard
+   - Clear buttons for Upload, Create Folder, and Settings (including security settings) are displayed
+   - Search bar is displayed
+   - Sidebar navigation is displayed
