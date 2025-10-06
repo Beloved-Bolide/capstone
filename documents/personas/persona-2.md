@@ -1,20 +1,20 @@
-Name
+<h1>Name</h1>
 
-Margaret “Maggie” Wilson
+<h2>Margaret “Maggie” Wilson</h2>
 
-AGE : 72
+<h2>AGE : 72</h2>
 
-Description
-For this UI/UX challenge, I chose to create a persona for the Receipt Vault Web Application, a project designed to help users easily organize and track their shopping receipts online.
+<h1>Description</h1>
+<p> I chose to create a persona for the Receipt Vault Web Application, a project designed to help users easily organize and track their shopping receipts online.
 The featured persona, Margaret “Maggie” Wilson, is a 72-year-old widow who enjoys staying independent and organized.
 Maggie shops at Costco once a month and visits her local produce market twice a month. 
 She often keeps paper receipts for possible returns, but sometimes struggles to find the right one when she needs it.
 With Receipt Vault, Maggie can scan, upload, and store her receipts digitally while also viewing a summary of her monthly spending. 
-This simple and user-friendly tool helps her stay on top of her budget and reduce paper clutter, giving her peace of mind and confidence in managing her expenses.
+This simple and user-friendly tool helps her stay on top of her budget and reduce paper clutter, giving her peace of mind and confidence in managing her expenses.</p>
 
 
 
-Technology / Devices
+<h1>Technology / Devices</h1>
 
 iPhone SE running the latest iOS and Safari
 
@@ -28,102 +28,117 @@ Comfortable using simple apps like Facebook, Gmail, and online shopping
 
 
 
-Love / Hate
+<h2>Love / Hate</h2>
 
-Loves:
+<h3>Loves:</h3>
 
-Staying organized and keeping track of her expenses
+<p>Staying organized and keeping track of her expenses
 
 Apps that are clean, simple, and easy to use
 
 Being able to see how much she’s spending every month
 
-The idea of reducing paper clutter by storing receipts digitally
+The idea of reducing paper clutter by storing receipts digitally</p>
 
-Hates:
+<h3>Hates:</h3>
 
-Complicated apps with too many steps or menus
+<p>Complicated apps with too many steps or menus
 
 Losing receipts when she needs to return an item
 
 Faded or unreadable paper receipts
 
-Small text or unclear buttons that are hard to see
+Small text or unclear buttons that are hard to see</p>
 
 
 
 
-Proficiency
+<h2>Proficiency</h2>
+<ul>
+<li>Basic-to-moderate technology user</li>
 
-Basic-to-moderate technology user
+<li>Can comfortably browse the internet, send emails, and use a few mobile apps</li>
 
-Can comfortably browse the internet, send emails, and use a few mobile apps
+<li>Prefers apps that provide clear guidance and visual feedback</li>
 
-Prefers apps that provide clear guidance and visual feedback
+<li>Needs an interface that is accessible, with large buttons and readable fonts</li>
 
-Needs an interface that is accessible, with large buttons and readable fonts
+<li>Prefers scanning or uploading photos instead of typing long details</li>
 
-Prefers scanning or uploading photos instead of typing long details
-
-
-
-
-
-Attitudes and Behaviors
-
-Shops at Costco once a month and local produce markets twice a month
-
-Keeps receipts mainly for returns or checking her monthly spending
-
-Organizes receipts at the end of each month to review her expenses
-
-Values simplicity and security — wants her data safe but accessible
-
-Logs into web apps occasionally; prefers “Remember Me” or auto-login options
-
-Likes apps that confirm her actions with clear messages (e.g., “Receipt Saved Successfully”)
+</ul>
 
 
 
+<h2>Attitudes and Behaviors</h2>
+<ul>
+
+<li>Shops at Costco once a month and local produce markets twice a month</li>
+
+<li>Keeps receipts mainly for returns or checking her monthly spending</li>
+
+<li>Organizes receipts at the end of each month to review her expenses</li>
+
+<li>Values simplicity and security — wants her data safe but accessible</li>
+
+<li>Logs into web apps occasionally; prefers “Remember Me” or auto-login options</li>
+
+<li>Likes apps that confirm her actions with clear messages (e.g., “Receipt Saved Successfully”)</li>
 
 
-User Story
+</ul>
 
-As Maggie, a retired teacher, I want to upload and organize my shopping receipts in one place so that I can easily find them later for returns and track my monthly spending.
 
-Use Case
+<h2>User Story</h2>
 
-Precondition:
+<h3>As Maggie, a retired teacher, I want to upload and organize my shopping receipts in one place so that I can easily find them later for returns and track my monthly spending.</h3>
+
+<h2>Use Case</h2>
+
+<h3>Precondition:
 Maggie is logged into her Receipt Vault account on her laptop.
 
 Post condition:
-Maggie has successfully uploaded her receipts, can view them in the monthly summary, and knows her total spending for the month.
+Maggie has successfully uploaded her receipts, can view them in the monthly summary, and knows her total spending for the month.</h3>
 
 
 
 
-Interaction Flow
+<h2>Interaction Flow</h2>
+<ul>
 
-Maggie opens the Receipt Vault web application on her laptop.
+<li>Maggie opens her laptop and searches for “Receipt Vault web app” on Google.</li>
 
-Receipt Vault automatically logs her in with her saved credentials.
+<li>She clicks on the Receipt Vault website link and lands on the homepage.</li>
 
-Maggie clicks on the Upload Receipt button on the dashboard.
+<li>Maggie reads a short description explaining that the web app helps organize and store receipts online.</li>
 
-Receipt Vault opens a pop-up window to select an image or take a photo.
 
-Maggie selects a photo of her Costco receipt from her computer.
+<li>She clicks Sign Up on the top navigation bar.</li>
 
-Receipt Vault scans and uploads the image, extracting the store name, date, and total amount.
+<li>On the sign-up page, Maggie enters her name, email, and password, and then clicks Create Account.</li>
 
-Maggie adds a note saying “Groceries – Costco” and clicks Save Receipt.
+<li>Receipt Vault confirms with a message “Account created successfully! Welcome, Maggie.”</li>
 
-Receipt Vault confirms with a message “Receipt Saved Successfully!”
+<li>The system automatically redirects her to the Dashboard with a simple guided tour showing how to upload receipts and view summaries.</li>
 
-Maggie clicks on Monthly Summary from the sidebar.
+<li>Maggie clicks on the Upload Receipt button on the dashboard.</li>
 
-Receipt Vault displays a bar chart of her spending for October, showing total spent at Costco and local stores.
+<li>Receipt Vault opens a pop-up window to select an image or take a photo.</li>
 
-Maggie smiles, realizing she stayed within her monthly grocery budget.
+<li>Maggie selects a photo of her Costco receipt from her computer.</li>
 
-She closes the app, confident that her receipts are safely stored for future reference.
+<li>Receipt Vault scans and uploads the image, extracting the store name, date, and total amount.</li>
+
+<li>Maggie adds a note saying “Groceries – Costco” and clicks Save Receipt.</li>
+
+<li>Receipt Vault confirms with a message “Receipt Saved Successfully!”</li>
+
+<li>Maggie clicks on Monthly Summary from the sidebar.</li>
+
+<li>Receipt Vault displays a bar chart of her spending for October, showing total spent at Costco and local stores.</li>
+
+<li>Maggie smiles, realizing she stayed within her monthly grocery budget.</li>
+
+<li>She closes the app, confident that her receipts are safely stored for future reference.</li>
+
+</ul>
