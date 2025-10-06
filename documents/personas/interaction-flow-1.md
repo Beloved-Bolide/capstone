@@ -14,4 +14,6 @@
 5. System displays receipt card with information, picture of receipt, download button, and print button
 6. Juan looks at information from when the receipt was added
 7. Juan clicks download
-8. System downloads file to device
+8. System initiates download
+9. Download starts in browser
+10. File finishes downloading
