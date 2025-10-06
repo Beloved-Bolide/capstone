@@ -32,13 +32,13 @@ Emily has a busy professional and personal life. She frequently purchases applia
 "I want to store my receipts and warranties digitally, but I need to know my information is safe and private. Convenience is great, but privacy comes first."
 
 ## Pre-Conditions
-1. Emily has access to the **app’s home page** via a web browser or mobile device.
-2. She has a **stable internet connection**.
-3. She has a **valid email address** to register and receive verification.
-4. The app’s **registration service** and **email verification system** are functioning properly.
+1. Emily has access to the app’s home page via a web browser or mobile device.
+2. She has a stable internet connection.
+3. She has a valid email address to register and receive verification.
+4. The app’s registration service and email verification system are functioning properly.
 
 ## Post-Conditions
-1. Emily’s **account is successfully created** and stored securely in the app’s database.
+1. Emily’s account is successfully created and stored securely in the app’s database.
 2. Her email address is verified, confirming account authenticity.
 3. Two-Factor Authentication is activated.
 4. Emily is logged into her new account and taken to her personalized dashboard.
