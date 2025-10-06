@@ -45,7 +45,7 @@ Emily has a busy professional and personal life. She frequently purchases applia
 5. The system is ready to accept document uploads and other interactions.
 6. Emily is confident her data is private, having seen clear privacy assurances during the flow.
 
-## Interaction Flow: Emily registers an Account
+## Interaction Flow: Emily registers an account
 
 1. ### Emily lands on the home page.
    - Emily scans the home page and reads: “Securely store and organize your important documents—accessible anytime, private and encrypted.” and a brief explanation of privacy features, encryption, and device access.
@@ -58,12 +58,13 @@ Emily has a busy professional and personal life. She frequently purchases applia
         - Full Name
         - Email Address
         - Strong Password (with password strength indicator)
+        - Retype password
         - Optional: Two-Factor Authentication setup
    - System sends a verification email
    - Emily navigates to her email
 4. ### Verification Step
    - Emily clicks the link in her email to verify her account
-   - The link directs her to the apps dashboard where she is already logged in with a welcome overlay
+   - The link directs her to the app's dashboard where she is already logged in with a welcome overlay
 5. ### Welcome
    - Guide through setup with simple instructions with skip option is displayed
    - Emily clicks skip
