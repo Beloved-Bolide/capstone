@@ -1,10 +1,10 @@
 # Persona 3 — Angela Kinsey
 
 ## 🔗 Navigation
-- [Home](./index.html)
-- [Persona](./persona.html)
-- [User Story](./user-story.html)
-- [Interaction Flow](./interaction-flow.html)
+- [Home](persona 3/index.html)
+- [Persona](persona 3/persona.html)
+- [User Story](persona 3/user-story.html)
+- [Interaction Flow](persona 3/interaction-flow.html)
 
 ---
 
