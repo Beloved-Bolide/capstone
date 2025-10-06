@@ -1,4 +1,7 @@
 ## Persona 4: Privacy-Conscious Individual
+
+### Emily Epstein
+
 **Age:** 34
 
 **Occupation:** Marketing Manager
