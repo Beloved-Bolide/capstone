@@ -98,4 +98,4 @@ Jastine buys a blender online, downloads the receipt PDF, and uploads it to the 
 21. After resolving the issue, mark the record as “Archived” to keep history clean
 22. For many receipts, use “Bulk Upload” to add multiple files at once and batch-tag them
 23. If a receipt is unreadable, re-upload a clearer file or enter key fields manually
-24. If offline, queue uploads; they sync automatically when internet returns
+24. Optional:  If offline, queue uploads; they sync automatically when internet returns
