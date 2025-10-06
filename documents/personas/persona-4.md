@@ -69,8 +69,12 @@ Emily has a busy professional and personal life. She frequently purchases applia
    - Guide through setup with simple instructions with skip option is displayed
    - Emily clicks skip
    - System closes welcome overlay
-6. ### Dashboard
+### 6. Dashboard
    - Option to immediately upload her first document displayed in middle of dashboard
-   - Clear buttons for Upload, Create Folder, and Settings (including security settings) are displayed
+   - Clear buttons for Add, Create Folder, and Settings (including security settings) are displayed
    - Search bar is displayed
    - Sidebar navigation is displayed
+### 7. Add
+   - Clicks "ADD + " button
+   - Displays pop-up form
+     - Drop down for type
