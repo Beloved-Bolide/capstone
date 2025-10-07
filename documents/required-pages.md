@@ -26,7 +26,7 @@ title: required pages
     - contact support
     - report a bug
 
-## [SIGN UP/SIGN IN—DYNAMIC]()
+## [SIGN UP/SIGN IN PAGE—DYNAMIC]()
 
 ### [SIGN UP]()
 - name
@@ -45,7 +45,7 @@ title: required pages
 
 ## [DASHBOARD—DYNAMIC]()
 
-### [NEW BUTTON (PLUS ICON)]()
+### [NEW BUTTON]() (plus icon)
 - opens a new file upload page
 ### [SEARCH BAR]()
 - advanced search
@@ -59,7 +59,7 @@ title: required pages
     - file description
     - file location (?)
 - opens search results page (optional)
-### [SETTINGS BUTTON (GEAR ICON)]()
+### [SETTINGS BUTTON]() (gear icon)
 - opens the settings page
 ### [ORGANIZATION DROP DOWN MENU]()
 - date
@@ -74,7 +74,7 @@ title: required pages
     - descending
     - ascending
 - type
-### [MAIN DASHBOARD INTERFACE (CENTER SECTION)]()
+### [MAIN DASHBOARD INTERFACE]() (center section)
 - main section where files reside based on the current folder selected
     - drag and drop files here
         - prompts the user to add/correct info
@@ -117,23 +117,25 @@ title: required pages
 - opens drop-down menu
     - settings
         - opens settings page
-## [NEW FILE UPLOAD PAGE—DYNAMIC]()
-- drag and drop area
-    - automatically scanned by google vison api
-- file info form
-    - file name
-    - file type (receipt, warranty, etc.)
-    - date
-    - folder (dropdown of existing folders)
-    - tags (ability to add new tags)
-    - description
-- upload button
-- cancel button
-- add to expenses (optional, if receipt)
-    - amount
-    - category
 
-## [SETTINGSDYNAMIC]()
+## [NEW FILE UPLOAD PAGE—DYNAMIC]()
+
+### [DRAG AND DROP AREA]()
+- automatically scanned by google vison api
+### [FILE INFO FORM]()
+- file name
+- file type (receipt, warranty, etc.)
+- date
+- folder (dropdown of existing folders)
+- tags (ability to add new tags)
+- description
+### [ADD TO EXPENSES]() (optional, if receipt)
+- amount
+- category
+### [UPLOAD BUTTON]()
+### [CANCEL BUTTON]()
+
+## [SETTINGS—DYNAMIC]()
 
 ### [GENERAL SETTINGS]()
 - language
