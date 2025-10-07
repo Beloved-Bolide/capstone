@@ -10,8 +10,8 @@
 1. Clicks on receipt folder
 2. System displays receipt folder
 3. Scrolls to specific date when he bought blender
-4. Clicks blender receipt
-5. System displays receipt card with information, picture of receipt, download button, and print button
+4. Clicks blender receipt card
+5. System displays enlarged receipt card with information about receipt, picture of receipt, download button, and print button
 6. Juan looks at information from when the receipt was added
 7. Juan clicks download
 8. System initiates download

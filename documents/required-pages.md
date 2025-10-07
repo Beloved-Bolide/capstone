@@ -1,66 +1,67 @@
 ---
 lang: en
-title: Required Pages
+title: required pages
 ---
 
-# Required Pages
+# [REQUIRED PAGES]()
 
-## Home Page - static
-- About Section
-- Features Section
-- Pricing Section (optional)
-- FAQ Section 
-- Contact Section
-- Login/Sign Up Buttons
-- Header
-    - Logo
-    - Nav bar
-- Footer
-    - Nav Section
-        - Home
-        - Features
-        - Pricing (optional)
-        - FAQ
-        - Contact
-- AI Chat Bot
-  - Contact Support
-  - Report a Bug
+## [HOME PAGE—STATIC]()
+- about section
+- features section
+- pricing section (optional)
+- faq section (optional)
+- contact section
+- login/sign up buttons
+- header
+    - logo
+    - nav bar
+- footer
+    - nav section
+        - home
+        - features
+        - pricing (optional)
+        - faq
+        - contact
+- ai chat bot
+    - contact support
+    - report a bug
 
-## Sign up/Login - dynamic
+## [SIGN UP/SIGN IN—DYNAMIC]()
 
-### Sign up:
-- Name
-- Email
-- Password
-- Confirm Password
-- Submit
-- 2FA (optional)
+### [SIGN UP]()
+- name
+- email
+- password
+- confirm password
+- submit
+- 2fa (optional)
 - redirects you to dashboard
-### Login:
-- Email
-- Password
-- Submit
+### [SIGN IN]()
+- email
+- password
+- forgot password?
+- submit
 - redirects you to dashboard
-- 
-## Dashboard - dynamic
 
-### New Button (plus icon)
-- opens new file upload page
-### Search Bar
+## [DASHBOARD—DYNAMIC]()
+
+### [NEW BUTTON (PLUS ICON)]()
+- opens a new file upload page
+### [SEARCH BAR]()
 - advanced search
-    - File type (receipt, warranty, etc.)
-    - Extension type (pdf, doc, etc.)
-    - Folder
-    - Tag
-    - Date
-    - Size
-    - File name
-    - File description
-    - File location (?)
+    - file type (receipt, warranty, etc.)
+    - extension type (pdf, doc, etc.)
+    - folder
+    - tag
+    - date
+    - size
+    - file name
+    - file description
+    - file location (?)
 - opens search results page (optional)
-### Settings Button (gear icon)
-- opens settings page
-### Organization Drop Down Menu
+### [SETTINGS BUTTON (GEAR ICON)]()
+- opens the settings page
+### [ORGANIZATION DROP DOWN MENU]()
 - date
     - descending
     - ascending
@@ -73,11 +74,11 @@ title: Required Pages
     - descending
     - ascending
 - type
-### Main Dashboard Interface (center section)
+### [MAIN DASHBOARD INTERFACE (CENTER SECTION)]()
 - main section where files reside based on the current folder selected
     - drag and drop files here
         - prompts the user to add/correct info
-        - automatically scanned by Google Vison API
+        - automatically scanned by google vison api
     - click on file to view
     - click on folder to view files in the folder
     - view option button
@@ -93,7 +94,7 @@ title: Required Pages
         - pdf
         - etc.
     - folder filter button (optional)
-### Left Sidebar
+### [LEFT SIDEBAR]()
 - collapse button
 - all folders
     - receipts
@@ -108,75 +109,85 @@ title: Required Pages
 - expenses folder
 - tags
 - trash
-### Right Sidebar
+### [RIGHT SIDEBAR]()
 - collapse button
 - file preview
 - file info
-### Account Button
-- Opens drop-down menu
-    - Profile
-    - Settings
-        - Opens settings page
-        - 
-## New File Upload Page - dynamic
-- drop down menu
-    - create a new folder
-    - file upload
-        - receipt
-            - check box for adding to expenses (choose default in settings)
-        - warranty
-        - tax document
-        - instruction manual
-        - coupon
-        - user created a folder type
-        - automatically scanned by Google Vision API
-    - folder upload
+### [ACCOUNT BUTTON]()
+- opens drop-down menu
+    - settings
+        - opens settings page
+## [NEW FILE UPLOAD PAGE—DYNAMIC]()
+- drag and drop area
+    - automatically scanned by google vison api
+- file info form
+    - file name
+    - file type (receipt, warranty, etc.)
+    - date
+    - folder (dropdown of existing folders)
+    - tags (ability to add new tags)
+    - description
+- upload button
+- cancel button
+- add to expenses (optional, if receipt)
+    - amount
+    - category
 
-[//]: # (    - drag and drop area)
+## [SETTINGSDYNAMIC]()
 
-[//]: # (        - prompts user to add/correct info)
-
-[//]: # (        - autimatically scanned by Google Vison API)
-
-[//]: # (    - file info form)
-
-[//]: # (        - File name)
-
-[//]: # (        - File type &#40;receipt, warranty, etc.&#41;)
-
-[//]: # (        - Date)
-
-[//]: # (        - Folder &#40;dropdown of existing folders&#41;)
-
-[//]: # (        - Tags &#40;ability to add new tags&#41;)
-
-[//]: # (        - Description)
-
-[//]: # (    - upload button)
-
-[//]: # (    - cancel button)
-## Settings - dynamic
-
-### Account Settings
-- Name
-- Email
-- Password
-- 2FA
-### App Settings
-- Default organization method
-- Default view method (grid/list)
-- Default file info to add (date, name, size, type, description, tags)
-### Privacy settings
+### [GENERAL SETTINGS]()
+- language
+- currency
+- timezone
+- date format
+- time format
+- 24-hour time
+- dark mode
+    - on
+    - off
+    - system default
+### [PROFILE SETTINGS]()
+- profile picture
+- profile name
+- profile bio
+- profile location
+- profile website
+- profile email
+- profile phone number
+- profile social media
+- profile tags
+### [ACCOUNT SETTINGS]()
+- name
+- email
+- password
+- 2fa
+### [APP SETTINGS]()
+- default organization method
+- default view method (grid/list)
+- default file info to add (date, name, size, type, description, tags)
+### [PRIVACY SETTINGS]()
 - data sharing preferences
 - ad preferences (if applicable)
-### Notification Settings
-- Email notifications
+### [NOTIFICATION SETTINGS]()
+- email notifications
     - new features (optional)
     - security alerts
     - expiring documents
-- In-app notifications
-### Billing Settings (if applicable)
-- Subscription plan
-- Payment method
-- Billing history 
-### Delete Account
+- in-app notifications
+### [BILLING SETTINGS (IF APPLICABLE)]()
+- subscription plan
+- payment method
+- billing history 
+### [DELETE ACCOUNT]()
+
+## [EXPENSES PAGE - DYNAMIC]()
+### [CORE FEATURES]()
+- table of expense entries linked to uploaded receipts
+- filters by date range, category, vendor, amount
+- export csv/pdf
+- typical route: /expenses
+- key ui/data:
+- model: expense referencing fileid, with amount, date, category, notes
+
+## [TAGS PAGE - DYNAMIC (OPTIONAL)]()
+
