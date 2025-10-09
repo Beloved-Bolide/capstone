@@ -47,12 +47,12 @@ Emily has a busy professional and personal life. She frequently purchases applia
 
 ## Interaction Flow: Emily registers an account
 
-1. ### Emily lands on the home page.
+### 1. Emily lands on the home page.
    - Emily scans the home page and reads: “Securely store and organize your important documents—accessible anytime, private and encrypted.” and a brief explanation of privacy features, encryption, and device access.
    - CTA: "Get Started", "Sign In"
-2. ### Click "Get Started"
+### 2. Click "Get Started"
    - System Feedback: Opens registration page with a clean, simple form and privacy agreement with link to privacy policy
-3. ### Registration Form
+### 3. Registration Form
    - Emily fills out the form and clicks agree to privacy agreement
       - Fields:
         - Full Name
@@ -62,15 +62,18 @@ Emily has a busy professional and personal life. She frequently purchases applia
         - Optional: Two-Factor Authentication setup
    - System sends a verification email
    - Emily navigates to her email
-4. ### Verification Step
+### 4. Verification Step
    - Emily clicks the link in her email to verify her account
    - The link directs her to the app's dashboard where she is already logged in with a welcome overlay
-5. ### Welcome
+### 5. Welcome
    - Guide through setup with simple instructions with skip option is displayed
    - Emily clicks skip
    - System closes welcome overlay
-6. ### Dashboard
+### 6. Dashboard
    - Option to immediately upload her first document displayed in middle of dashboard
-   - Clear buttons for Upload, Create Folder, and Settings (including security settings) are displayed
+   - Clear buttons for Add, Create Folder, and Settings (including security settings) are displayed
    - Search bar is displayed
    - Sidebar navigation is displayed
+### 7. Add
+   - Clicks "ADD + " button
+   - TBC
