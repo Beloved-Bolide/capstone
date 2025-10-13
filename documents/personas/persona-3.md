@@ -76,7 +76,7 @@ Angela decides that our website/application will suit her needs and creates and 
 1. Angela arrives at our website after a search helps her determine that it will work for her needs.
 2. She does some reading on the home page, then decides to sign up.
 3. She clicks the "Sign Up" button on our home page.
-4. The Sign Up button takes her to the Sign Up page, where she puts in her information.
+4. The Sign-Up button takes her to the Sign-Up page, where she puts in her information.
 5. After she saves her information, a message with a button pops up that says "Get Started!"
 6. She clicks the button and is taken to the User Interaction/Dashboard page.
 7. Angela begins to set up folders by clicking the "New Folder" icon.
@@ -84,9 +84,10 @@ Angela decides that our website/application will suit her needs and creates and 
 9. Angela names the folder and clicks "Enter".
 10. The browser stores the information and displays the newly named folder.
 11. Angela begins scanning receipts to put into the folder.
-12. Angela would like to change some of her settings, so goes to the Account Management page.
-13. She clicks the "Edit" button and her contact information becomes editable.
-14. She edits her contact information and clicks "Save".
-15. The browser stores her information.
-16. Angela is done scanning receipts for the day and clicks the log out button.
-17. She is redirected to the home page, ready for the next session.
+12. Angela is done scanning receipts for the day.
+13. Angela would like to change some of her settings, so goes to the Account Management page.
+14. She clicks the "Edit" button and her contact information becomes editable.
+15. She edits her contact information and clicks "Save".
+16. The browser stores her information.
+17. Angela is done using the application for the day and clicks the log-out button.
+18. She is redirected to the home page, ready for the next session.

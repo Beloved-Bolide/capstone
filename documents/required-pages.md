@@ -5,7 +5,7 @@ title: required pages
 
 # [REQUIRED PAGES]()
 
-## [HOME PAGE—STATIC]()
+## [HOME PAGE—STATIC](Page 1)
 - about section
 - features section
 - pricing section (optional)
@@ -26,7 +26,7 @@ title: required pages
     - contact support
     - report a bug
 
-## [SIGN UP/SIGN IN PAGE—DYNAMIC]()
+## [SIGN UP/SIGN IN PAGE—DYNAMIC](Page 2)
 
 ### [SIGN UP]()
 - name
@@ -43,7 +43,7 @@ title: required pages
 - submit
 - redirects you to dashboard
 
-## [DASHBOARD—DYNAMIC]()
+## [DASHBOARD—DYNAMIC](Page 3)
 
 ### [NEW BUTTON]() (plus icon)
 - opens a new file upload page
@@ -118,7 +118,7 @@ title: required pages
     - settings
         - opens settings page
 
-## [NEW FILE UPLOAD PAGE—DYNAMIC]()
+## [NEW FILE UPLOAD PAGE—DYNAMIC](Page 4)
 
 ### [DRAG AND DROP AREA]()
 - automatically scanned by google vison api
@@ -135,7 +135,7 @@ title: required pages
 ### [UPLOAD BUTTON]()
 ### [CANCEL BUTTON]()
 
-## [SETTINGS—DYNAMIC]()
+## [SETTINGS—DYNAMIC](Page 5)
 
 ### [GENERAL SETTINGS]()
 - language
@@ -182,7 +182,7 @@ title: required pages
 - billing history 
 ### [DELETE ACCOUNT]()
 
-## [EXPENSES PAGE - DYNAMIC]()
+## [EXPENSES PAGE - DYNAMIC](Page 6)
 ### [CORE FEATURES]()
 - table of expense entries linked to uploaded receipts
 - filters by date range, category, vendor, amount
