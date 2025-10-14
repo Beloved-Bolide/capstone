@@ -6,36 +6,28 @@ title: required pages
 # [REQUIRED PAGES]()
 
 ## [HOME PAGE—STATIC](Page 1)
+
+
 - about section
 - features section
-- pricing section (optional)
-- faq section (optional)
-- contact section
-- login/sign up buttons
 - header
-    - logo
-    - nav bar
+    - logo and name
+    - nav bar (aligned right)
+        - get started (sign up/sign in)
+        - home
+        - about
+        - features
 - footer
     - nav section
         - home
+        - about
         - features
-        - pricing (optional)
-        - faq
-        - contact
-- ai chat bot
-    - contact support
-    - report a bug
 
-## [SIGN UP/SIGN IN PAGE—DYNAMIC](Page 2)
 
-### [SIGN UP]()
-- name
-- email
-- password
-- confirm password
-- submit
-- 2fa (optional)
-- redirects you to dashboard
+## [SIGN UP/SIGN IN PAGE](Page 2)
+- sign in component if user clicks sign in on home page
+- sign up component if user clicks sign up on home page
+
 ### [SIGN IN]()
 - email
 - password
@@ -43,26 +35,38 @@ title: required pages
 - submit
 - redirects you to dashboard
 
+### [SIGN UP]()
+- name
+- email
+- password
+- confirm password
+- submit
+- redirects you to dashboard
+
+
 ## [DASHBOARD—DYNAMIC](Page 3)
 
+
 ### [NEW BUTTON]() (plus icon)
-- opens a new file upload page
+- opens new file upload page
+
 ### [SEARCH BAR]()
-- advanced search
+- advanced search options (aligned right)
     - file type (receipt, warranty, etc.)
     - extension type (pdf, doc, etc.)
     - folder
-    - tag
+    - category
     - date
     - size
     - file name
     - file description
     - file location (?)
-- opens search results page (optional)
+
 ### [SETTINGS BUTTON]() (gear icon)
 - opens the settings page
+
 ### [ORGANIZATION DROP DOWN MENU]()
-- date
+- date added
     - descending
     - ascending
 - name
@@ -70,16 +74,13 @@ title: required pages
     - z-a
     - newest
     - oldest
-- size
-    - descending
-    - ascending
-- type
+- category
+
 ### [MAIN DASHBOARD INTERFACE]() (center section)
 - main section where files reside based on the current folder selected
-    - drag and drop files here
-        - prompts the user to add/correct info
-        - automatically scanned by google vison api
-    - click on file to view
+    - drag files here
+        - directs user to new file upload page
+    - click on file to view document and file info
     - click on folder to view files in the folder
     - view option button
         - grid
@@ -94,6 +95,7 @@ title: required pages
         - pdf
         - etc.
     - folder filter button (optional)
+
 ### [LEFT SIDEBAR]()
 - collapse button
 - all folders
@@ -122,6 +124,7 @@ title: required pages
 
 ### [DRAG AND DROP AREA]()
 - automatically scanned by google vison api
+- 
 ### [FILE INFO FORM]()
 - file name
 - file type (receipt, warranty, etc.)
