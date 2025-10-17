@@ -10,7 +10,7 @@ export function Navigation() {
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">FileWise</span>
       </NavbarBrand>
       <NavbarCollapse>
-          <NavbarLink href="#" active>Home</NavbarLink>
+        <NavbarLink href="#" active>Home</NavbarLink>
         <NavbarLink as={Link} href="#">About</NavbarLink>
         <NavbarLink href="#">Services</NavbarLink>
         <NavbarLink href="#">Pricing</NavbarLink>
