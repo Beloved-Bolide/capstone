@@ -1,5 +1,6 @@
-import {Navbar, NavbarBrand, NavbarCollapse, NavbarLink, NavbarToggle} from "flowbite-react";
-import {Link} from "react-router";
+
+import { Navbar, NavbarBrand, NavbarCollapse, NavbarLink, NavbarToggle } from "flowbite-react";
+import { Link } from "react-router";
 
 export function Navigation() {
   return (
@@ -9,12 +10,17 @@ export function Navigation() {
         <img src="/logo.png" className="mr-3 h-12 w-auto sm:h-14" alt="Flowbite React Logo"/>
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">FileWise</span>
       </NavbarBrand>
+      <NavbarToggle />
       <NavbarCollapse>
-          <NavbarLink href="#" active>Home</NavbarLink>
-        <NavbarLink as={Link} href="#">About</NavbarLink>
-        <NavbarLink href="#">Services</NavbarLink>
-        <NavbarLink href="#">Pricing</NavbarLink>
-        <NavbarLink href="#">Expenses</NavbarLink>
+        <NavbarLink href="#" to="/" active>
+          Home
+        </NavbarLink>
+        <NavbarLink as={ Link } to="/dashboard">
+          Dashboard
+        </NavbarLink>
+        <NavbarLink href="#">
+          Services
+        </NavbarLink>
       </NavbarCollapse>
     </Navbar>
   );
