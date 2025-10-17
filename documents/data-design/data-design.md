@@ -1,6 +1,7 @@
 Conceptual model from db diagram:
 https://dbdiagram.io/d/Capstone-Project-68e57557d2b621e422bc08e5
 
+```
 Table user {
     id uuid [primary key, not null]
     activation_token char32
@@ -56,3 +57,6 @@ Ref: file.record_id > record.id [delete: set null]
 Ref: folder.user_id > user.id [delete: cascade]
 Ref: folder.parent_folder_id > folder.id [delete: cascade]
 Ref: record.folder_id > folder.id [delete: cascade]
+```
+
+![Capstone Project.png](Capstone%20Project.png)
