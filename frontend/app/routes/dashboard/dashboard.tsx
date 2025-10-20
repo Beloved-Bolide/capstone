@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Plus, FolderOpen, Star, Clock, FileText, Trash2, Settings, ChevronDown, Calendar } from 'lucide-react';
+import React, {useState} from 'react';
+import {Search, Plus, FolderOpen, Star, Clock, FileText, Trash2, Settings, ChevronDown, Calendar} from 'lucide-react';
 
 type Receipt = {
     id: number;
@@ -11,35 +11,35 @@ type Receipt = {
 
 export default function Dashboard() {
     const [selectedFolder, setSelectedFolder] = useState('All Folders');
-    const [selectedReceipt, setSelectedReceipt] = useState(null);
+    const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
 
     const folders = [
-        { name: 'All Folders', icon: FolderOpen, count: 18 },
-        { name: 'Receipts', icon: FileText, count: 12 },
-        { name: 'Warranties', icon: FileText, count: 3 },
-        { name: 'Taxes', icon: FileText, count: 2 },
-        { name: 'Manuals', icon: FileText, count: 1 },
-        { name: 'Coupons', icon: FileText, count: 0 },
+        {name: 'All Folders', icon: FolderOpen, count: 18},
+        {name: 'Receipts', icon: FileText, count: 12},
+        {name: 'Warranties', icon: FileText, count: 3},
+        {name: 'Taxes', icon: FileText, count: 2},
+        {name: 'Manuals', icon: FileText, count: 1},
+        {name: 'Coupons', icon: FileText, count: 0},
     ];
 
     const receipts = [
-        { id: 1, name: 'Costco', date: 'Oct 7th', category: 'Grocery', folder: 'Receipts' },
-        { id: 2, name: 'Smiths', date: 'Oct 5th', category: 'Grocery', folder: 'Receipts' },
-        { id: 3, name: 'Cheddar\'s', date: 'Oct 4th', category: 'Restaurant', folder: 'Receipts' },
-        { id: 4, name: 'BestBuy', date: 'Oct 3rd', category: 'Electronics', folder: 'Warranties' },
-        { id: 5, name: 'Amazon', date: 'Oct 3rd', category: 'Online', folder: 'Receipts' },
-        { id: 6, name: 'ETSY', date: 'Oct 3rd', category: 'Online', folder: 'Receipts' },
-        { id: 7, name: 'Amazon', date: 'Oct 2nd', category: 'Online', folder: 'Receipts' },
-        { id: 8, name: 'Walmart', date: 'Oct 2nd', category: 'Grocery', folder: 'Receipts' },
-        { id: 9, name: 'Walmart', date: 'Oct 1st', category: 'Online', folder: 'Receipts' },
-        { id: 10, name: 'Macbook', date: 'Oct 3rd', category: 'BestBuy', folder: 'Warranties' },
-        { id: 11, name: '2024 taxes', date: 'April 8th', category: 'Turbo Tax', folder: 'Taxes' },
-        { id: 12, name: 'Macbook', date: 'Oct 3rd', category: 'Bestbuy', folder: 'Manuals' },
-        { id: 13, name: 'Vacuum Cleaner', date: 'Dyson.com', category: '', folder: 'Coupons' },
-        { id: 14, name: 'Subway', date: '-', category: 'Restaurant', folder: 'Coupons' },
-        { id: 15, name: 'Great Clips', date: '-', category: 'Grooming', folder: 'Coupons' },
+        {id: 1, name: 'Costco', date: 'Oct 7th', category: 'Grocery', folder: 'Receipts'},
+        {id: 2, name: 'Smiths', date: 'Oct 5th', category: 'Grocery', folder: 'Receipts'},
+        {id: 3, name: 'Cheddar\'s', date: 'Oct 4th', category: 'Restaurant', folder: 'Receipts'},
+        {id: 4, name: 'BestBuy', date: 'Oct 3rd', category: 'Electronics', folder: 'Warranties'},
+        {id: 5, name: 'Amazon', date: 'Oct 3rd', category: 'Online', folder: 'Receipts'},
+        {id: 6, name: 'ETSY', date: 'Oct 3rd', category: 'Online', folder: 'Receipts'},
+        {id: 7, name: 'Amazon', date: 'Oct 2nd', category: 'Online', folder: 'Receipts'},
+        {id: 8, name: 'Walmart', date: 'Oct 2nd', category: 'Grocery', folder: 'Receipts'},
+        {id: 9, name: 'Walmart', date: 'Oct 1st', category: 'Online', folder: 'Receipts'},
+        {id: 10, name: 'Macbook', date: 'Oct 3rd', category: 'BestBuy', folder: 'Warranties'},
+        {id: 11, name: '2024 taxes', date: 'April 8th', category: 'Turbo Tax', folder: 'Taxes'},
+        {id: 12, name: 'Macbook', date: 'Oct 3rd', category: 'Bestbuy', folder: 'Manuals'},
+        {id: 13, name: 'Vacuum Cleaner', date: 'Dyson.com', category: '', folder: 'Coupons'},
+        {id: 14, name: 'Subway', date: '-', category: 'Restaurant', folder: 'Coupons'},
+        {id: 15, name: 'Great Clips', date: '-', category: 'Grooming', folder: 'Coupons'},
     ];
 
     const receiptDetail = {
@@ -48,9 +48,9 @@ export default function Dashboard() {
         date: '10/20/25',
         time: '14:35:22',
         items: [
-            { name: 'Face and hair Serum calms', qty: 1, price: 109.00, amount: 109.00 },
-            { name: 'Soap and scrotal salve', qty: 1, price: 52.50, amount: 52.50 },
-            { name: 'Leather Desk', qty: 1, price: 6.00, amount: 6.00 },
+            {name: 'Face and hair Serum calms', qty: 1, price: 109.00, amount: 109.00},
+            {name: 'Soap and scrotal salve', qty: 1, price: 52.50, amount: 52.50},
+            {name: 'Leather Desk', qty: 1, price: 6.00, amount: 6.00},
         ],
         subtotal: 167.50,
         salesTax: 6.58,
@@ -87,7 +87,8 @@ export default function Dashboard() {
                             onClick={() => setSidebarOpen(false)}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
@@ -95,8 +96,9 @@ export default function Dashboard() {
 
                 {/* Create Folder Button */}
                 <div className="px-3 lg:px-4 pt-4">
-                    <button className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700">
-                        <Plus className="w-4 h-4" />
+                    <button
+                        className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700">
+                        <Plus className="w-4 h-4"/>
                         <span className="hidden sm:inline">Create New Folder</span>
                         <span className="sm:hidden">New Folder</span>
                     </button>
@@ -115,39 +117,45 @@ export default function Dashboard() {
                                         : 'text-gray-700 hover:bg-gray-50'
                                 }`}
                             >
-                                <folder.icon className="w-4 h-4" />
+                                <folder.icon className="w-4 h-4"/>
                                 <span className="flex-1 text-left">{folder.name}</span>
                                 {folder.count > 0 && (
                                     <span className="text-xs text-gray-500">{folder.count}</span>
                                 )}
                             </button>
                         ))}
-                        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <Plus className="w-4 h-4" />
+                        <button
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <Plus className="w-4 h-4"/>
                             <span className="flex-1 text-left">Create New Folder</span>
                         </button>
                     </div>
 
                     {/* Quick Access */}
                     <div className="mt-6 space-y-1">
-                        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <Star className="w-4 h-4" />
+                        <button
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <Star className="w-4 h-4"/>
                             <span className="flex-1 text-left">Starred</span>
                         </button>
-                        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <Clock className="w-4 h-4" />
+                        <button
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <Clock className="w-4 h-4"/>
                             <span className="flex-1 text-left">Recent</span>
                         </button>
-                        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <FileText className="w-4 h-4" />
+                        <button
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <FileText className="w-4 h-4"/>
                             <span className="flex-1 text-left">Expenses</span>
                         </button>
-                        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <Clock className="w-4 h-4" />
+                        <button
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <Clock className="w-4 h-4"/>
                             <span className="flex-1 text-left">Expiring</span>
                         </button>
-                        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <Trash2 className="w-4 h-4" />
+                        <button
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <Trash2 className="w-4 h-4"/>
                             <span className="flex-1 text-left">Trash</span>
                         </button>
                     </div>
@@ -155,8 +163,9 @@ export default function Dashboard() {
 
                 {/* Settings */}
                 <div className="p-4 border-t border-gray-200">
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        <Settings className="w-4 h-4" />
+                    <button
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <Settings className="w-4 h-4"/>
                         <span className="flex-1 text-left">Settings</span>
                     </button>
                 </div>
@@ -173,16 +182,19 @@ export default function Dashboard() {
                                 className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
                                 onClick={() => setSidebarOpen(true)}
                             >
-                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M4 6h16M4 12h16M4 18h16"/>
                                 </svg>
                             </button>
 
                             <button className="hidden lg:block p-2 hover:bg-gray-100 rounded-lg">
-                                <Plus className="w-5 h-5 text-gray-600" />
+                                <Plus className="w-5 h-5 text-gray-600"/>
                             </button>
                             <div className="flex-1 max-w-2xl relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400" />
+                                <Search
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
                                 <input
                                     type="text"
                                     placeholder="Find name or place..."
@@ -192,11 +204,11 @@ export default function Dashboard() {
                         </div>
                         <div className="flex items-center gap-2 lg:gap-3">
                             <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" />
-                                <div className="w-9 h-5 lg:w-11 lg:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 lg:after:h-5 lg:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                <input type="checkbox" className="sr-only peer"/>
                             </label>
                             <div className="hidden sm:flex items-center gap-2 lg:gap-3">
-                                <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
+                                <div
+                                    className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
                                     DR
                                 </div>
                                 <div className="hidden md:block text-sm">
@@ -218,10 +230,10 @@ export default function Dashboard() {
                                     <React.Fragment key={receipt.id}>
                                         {(index === 0 || receipts[index - 1].folder !== receipt.folder) && (
                                             <div className="flex items-center gap-2 py-2 px-3 bg-gray-50 rounded-lg">
-                                                <ChevronDown className="w-4 h-4 text-blue-700" />
+                                                <ChevronDown className="w-4 h-4 text-blue-700"/>
                                                 <span className="text-sm font-semibold text-blue-700">
-                          {receipt.folder} ({receipts.filter(r => r.folder === receipt.folder).length})
-                        </span>
+                                                    {receipt.folder} ({receipts.filter(r => r.folder === receipt.folder).length})
+                                                </span>
                                             </div>
                                         )}
                                         <div
@@ -237,11 +249,12 @@ export default function Dashboard() {
                                         >
                                             <div className="flex justify-between items-start mb-2">
                                                 <h3 className="font-medium text-gray-900">{receipt.name}</h3>
-                                                <ChevronDown className="w-4 h-4 text-gray-400" />
+                                                <ChevronDown className="w-4 h-4 text-gray-400"/>
                                             </div>
                                             <div className="flex justify-between text-sm text-gray-600">
                                                 <span>{receipt.date}</span>
-                                                <span className="px-2 py-1 bg-gray-100 rounded text-xs">{receipt.category}</span>
+                                                <span
+                                                    className="px-2 py-1 bg-gray-100 rounded text-xs">{receipt.category}</span>
                                             </div>
                                         </div>
                                     </React.Fragment>
@@ -254,7 +267,7 @@ export default function Dashboard() {
                                 <tr className="border-b border-gray-200">
                                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                                         <div className="flex items-center gap-2">
-                                            <ChevronDown className="w-4 h-4" />
+                                            <ChevronDown className="w-4 h-4"/>
                                             {selectedFolder}
                                         </div>
                                     </th>
@@ -269,8 +282,9 @@ export default function Dashboard() {
                                         {(index === 0 || receipts[index - 1].folder !== receipt.folder) && (
                                             <tr className="bg-gray-50">
                                                 <td colSpan={4} className="py-2 px-4">
-                                                    <div className="flex items-center gap-2 text-sm font-semibold text-blue-700">
-                                                        <ChevronDown className="w-4 h-4" />
+                                                    <div
+                                                        className="flex items-center gap-2 text-sm font-semibold text-blue-700">
+                                                        <ChevronDown className="w-4 h-4"/>
                                                         {receipt.folder} ({receipts.filter(r => r.folder === receipt.folder).length} items)
                                                     </div>
                                                 </td>
@@ -290,7 +304,7 @@ export default function Dashboard() {
                                             <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>
                                             <td className="py-3 px-4">
                                                 <button className="text-gray-400 hover:text-gray-600">
-                                                    <ChevronDown className="w-4 h-4" />
+                                                    <ChevronDown className="w-4 h-4"/>
                                                 </button>
                                             </td>
                                         </tr>
@@ -356,7 +370,8 @@ export default function Dashboard() {
                                     <tr className="border-b border-gray-200">
                                         <th className="text-left py-2 text-xs font-semibold text-gray-600">QTY</th>
                                         <th className="text-left py-2 text-xs font-semibold text-gray-600">DESCRIPTION</th>
-                                        <th className="text-right py-2 text-xs font-semibold text-gray-600">UNIT PRICE</th>
+                                        <th className="text-right py-2 text-xs font-semibold text-gray-600">UNIT PRICE
+                                        </th>
                                         <th className="text-right py-2 text-xs font-semibold text-gray-600">AMOUNT</th>
                                     </tr>
                                     </thead>
@@ -381,7 +396,8 @@ export default function Dashboard() {
                                         <span className="text-gray-600">Sales Tax 5.875%</span>
                                         <span className="font-medium">${receiptDetail.salesTax.toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-between text-lg font-bold border-t-2 border-gray-900 pt-2">
+                                    <div
+                                        className="flex justify-between text-lg font-bold border-t-2 border-gray-900 pt-2">
                                         <span>TOTAL</span>
                                         <span>${receiptDetail.total.toFixed(2)}</span>
                                     </div>
@@ -416,16 +432,20 @@ export default function Dashboard() {
 
             {/* Mobile Receipt Preview Modal */}
             {previewOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 xl:hidden flex items-end sm:items-center justify-center">
-                    <div className="bg-white w-full sm:max-w-lg sm:rounded-t-xl rounded-t-xl max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-50 xl:hidden flex items-end sm:items-center justify-center">
+                    <div
+                        className="bg-white w-full sm:max-w-lg sm:rounded-t-xl rounded-t-xl max-h-[90vh] overflow-y-auto">
+                        <div
+                            className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
                             <h2 className="text-lg font-semibold text-gray-900">Receipt Details</h2>
                             <button
                                 onClick={() => setPreviewOpen(false)}
                                 className="p-2 hover:bg-gray-100 rounded-lg"
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                             </button>
                         </div>
@@ -433,7 +453,8 @@ export default function Dashboard() {
                             <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6 border border-gray-200">
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="text-lg font-bold text-gray-900">receipt</h3>
-                                    <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                    <div
+                                        className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                                         <span className="text-xs font-medium text-gray-600">LOGO</span>
                                     </div>
                                 </div>
@@ -510,7 +531,8 @@ export default function Dashboard() {
                                             <span className="text-gray-600">Sales Tax 5.875%</span>
                                             <span className="font-medium">${receiptDetail.salesTax.toFixed(2)}</span>
                                         </div>
-                                        <div className="flex justify-between text-lg font-bold border-t-2 border-gray-900 pt-2">
+                                        <div
+                                            className="flex justify-between text-lg font-bold border-t-2 border-gray-900 pt-2">
                                             <span>TOTAL</span>
                                             <span>${receiptDetail.total.toFixed(2)}</span>
                                         </div>

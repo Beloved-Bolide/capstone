@@ -6,6 +6,6 @@ export default function RootLayout() {
   return (
     <>
       <Outlet/>
-	  </>
+    </>
   )
 }
