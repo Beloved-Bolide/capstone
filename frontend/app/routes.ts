@@ -8,7 +8,7 @@ export default [
     index("./routes/home/home.tsx"),
 
     // Dashboard at "/dashboard"
-    route("dashboard", "./routes/dashboard/dashboard.tsx")
+    route("Dashboard", "./routes/dashboard/dashboard.tsx")
 
   ])
 
