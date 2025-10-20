@@ -15,6 +15,23 @@ export default function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
 
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
+
+    const closeSidebar = () => {
+        setSidebarOpen(false);
+    };
+
+    const openPreview =  (receipt: Receipt) => {
+        setSelectedReceipt(receipt);
+        setPreviewOpen(true);
+    };
+
+    const closePreview = () => {
+        setPreviewOpen(false);
+    };
+
     const folders = [
         {name: 'All Folders', icon: FolderOpen, count: 18},
         {name: 'Receipts', icon: FileText, count: 12},
@@ -72,7 +89,7 @@ export default function Dashboard() {
                 sidebarOpen ? 'translate-x-0' : '-translate-x-full'
             } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
                 {/* Logo */}
-                <div className="p-4 lg:p-6 border-b border-gray-200">
+                <div className="px-4 lg:px-5 pb-5 pt-5 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center">
@@ -316,7 +333,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Receipt Preview - Desktop */}
-                    <div className="hidden xl:block w-96 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
+                    <div className="hidden xl:block w-120 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
                         <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6 border border-gray-200">
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-bold text-gray-900">receipt</h3>
