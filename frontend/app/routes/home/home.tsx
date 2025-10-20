@@ -1,4 +1,4 @@
-import {Navigation} from "~/components/navigation";
+// import {Navigation} from "~/components/navigation";
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
@@ -12,7 +12,8 @@ export default function Home() {
   return(
     <>
 
-      <Navigation/>
+      {/* Remember to add back */}
+      {/* <Navigation/> */}
 
       <h1 className={'text-3xl font-bold'}> Home </h1>
 
