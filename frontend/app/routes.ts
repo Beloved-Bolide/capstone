@@ -10,8 +10,10 @@ export default [
     index("./routes/home/home.tsx"),
 
     // Dashboard at "/dashboard"
-    route("dashboard", "./routes/dashboard/dashboard.tsx")
+    route("dashboard", "./routes/dashboard/dashboard.tsx"),
 
+    // New File at "/new-file"
+    route("new-file", "./routes/new-file/new-file.tsx")
   ])
 
 ] satisfies RouteConfig;
