@@ -1,6 +1,4 @@
-// test comment to see branching
-
-import {type RouteConfig, index, layout, route} from "@react-router/dev/routes";
+import { type RouteConfig, index, layout, route } from "@react-router/dev/routes";
 
 export default [
 
@@ -12,8 +10,12 @@ export default [
     // Dashboard at "/dashboard"
     route("dashboard", "./routes/dashboard/dashboard.tsx"),
 
+    // Login at "/login"
+    route("login", "./routes/login/login.tsx"),
+
     // New File at "/new-file"
-    route("new-file", "./routes/new-file/new-file.tsx")
+    route("new-file", "./routes/new-file/new-file.tsx"),
+
   ])
 
 ] satisfies RouteConfig;

@@ -1,9 +1,12 @@
-import {Outlet} from "react-router";
+import { Outlet } from 'react-router';
 
 export default function RootLayout() {
-  return (
-    <>
-      <Outlet/>
-    </>
-  )
+    return (
+
+            <div>
+                {/* Your navbar or other layout elements */}
+                <Outlet />
+            </div>
+
+    );
 }
