@@ -1,5 +1,3 @@
-// test comment to see branching
-
 import { type RouteConfig, index, layout, route } from "@react-router/dev/routes";
 
 export default [
@@ -10,7 +8,10 @@ export default [
     index("./routes/home/home.tsx"),
 
     // Dashboard at "/dashboard"
-    route("dashboard", "./routes/dashboard/dashboard.tsx")
+    route("dashboard", "./routes/dashboard/dashboard.tsx"),
+
+    // Sign Up / Sign In at "/sign-up-sign-in"
+    route("login", "./routes/login/login.tsx")
 
   ])
 
