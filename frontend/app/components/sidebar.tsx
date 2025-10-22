@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {Clock, FileText, FolderOpen, Plus, Settings, Star, Trash2} from "lucide-react";
 
-
 type Receipt = {
   id: number;
   name: string;
