@@ -10,7 +10,10 @@ export default [
     index("./routes/home/home.tsx"),
 
     // Dashboard at "/dashboard"
-    route("dashboard", "./routes/dashboard/dashboard.tsx")
+    route("dashboard", "./routes/dashboard/dashboard.tsx"),
+
+    // Navbar at "./components"
+    // route("navbar","../../components/Navbar/Navbar"),
 
   ])
 
