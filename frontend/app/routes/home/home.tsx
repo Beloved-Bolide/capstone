@@ -75,7 +75,7 @@ export default function FileWiseLanding() {
               About
             </button>
             <button className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
-              Sign Up
+              Sign In
             </button>
           </div>
 
@@ -257,7 +257,7 @@ export default function FileWiseLanding() {
             <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <Search className="w-7 h-7 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Smart Search</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Fast Search</h3>
             <p className="text-gray-600 leading-relaxed">
               Find any receipt instantly with our powerful AI-powered search. Search by store name, date, amount, or category in seconds.
             </p>
@@ -312,7 +312,7 @@ export default function FileWiseLanding() {
             <div className="w-14 h-14 bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <Lock className="w-7 h-7 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Tax Ready</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Coupon Keeper</h3>
             <p className="text-gray-600 leading-relaxed">
               Export your receipts and expenses in tax-ready format. Simplify tax season with organized, categorized financial records.
             </p>

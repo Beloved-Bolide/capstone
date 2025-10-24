@@ -85,8 +85,7 @@ export default function Dashboard() {
     )}
 
     {/* Sidebar */}
-    <div
-    className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
+    <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
       {/* Logo */}
       <div className="px-4 lg:px-5 pb-5 pt-5 border-b border-gray-200">
@@ -189,7 +188,7 @@ export default function Dashboard() {
     </div>
 
     {/* Main Content */}
-    <div className="flex-1 flex flex-col min-w-0">
+    <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
         <div className="flex items-center justify-between gap-2">
@@ -206,9 +205,6 @@ export default function Dashboard() {
               </svg>
             </button>
 
-            <button className="hidden lg:block p-2 hover:bg-gray-100 rounded-lg">
-              <Plus className="w-5 h-5 text-gray-600"/>
-            </button>
             <div className="flex-1 max-w-2xl relative">
               <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
@@ -218,6 +214,9 @@ export default function Dashboard() {
               className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            <button className="p-2 hover:bg-gray-100 rounded-lg">
+              <Plus className="w-5 h-5 text-gray-600"/>
+            </button>
           </div>
           <div className="flex items-center gap-2 lg:gap-3">
             <label className="relative inline-flex items-center cursor-pointer">
@@ -237,7 +236,7 @@ export default function Dashboard() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden bg-gray-50">
         {/* Receipt List */}
         <div className="flex-1 overflow-y-auto bg-white">
           <div className="p-3 lg:p-6">
