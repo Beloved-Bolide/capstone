@@ -16,6 +16,9 @@ export default [
     // New File at "/new-file"
     route("new-file", "./routes/new-file/new-file.tsx"),
 
+    // Expenses at "/expenses"
+    route("expenses", "./routes/expenses/expenses.tsx"),
+
   ])
 
 ] satisfies RouteConfig;
