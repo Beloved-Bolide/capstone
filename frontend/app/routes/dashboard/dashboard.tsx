@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Search, Plus, FolderOpen, Star, Clock, FileText, Trash2, Settings, ChevronDown, Calendar} from 'lucide-react';
+import React, {useState} from "react";
+import {Search, Plus, FolderOpen, Star, Clock, FileText, Trash2, Settings, ChevronDown, Calendar} from "lucide-react";
 
 type Receipt = {
   id: number;
