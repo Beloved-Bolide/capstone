@@ -99,7 +99,8 @@ export default function Dashboard() {
             <span className="text-xl font-bold text-gray-800">FileWise</span>
           </div>
           <button
-          className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+          aria-label="Close sidebar"
+          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           onClick={() => setSidebarOpen(false)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,8 +130,8 @@ export default function Dashboard() {
           onClick={() => setSelectedFolder(folder.name)}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
           selectedFolder === folder.name
-          ? 'bg-blue-50 text-blue-700'
-          : 'text-gray-700 hover:bg-gray-50'
+          ? 'bg-blue-50 text-blue-700 border border-blue-200'
+          : 'text-gray-700 hover:bg-gray-50 border border-transparent'
           }`}
           >
             <folder.icon className="w-4 h-4"/>
@@ -195,7 +196,8 @@ export default function Dashboard() {
           <div className="flex items-center gap-2 lg:gap-4 flex-1 min-w-0">
             {/* Mobile Menu Button */}
             <button
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+            aria-label="Open sidebar"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             onClick={() => setSidebarOpen(true)}
             >
               <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
@@ -207,14 +209,14 @@ export default function Dashboard() {
 
             <div className="flex-1 max-w-2xl relative">
               <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
               <input
               type="text"
               placeholder="Find name or place..."
               className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
+            <button aria-label="Add new" className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <Plus className="w-5 h-5 text-gray-600"/>
             </button>
           </div>
@@ -278,7 +280,7 @@ export default function Dashboard() {
               </div>
 
               {/* Desktop Table */}
-              <table className="hidden lg:table w-full">
+              <table className="hidden lg:table w-full text-sm">
                 <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
@@ -319,7 +321,7 @@ export default function Dashboard() {
                       <td className="py-3 px-4 text-sm text-gray-600">{receipt.date}</td>
                       <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>
                       <td className="py-3 px-4">
-                        <button className="text-gray-400 hover:text-gray-600">
+                        <button aria-label="Row actions" className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                           <ChevronDown className="w-4 h-4"/>
                         </button>
                       </td>
@@ -456,8 +458,9 @@ export default function Dashboard() {
               className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Receipt Details</h2>
               <button
+                aria-label="Close preview"
                 onClick={() => setPreviewOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
