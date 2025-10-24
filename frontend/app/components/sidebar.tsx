@@ -25,7 +25,7 @@ export default function Sidebar() {
     setSidebarOpen(false);
   };
 
-  const openPreview =  (receipt: Receipt) => {
+  const openPreview = (receipt: Receipt) => {
     setSelectedReceipt(receipt);
     setPreviewOpen(true);
   };
@@ -78,106 +78,106 @@ export default function Sidebar() {
 
   return (
 
-    <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
+  <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
-      {/* Logo */}
-      <div className="px-4 lg:px-5 pb-5 pt-5 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center">
-              <div className="w-6 h-6 bg-blue-700 rounded" style={{
-                clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
-              }}></div>
-            </div>
-            <span className="text-xl font-bold text-gray-800">FileWise</span>
+    {/* Logo */}
+    <div className="px-4 lg:px-5 pb-5 pt-5 border-b border-gray-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center">
+            <div className="w-6 h-6 bg-blue-700 rounded" style={{
+              clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+            }}></div>
           </div>
-          <button
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
+          <span className="text-xl font-bold text-gray-800">FileWise</span>
         </div>
-      </div>
-
-      {/* Create Folder Button */}
-      <div className="px-3 lg:px-4 pt-4">
         <button
-          className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700">
-          <Plus className="w-4 h-4"/>
-          <span className="hidden sm:inline">Create New Folder</span>
-          <span className="sm:hidden">New Folder</span>
-        </button>
-      </div>
-
-      {/* Folders */}
-      <div className="flex-1 overflow-y-auto px-3 lg:px-4 py-4">
-        <div className="space-y-1">
-          {folders.map((folder) => (
-            <button
-              key={folder.name}
-              onClick={() => setSelectedFolder(folder.name)}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedFolder === folder.name
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <folder.icon className="w-4 h-4"/>
-              <span className="flex-1 text-left">{folder.name}</span>
-              {folder.count > 0 && (
-                <span className="text-xs text-gray-500">{folder.count}</span>
-              )}
-            </button>
-          ))}
-          <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Plus className="w-4 h-4"/>
-            <span className="flex-1 text-left">Create New Folder</span>
-          </button>
-        </div>
-
-        {/* Quick Access */}
-        <div className="mt-6 space-y-1">
-          <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Star className="w-4 h-4"/>
-            <span className="flex-1 text-left">Starred</span>
-          </button>
-          <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Clock className="w-4 h-4"/>
-            <span className="flex-1 text-left">Recent</span>
-          </button>
-          <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <FileText className="w-4 h-4"/>
-            <span className="flex-1 text-left">Expenses</span>
-          </button>
-          <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Clock className="w-4 h-4"/>
-            <span className="flex-1 text-left">Expiring</span>
-          </button>
-          <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Trash2 className="w-4 h-4"/>
-            <span className="flex-1 text-left">Trash</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Settings */}
-      <div className="p-4 border-t border-gray-200">
-        <button
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-          <Settings className="w-4 h-4"/>
-          <span className="flex-1 text-left">Settings</span>
+        className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+        onClick={() => setSidebarOpen(false)}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"/>
+          </svg>
         </button>
       </div>
     </div>
+
+    {/* Create Folder Button */}
+    <div className="px-3 lg:px-4 pt-4">
+      <button
+      className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700">
+        <Plus className="w-4 h-4"/>
+        <span className="hidden sm:inline">Create New Folder</span>
+        <span className="sm:hidden">New Folder</span>
+      </button>
+    </div>
+
+    {/* Folders */}
+    <div className="flex-1 overflow-y-auto px-3 lg:px-4 py-4">
+      <div className="space-y-1">
+        {folders.map((folder) => (
+        <button
+        key={folder.name}
+        onClick={() => setSelectedFolder(folder.name)}
+        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+        selectedFolder === folder.name
+        ? 'bg-blue-50 text-blue-700'
+        : 'text-gray-700 hover:bg-gray-50'
+        }`}
+        >
+          <folder.icon className="w-4 h-4"/>
+          <span className="flex-1 text-left">{folder.name}</span>
+          {folder.count > 0 && (
+          <span className="text-xs text-gray-500">{folder.count}</span>
+          )}
+        </button>
+        ))}
+        <button
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <Plus className="w-4 h-4"/>
+          <span className="flex-1 text-left">Create New Folder</span>
+        </button>
+      </div>
+
+      {/* Quick Access */}
+      <div className="mt-6 space-y-1">
+        <button
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <Star className="w-4 h-4"/>
+          <span className="flex-1 text-left">Starred</span>
+        </button>
+        <button
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <Clock className="w-4 h-4"/>
+          <span className="flex-1 text-left">Recent</span>
+        </button>
+        <button
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <FileText className="w-4 h-4"/>
+          <span className="flex-1 text-left">Expenses</span>
+        </button>
+        <button
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <Clock className="w-4 h-4"/>
+          <span className="flex-1 text-left">Expiring</span>
+        </button>
+        <button
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <Trash2 className="w-4 h-4"/>
+          <span className="flex-1 text-left">Trash</span>
+        </button>
+      </div>
+    </div>
+
+    {/* Settings */}
+    <div className="p-4 border-t border-gray-200">
+      <button
+      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+        <Settings className="w-4 h-4"/>
+        <span className="flex-1 text-left">Settings</span>
+      </button>
+    </div>
+  </div>
   )
 }
