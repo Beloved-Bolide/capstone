@@ -1,4 +1,3 @@
-import { Button, Label, TextInput } from 'flowbite-react';
 import { useState } from "react";
 
 function AuthPage() {
@@ -21,7 +20,7 @@ function AuthPage() {
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="flex items-center justify-center gap-2 mb-8">
-                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                         <img src="/logo-croppy.png" alt="FileWise logo" />
                     </div>
                     <span className="text-2xl font-bold text-gray-800">FileWise</span>
