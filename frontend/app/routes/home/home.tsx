@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, FileText, Shield, Clock, TrendingUp, Check, Menu, X, ChevronRight, Star, Zap, Lock } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Search, FileText, Shield, Clock, TrendingUp, Check, Menu, X, ChevronRight, Star, Zap, Lock } from "lucide-react";
 
 export default function FileWiseLanding() {
   const [scrolled, setScrolled] = useState(false);

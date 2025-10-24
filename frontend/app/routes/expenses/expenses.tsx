@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Search, Plus, FolderOpen, FileText, ChevronDown} from 'lucide-react';
+import React, {useState} from "react";
+import {ChevronDown} from "lucide-react";
 
 export default function ExpensesPage() {
 
