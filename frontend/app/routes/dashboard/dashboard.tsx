@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [allExpanded, setAllExpanded] = useState(true);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -33,11 +34,21 @@ export default function Dashboard() {
   };
 
   const folders = [
-    {name: 'All Folders', icon: FolderOpen, count: 18},
-    {name: 'Receipts', icon: FileText, count: 12},
-    {name: 'Warranties', icon: FileText, count: 3},
-    {name: 'Manuals', icon: FileText, count: 1},
-    {name: 'Coupons', icon: FileText, count: 0},
+    {
+      name: 'All Folders',
+      icon: FolderOpen,
+      count: 4,
+      children: [
+        { name: 'Receipts', icon: FileText, count: 12 },
+        { name: 'Warranties', icon: FileText, count: 3 },
+        { name: 'Manuals', icon: FileText, count: 1 },
+        { name: 'Coupons', icon: FileText, count: 0 },
+      ],
+    },
+    { name: 'Starred', icon: Star, count: 0 },
+    { name: 'Recent', icon: RotateCw, count: 0 },
+    { name: 'Expiring', icon: ClockAlert, count: 0 },
+    { name: 'Trash', icon: Trash2, count: 0 },
   ];
 
   const receipts = [
@@ -73,9 +84,12 @@ export default function Dashboard() {
     total: 154.06,
   };
 
+  const visibleReceipts = selectedFolder === 'All Folders'
+    ? receipts
+    : receipts.filter(r => r.folder === selectedFolder);
+
   return (
   <div className="flex h-screen bg-gray-50 overflow-hidden">
-    {/* Mobile Sidebar Overlay */}
 
     {/* Sidebar */}
     <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
@@ -114,47 +128,79 @@ export default function Dashboard() {
       {/* Folders */}
       <div className="flex-1 overflow-y-auto px-3 lg:px-4 py-4">
         <div className="space-y-1">
-          {folders.map((folder) => (
-          <button
-          key={folder.name}
-          onClick={() => setSelectedFolder(folder.name)}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-          selectedFolder === folder.name
-          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-          : 'text-gray-700 hover:bg-gray-50 border border-transparent'
-          }`}
-          >
-            <folder.icon className="w-4 h-4"/>
-            <span className="flex-1 text-left">{folder.name}</span>
-            {folder.count > 0 && (
-            <span className="text-xs text-gray-500">{folder.count}</span>
-            )}
-          </button>
-          ))}
-        </div>
 
-        {/* Quick Access */}
-        <div className="mt-6 space-y-1">
-          <button
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Star className="w-4 h-4"/>
-            <span className="flex-1 text-left">Starred</span>
-          </button>
-          <button
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <RotateCw className="w-4 h-4"/>
-            <span className="flex-1 text-left">Recent</span>
-          </button>
-          <button
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <ClockAlert className="w-4 h-4"/>
-            <span className="flex-1 text-left">Expiring</span>
-          </button>
-          <button
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Trash2 className="w-4 h-4"/>
-            <span className="flex-1 text-left">Trash</span>
-          </button>
+          {/* All Folders with dropdown */}
+          {(() => {
+            const all = folders[0];
+            return (
+              <div key={all.name} className="space-y-1">
+                <div className="w-full flex items-center gap-2">
+                  <button
+                    onClick={() => setSelectedFolder(all.name)}
+                    className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      selectedFolder === all.name
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                    }`}
+                  >
+                    <all.icon className="w-4 h-4" />
+                    <span className="flex-1 text-left">{all.name}</span>
+                    {all.count > 0 && (
+                      <span className="text-xs text-gray-500">{all.count}</span>
+                    )}
+                  </button>
+                  <button
+                    aria-label={allExpanded ? 'Collapse All Folders' : 'Expand All Folders'}
+                    aria-expanded={allExpanded}
+                    onClick={() => setAllExpanded(!allExpanded)}
+                    className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${allExpanded ? '' : '-rotate-90'}`} />
+                  </button>
+                </div>
+                {allExpanded && all.children && (
+                  <div className="space-y-1 pl-8">
+                    {all.children.map((child) => (
+                      <button
+                        key={child.name}
+                        onClick={() => setSelectedFolder(child.name)}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          selectedFolder === child.name
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                        }`}
+                      >
+                        <child.icon className="w-4 h-4" />
+                        <span className="flex-1 text-left">{child.name}</span>
+                        {typeof child.count === 'number' && child.count > 0 && (
+                          <span className="text-xs text-gray-500">{child.count}</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* Other folders (Starred, Recent, Expiring, Trash) */}
+          {folders.slice(1).map((folder) => (
+            <button
+              key={folder.name}
+              onClick={() => setSelectedFolder(folder.name)}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                selectedFolder === folder.name
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+              }`}
+            >
+              <folder.icon className="w-4 h-4" />
+              <span className="flex-1 text-left">{folder.name}</span>
+              {typeof folder.count === 'number' && folder.count > 0 && (
+                <span className="text-xs text-gray-500">{folder.count}</span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -170,47 +216,38 @@ export default function Dashboard() {
 
     {/* Main Content */}
     <div className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
+      <div className="bg-white border-b border-gray-200 px-3 lg:px-6 py-3 lg:py-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 lg:gap-4 flex-1 min-w-0">
+
             {/* Mobile Menu Button */}
-            <button
-            aria-label="Open sidebar"
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            onClick={() => setSidebarOpen(true)}
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                   viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"/>
+            <button aria-label="Open sidebar" className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" onClick={() => setSidebarOpen(true)}>
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
             </button>
 
+            {/* Search Bar */}
             <div className="flex-1 max-w-2xl relative">
-              <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
-              <input
-              type="text"
-              placeholder="Find name or place..."
-              className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
+              <input type="text" placeholder="Find file..." className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/></div>
+
+            {/* New File Button */}
             <button aria-label="Add new" className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <Plus className="w-5 h-5 text-gray-600"/>
             </button>
           </div>
+
+          {/* User Profile Dropdown */}
           <div className="flex items-center gap-2 lg:gap-3">
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer"/>
             </label>
             <div className="hidden sm:flex items-center gap-2 lg:gap-3">
-              <div
-              className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
+              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
                 DR
-              </div>
-              <div className="hidden md:block text-sm">
-                <div className="font-medium text-gray-900">Denise Rose</div>
               </div>
             </div>
           </div>
@@ -219,49 +256,51 @@ export default function Dashboard() {
 
       {/* Content Area */}
       <div className="flex-1 flex overflow-hidden bg-gray-50">
+
         {/* Receipt List */}
         <div className="flex-1 overflow-y-auto bg-white">
           <div className="p-3 lg:p-6">
+
             {/* Mobile: Show as cards, Desktop: Show as table */}
             <div className="lg:hidden space-y-3">
-              {receipts.map((receipt, index) => (
+              {visibleReceipts.map((receipt, index) => (
               <React.Fragment key={receipt.id}>
-                {(index === 0 || receipts[index - 1].folder !== receipt.folder) && (
+                {(index === 0 || visibleReceipts[index - 1].folder !== receipt.folder) && (
                 <div className="flex items-center gap-2 py-2 px-3 bg-gray-50 rounded-lg">
                   <ChevronDown className="w-4 h-4 text-blue-700"/>
                   <span className="text-sm font-semibold text-blue-700">
-                                                    {receipt.folder} ({receipts.filter(r => r.folder === receipt.folder).length})
-                                                </span>
-                      </div>
-                    )}
-                    <div
-                      className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                        selectedReceipt?.id === receipt.id
-                          ? 'bg-blue-50 border-blue-200'
-                          : 'bg-white border-gray-200 hover:bg-gray-50'
-                      }`}
-                      onClick={() => {
-                        setSelectedReceipt(receipt);
-                        setPreviewOpen(true);
-                      }}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-medium text-gray-900">{receipt.name}</h3>
-                        <ChevronDown className="w-4 h-4 text-gray-400"/>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        <span>{receipt.date}</span>
-                        <span
-                          className="px-2 py-1 bg-gray-100 rounded text-xs">{receipt.category}</span>
-                      </div>
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
+                    {receipt.folder} ({visibleReceipts.filter(r => r.folder === receipt.folder).length})
+                  </span>
+                </div>
+                )}
+                <div
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    selectedReceipt?.id === receipt.id
+                      ? 'bg-blue-50 border-blue-200'
+                      : 'bg-white border-gray-200 hover:bg-gray-50'
+                  }`}
+                  onClick={() => {
+                    setSelectedReceipt(receipt);
+                    setPreviewOpen(true);
+                  }}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-gray-900">{receipt.name}</h3>
+                    <ChevronDown className="w-4 h-4 text-gray-400"/>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>{receipt.date}</span>
+                    <span
+                      className="px-2 py-1 bg-gray-100 rounded text-xs">{receipt.category}</span>
+                  </div>
+                </div>
+              </React.Fragment>
+              ))}
+            </div>
 
-              {/* Desktop Table */}
-              <table className="hidden lg:table w-full text-sm">
-                <thead>
+            {/* Desktop Table */}
+            <table className="hidden lg:table w-full text-sm">
+              <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                     <div className="flex items-center gap-2">
@@ -273,47 +312,38 @@ export default function Dashboard() {
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>
                   <th className="w-8"></th>
                 </tr>
-                </thead>
-                <tbody>
-                {receipts.map((receipt, index) => (
-                  <React.Fragment key={receipt.id}>
-                    {(index === 0 || receipts[index - 1].folder !== receipt.folder) && (
-                      <tr className="bg-gray-50">
-                        <td colSpan={4} className="py-2 px-4">
-                          <div
-                            className="flex items-center gap-2 text-sm font-semibold text-blue-700">
-                            <ChevronDown className="w-4 h-4"/>
-                            {receipt.folder} ({receipts.filter(r => r.folder === receipt.folder).length} items)
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                    <tr
-                      className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
-                        selectedReceipt?.id === receipt.id ? 'bg-blue-50' : ''
-                      }`}
-                      onClick={() => {
-                        setSelectedReceipt(receipt);
-                        setPreviewOpen(true);
-                      }}
-                    >
-                      <td className="py-3 px-4 text-sm text-gray-900">{receipt.name}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{receipt.date}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>
-                      <td className="py-3 px-4">
-                        <button aria-label="Row actions" className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </thead>
+              <tbody>
+              {visibleReceipts.map((receipt, index) => (
+                <React.Fragment key={receipt.id}>
+                  {(index === 0 || visibleReceipts[index - 1].folder !== receipt.folder) && (
+                    <tr className="bg-gray-50">
+                      <td colSpan={4} className="py-2 px-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-blue-700">
                           <ChevronDown className="w-4 h-4"/>
-                        </button>
+                          {receipt.folder} ({visibleReceipts.filter(r => r.folder === receipt.folder).length} items)
+                        </div>
                       </td>
                     </tr>
-                  </React.Fragment>
-                ))}
-                </tbody>
-              </table>
-            </div>
+                  )}
+                  <tr className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedReceipt?.id === receipt.id ? 'bg-blue-50' : ''}`} onClick={() => {setSelectedReceipt(receipt);setPreviewOpen(true);}}>
+                    <td className="py-3 px-4 text-sm text-gray-900">{receipt.name}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600">{receipt.date}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>
+                    <td className="py-3 px-4">
+                      <button aria-label="Row actions" className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <ChevronDown className="w-4 h-4"/>
+                      </button>
+                    </td>
+                  </tr>
+                </React.Fragment>
+              ))}
+              </tbody>
+            </table>
           </div>
+        </div>
 
-          {/* Receipt Preview - Desktop */}
+        {/* Receipt Preview - Desktop */}
           <div className="hidden xl:block w-120 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
             <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6 border border-gray-200">
               <div className="flex items-center justify-between mb-6">
