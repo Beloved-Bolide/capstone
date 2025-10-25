@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Search, Plus, FolderOpen, Star, Clock, FileText, Trash2, Settings, ChevronDown, Calendar} from "lucide-react";
+import {Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, FileText, Trash2, Settings, ChevronDown} from "lucide-react";
 
 type Receipt = {
   id: number;
@@ -36,7 +36,6 @@ export default function Dashboard() {
     {name: 'All Folders', icon: FolderOpen, count: 18},
     {name: 'Receipts', icon: FileText, count: 12},
     {name: 'Warranties', icon: FileText, count: 3},
-    {name: 'Taxes', icon: FileText, count: 2},
     {name: 'Manuals', icon: FileText, count: 1},
     {name: 'Coupons', icon: FileText, count: 0},
   ];
@@ -77,12 +76,6 @@ export default function Dashboard() {
   return (
   <div className="flex h-screen bg-gray-50 overflow-hidden">
     {/* Mobile Sidebar Overlay */}
-    {sidebarOpen && (
-    <div
-    className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-    onClick={() => setSidebarOpen(false)}
-    ></div>
-    )}
 
     {/* Sidebar */}
     <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
@@ -91,10 +84,8 @@ export default function Dashboard() {
       <div className="px-4 lg:px-5 pb-5 pt-5 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center">
-              <div className="w-6 h-6 bg-blue-700 rounded" style={{
-                clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
-              }}></div>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+              <img src="/logo-croppy.png" alt="logo"/>
             </div>
             <span className="text-xl font-bold text-gray-800">FileWise</span>
           </div>
@@ -116,8 +107,7 @@ export default function Dashboard() {
         <button
         className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700">
           <Plus className="w-4 h-4"/>
-          <span className="hidden sm:inline">Create New Folder</span>
-          <span className="sm:hidden">New Folder</span>
+          <span>New Folder</span>
         </button>
       </div>
 
@@ -141,11 +131,6 @@ export default function Dashboard() {
             )}
           </button>
           ))}
-          <button
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Plus className="w-4 h-4"/>
-            <span className="flex-1 text-left">Create New Folder</span>
-          </button>
         </div>
 
         {/* Quick Access */}
@@ -157,17 +142,12 @@ export default function Dashboard() {
           </button>
           <button
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Clock className="w-4 h-4"/>
+            <RotateCw className="w-4 h-4"/>
             <span className="flex-1 text-left">Recent</span>
           </button>
           <button
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <FileText className="w-4 h-4"/>
-            <span className="flex-1 text-left">Expenses</span>
-          </button>
-          <button
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Clock className="w-4 h-4"/>
+            <ClockAlert className="w-4 h-4"/>
             <span className="flex-1 text-left">Expiring</span>
           </button>
           <button
@@ -189,7 +169,7 @@ export default function Dashboard() {
     </div>
 
     {/* Main Content */}
-    <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
+    <div className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
         <div className="flex items-center justify-between gap-2">
