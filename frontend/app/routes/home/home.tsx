@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, FileText, Shield, Clock, TrendingUp, Check, Menu, X, ChevronRight, Star, Zap, Lock } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Search, FileText, Shield, Clock, TrendingUp, Check, Menu, X, ChevronRight, Star, Zap, Lock } from "lucide-react";
 
 export default function FileWiseLanding() {
   const [scrolled, setScrolled] = useState(false);
@@ -14,7 +14,7 @@ export default function FileWiseLanding() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id) => {
+  const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -447,7 +447,7 @@ export default function FileWiseLanding() {
       </div>
     </footer>
 
-    <style jsx>{`
+    <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-20px); }
