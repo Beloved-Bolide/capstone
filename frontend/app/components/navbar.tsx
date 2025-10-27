@@ -34,7 +34,7 @@ export default function Navbar({onMenuClick}: NavbarProps) {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <img src="./logo-croppy.png" alt="FileWise logo" />
+            <img src="/logo-croppy.png" alt="FileWise logo" />
           </div>
           <span className="text-xl font-bold text-gray-800 hidden sm:inline">FileWise</span>
         </div>
