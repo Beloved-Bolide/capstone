@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from 'react';
 
 const NewFile: React.FC = () => {
   const [fileType, setFileType] = useState<string>('');
@@ -57,7 +57,7 @@ const NewFile: React.FC = () => {
                   or click to browse
                 </p>
               </div>
-              <input id="dropzone-file" type="file" className="hidden"/>
+              <input id="dropzone-file" type="file" className="hidden" />
             </label>
           </div>
 
@@ -135,31 +135,16 @@ const NewFile: React.FC = () => {
                   className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   >
                     <option value="">Select folder...</option>
-                    <option value="documents">Documents</option>
-                    <option value="receipts">Receipts</option>
-                    <option value="contracts">Contracts</option>
                     <option value="personal">Personal</option>
+                    <option value="work">Work</option>
+                    <option value="medical">Medical</option>
+                    <option value="financial">Financial</option>
+                    <option value="home">Home</option>
                   </select>
                 </div>
 
-                {/* Organization */}
-                <div>
-                  <label
-                  htmlFor="organization"
-                  className="block mb-2 text-sm font-medium text-gray-700"
-                  >
-                    Organization
-                  </label>
-                  <input
-                  type="text"
-                  id="organization"
-                  className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
-                  placeholder="Enter organization name"
-                  />
-                </div>
-
                 {/* Tags */}
-                <div className="md:col-span-2">
+                <div>
                   <label
                   htmlFor="tags"
                   className="block mb-2 text-sm font-medium text-gray-700"
@@ -170,20 +155,52 @@ const NewFile: React.FC = () => {
                   type="text"
                   id="tags"
                   className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
-                  placeholder="Enter tags (comma separated)"
+                  placeholder="Add tags (comma separated)"
+                  />
+                </div>
+
+                {/* Description */}
+                <div className="md:col-span-2">
+                  <label
+                  htmlFor="description"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                  id="description"
+                  rows={3}
+                  className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                  placeholder="Enter file description"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Receipt Details Section (Conditional) */}
+            {/* Financial Details - Show for Receipt/Invoice */}
             {showAmountField && (
             <div>
               <h3 className="text-base font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                Receipt Details
+                Financial Details
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Vendor/Merchant */}
+                <div>
+                  <label
+                  htmlFor="vendor"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                  >
+                    Vendor/Merchant
+                  </label>
+                  <input
+                  type="text"
+                  id="vendor"
+                  className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                  placeholder="Enter vendor name"
+                  />
+                </div>
+
                 {/* Amount */}
                 <div>
                   <label
@@ -304,13 +321,13 @@ const NewFile: React.FC = () => {
           <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
             <button
             type="button"
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-100 transition-colors cursor-pointer"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-100 transition-colors"
             >
               Cancel
             </button>
             <button
             type="button"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-colors cursor-pointer"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-colors"
             >
               Upload File
             </button>
