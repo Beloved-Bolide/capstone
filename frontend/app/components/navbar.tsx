@@ -5,7 +5,7 @@ type NavbarProps = {
   onMenuClick: () => void;
 };
 
-export default function Navbar({onMenuClick}: NavbarProps) {
+export function Navbar({onMenuClick}: NavbarProps) {
   return (
   <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
     <div className="flex items-center justify-between gap-4">
