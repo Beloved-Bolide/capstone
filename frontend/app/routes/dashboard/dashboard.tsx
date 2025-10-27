@@ -76,7 +76,10 @@ export default function Dashboard() {
       map.get(f.folder)!.push(f);
     });
     return Array.from(map.entries()).map(([folder, items]) => ({ folder, items }));
-  }, []);
+  }, [visibleFiles]);
+
+  const isAllFolders = selectedFolder === 'All Folders';
+  const subfolders = folders[0]?.children ?? [];
 
   return (
   <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -244,15 +247,34 @@ export default function Dashboard() {
 
             {/* Mobile: Show as cards */}
             <div className="lg:hidden space-y-3">
-              {groupedFiles.map((group) => (
-                <div key={group.folder} className="space-y-3">
-                  <div className="flex items-center gap-2 py-2 px-3 bg-gray-50 rounded-lg">
-                    <ChevronDown className="w-4 h-4 text-blue-700"/>
-                    <span className="text-sm font-semibold text-blue-700">
-                      {group.folder} ({group.items.length})
-                    </span>
-                  </div>
-                  {group.items.map((file) => (
+              {isAllFolders ? (
+                // Show subfolders as cards when "All Folders" is selected
+                <div className="space-y-2">
+                  {subfolders.map((sf) => (
+                    <button
+                      key={sf.name}
+                      onClick={() => setSelectedFolder(sf.name)}
+                      className="w-full p-4 border rounded-lg bg-white border-gray-200 hover:bg-gray-50 transition-colors text-left"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <sf.icon className="w-5 h-5 text-gray-600" />
+                          <div>
+                            <div className="font-medium text-gray-900">{sf.name}</div>
+                            {typeof sf.count === 'number' && (
+                              <div className="text-xs text-gray-500">{sf.count} items</div>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronDown className="w-4 h-4 text-gray-400"/>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                // Show only files for the selected subfolder
+                <div className="space-y-3">
+                  {visibleFiles.map((file) => (
                     <div
                       key={file.id}
                       className={`p-4 border rounded-lg cursor-pointer transition-colors ${
@@ -276,36 +298,49 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
-              ))}
+              )}
             </div>
 
-            {/* Desktop: Show as a table */}
-            <table className="hidden lg:table w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <ChevronDown className="w-4 h-4"/>
-                      {selectedFolder}
-                    </div>
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>
-                  <th className="w-8"></th>
-                </tr>
-              </thead>
-              <tbody>
-              {groupedFiles.map((group) => (
-                <React.Fragment key={group.folder}>
-                  <tr className="bg-gray-50">
-                    <td colSpan={4} className="py-2 px-4">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-blue-700">
-                        <ChevronDown className="w-4 h-4"/>
-                        {group.folder} ({group.items.length} items)
+            {/* Desktop */}
+            {isAllFolders ? (
+              // Show subfolders grid when "All Folders" is selected
+              <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3">
+                {subfolders.map((sf) => (
+                  <button
+                    key={sf.name}
+                    onClick={() => setSelectedFolder(sf.name)}
+                    className="p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 text-left transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <sf.icon className="w-5 h-5 text-gray-600" />
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{sf.name}</div>
+                        {typeof sf.count === 'number' && (
+                          <div className="text-xs text-gray-500">{sf.count} items</div>
+                        )}
                       </div>
-                    </td>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              // Show table of files for the selected subfolder
+              <table className="hidden lg:table w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                      <div className="flex items-center gap-2">
+                        <ChevronDown className="w-4 h-4"/>
+                        {selectedFolder}
+                      </div>
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>
+                    <th className="w-8"></th>
                   </tr>
-                  {group.items.map((receipt) => (
+                </thead>
+                <tbody>
+                  {visibleFiles.map((receipt) => (
                     <tr
                       key={receipt.id}
                       className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedReceipt?.id === receipt.id ? 'bg-blue-50' : ''}`}
@@ -321,10 +356,9 @@ export default function Dashboard() {
                       </td>
                     </tr>
                   ))}
-                </React.Fragment>
-              ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 
