@@ -4,7 +4,7 @@ services:
     volumes:
       - 'redis:/data'
     env_file:
-      - ../../projects/capstone-project/project.env
+      - ./project.env
     healthcheck:
       test: [ 'CMD', 'redis-cli', 'ping']
   sql:
@@ -12,11 +12,11 @@ services:
     volumes:
       - capstone-sql:/var/lib/postgresql/data/
     env_file:
-      - ../../projects/capstone-project/project.env
+      - ./project.env
   backend:
     build: backend
     env_file:
-      - ../../projects/capstone-project/project.env
+      - ./project.env
     user: 'node'
     volumes:
       - ./backend/src:/home/node/app/src
