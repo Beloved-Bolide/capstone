@@ -1,4 +1,5 @@
 import {Search, Plus} from 'lucide-react';
+import {Link} from 'react-router';
 
 type NavbarProps = {
   onMenuClick: () => void;
@@ -9,7 +10,7 @@ export default function Navbar({onMenuClick}: NavbarProps) {
   <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
     <div className="flex items-center justify-between gap-4">
       {/* Left: Mobile Menu + Logo */}
-      <div className="flex items-center gap-2 lg:gap-4">
+      <div className="flex items-center gap-2 lg:gap-6">
         {/* Mobile Menu Button */}
         <button
         className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
@@ -32,13 +33,8 @@ export default function Navbar({onMenuClick}: NavbarProps) {
 
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center">
-            <div
-            className="w-6 h-6 bg-blue-700 rounded"
-            style={{
-              clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-            }}
-            ></div>
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+            <img src="./logo-croppy.png" alt="FileWise logo" />
           </div>
           <span className="text-xl font-bold text-gray-800 hidden sm:inline">FileWise</span>
         </div>
@@ -57,8 +53,25 @@ export default function Navbar({onMenuClick}: NavbarProps) {
         />
       </div>
 
-      {/* Right: User Profile */}
-      <div className="flex items-center gap-2 lg:gap-3">
+      {/* Right: Navigation Links + User Profile */}
+      <div className="flex items-center gap-4 lg:gap-6">
+        {/* Navigation Links */}
+        <div className="hidden md:flex items-center gap-4">
+          <Link
+          to="/"
+          className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+          >
+            Home
+          </Link>
+          <Link
+          to="/dashboard"
+          className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+          >
+            Dashboard
+          </Link>
+        </div>
+
+        {/* User Profile */}
         <div className="hidden sm:flex items-center gap-2 lg:gap-3">
           <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
             DR
