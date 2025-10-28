@@ -64,6 +64,3 @@ CREATE TABLE IF NOT EXISTS file (
     FOREIGN KEY (record_id) REFERENCES record (id)
 );
 CREATE INDEX ON file (record_id);
-
-
-
