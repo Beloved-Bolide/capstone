@@ -1,6 +1,5 @@
-import type { Response } from 'express'
-
-import type { Status } from './interfaces/Status'
+import type {Response} from "express";
+import type {Status} from "./interfaces/Status";
 import type {ZodError} from "zod/v4";
 
 /**
@@ -9,8 +8,8 @@ import type {ZodError} from "zod/v4";
  * @param data to send back to the client
  * @param message
  */
-export function createStatus (status: number, data: unknown, message: string | null): Status {
-	return { status, data, message }
+export function createStatus(status: number, data: unknown, message: string | null): Status {
+  return {status, data, message}
 }
 
 /**
@@ -18,12 +17,12 @@ export function createStatus (status: number, data: unknown, message: string | n
  * @param response an object modeling the response that will be sent to the client.
  * @param error an object containing the errors from zod validation
  */
-export function zodErrorResponse (response: Response, error: ZodError): Response<Status> {
-	let message = 'validation error occurred'
-	if( error.issues[0]) {
-		 message = error.issues[0].message
-	}
-	return errorResponse(response, createStatus(418, null, message))
+export function zodErrorResponse(response: Response, error: ZodError): Response<Status> {
+  let message = 'validation error occurred'
+  if (error.issues[0]) {
+    message = error.issues[0].message
+  }
+  return errorResponse(response, createStatus(418, null, message))
 
 }
 
@@ -32,8 +31,8 @@ export function zodErrorResponse (response: Response, error: ZodError): Response
  * @param response
  * @param status
  */
-export function errorResponse (response: Response, status: Status): Response<Status> {
-	return response.json(status)
+export function errorResponse(response: Response, status: Status): Response<Status> {
+  return response.json(status)
 }
 
 /**
@@ -41,6 +40,6 @@ export function errorResponse (response: Response, status: Status): Response<Sta
  * @param response an object modeling the response that will be sent to the client.
  * @param defaultDataValue default value to send back to the client to help with rendering when an error occurs
  */
-export function serverErrorResponse (response: Response, defaultDataValue: unknown = null): Response<Status> {
-	return errorResponse(response, createStatus(500, defaultDataValue, 'internal server error occurred try again later'))
+export function serverErrorResponse(response: Response, defaultDataValue: unknown = null): Response<Status> {
+  return errorResponse(response, createStatus(500, defaultDataValue, 'internal server error occurred try again later'))
 }

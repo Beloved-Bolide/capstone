@@ -1,10 +1,11 @@
-import express, {type Application } from 'express'
-import morgan from 'morgan'
+import express, {type Application} from "express";
+import morgan from "morgan";
 // Routes
-import session from 'express-session'
-import type {  RedisClientType } from 'redis'
-import {RedisStore} from 'connect-redis'
+import session from "express-session";
+import type {RedisClientType} from "redis";
+import {RedisStore} from "connect-redis";
 import {indexRoute} from "./apis/index.route.ts";
+
 export class App {
 	app: Application
 	redisStore : RedisStore
