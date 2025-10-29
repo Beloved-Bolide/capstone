@@ -35,14 +35,14 @@ export async function signupUserController(request: Request, response: Response)
     const mailGun: Mailgun = new Mailgun(formData)
     const mailgunClient = mailGun.client({username: 'api', key: process.env.MAILGUN_API_KEY as string})
     const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}activation/${activationToken}`
-    const message =
-     `<h2>Welcome to FileWise!</h2>
+    const message = `
+      <h2>Welcome to FileWise!</h2>
       <p>To start storing your documents, you must confirm your account.</p>
       <p><a href="${basePath}">${basePath}</a></p>`
     const mailgunMessage = {
       from: `Mailgun Sandbox <postmaster@${process.env.MAILGUN_DOMAIN as string}>`,
       to: email,
-      subject: 'Please confirm your filewise account -- Account Activation',
+      subject: 'Please confirm your Filewise account -- Account Activation',
       html: message
     }
     await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
