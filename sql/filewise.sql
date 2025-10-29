@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "user"
     activation_token CHAR(32),
     email            VARCHAR(128) UNIQUE NOT NULL,
     name             VARCHAR(64)         NOT NULL,
-    notifications    boolean DEFAULT true,
+    notifications    BOOLEAN DEFAULT TRUE,
     hash             CHAR(97)            NOT NULL
 );
 
