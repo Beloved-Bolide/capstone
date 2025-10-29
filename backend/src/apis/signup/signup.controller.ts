@@ -1,20 +1,22 @@
-import type {Request, Response} from "express";
-import Mailgun from "mailgun.js";
-import formData from "form-data";
-import {type PrivateUser, insertUser} from "../user/user.model.ts";
-import {SignUpUserSchema} from "./signup.schema.ts";
-import {zodErrorResponse} from "../../utils/response.utils.ts";
-import {setActivationToken, setHash} from "../../utils/auth.utils";
+import type {Request, Response} from 'express'
+import Mailgun from 'mailgun.js'
+import formData from 'form-data'
+import {SignUpUserSchema} from './signup.schema.ts'
+import {type PrivateUser, insertUser} from '../user/user.model.ts'
+import {zodErrorResponse} from '../../utils/response.utils.ts'
+import {setHash, setActivationToken} from '../../utils/auth.utils'
+import type {Status} from '../../utils/interfaces/Status.ts'
 
-export async function signUpUserController(request: Request, response: Response) {
+export async function signupUserController(request: Request, response: Response) {
   try {
+
     const validationResult = SignUpUserSchema.safeParse(request.body)
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    const {name, email, password, id} = validationResult.data
+    const {id, email, name, password} = validationResult.data
     const hash = await setHash(password)
     const activationToken = setActivationToken()
     const user: PrivateUser = {
@@ -33,8 +35,8 @@ export async function signUpUserController(request: Request, response: Response)
     const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}activation/${activationToken}`
 
     const message = `
-      <h2>Welcome to FileWise.</h2>
-      <p>In order to start storing your documents you must confirm your account.</p>
+      <h2>Welcome to FileWise!</h2>
+      <p>To start storing your documents, you must confirm your account.</p>
       <p><a href="${basePath}">${basePath}</a></p>
     `
 
@@ -52,7 +54,6 @@ export async function signUpUserController(request: Request, response: Response)
       message: 'Profile successfully created please check your email.',
       data: null
     }
-
     response.status(200).json(status)
 
   } catch (error: any) {

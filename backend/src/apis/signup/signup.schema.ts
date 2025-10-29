@@ -1,5 +1,5 @@
-import {z} from "zod/v4";
-import {PrivateUserSchema} from "../user/user.model.ts";
+import {z} from 'zod/v4'
+import {PrivateUserSchema} from '../user/user.model.ts'
 
 export const SignUpUserSchema =
 PrivateUserSchema
