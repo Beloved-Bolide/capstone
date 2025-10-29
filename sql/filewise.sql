@@ -4,8 +4,7 @@ DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS folder;
 DROP TABLE IF EXISTS "user";
 
-CREATE TABLE IF NOT EXISTS "user"
-(
+CREATE TABLE IF NOT EXISTS "user" (
     id               UUID PRIMARY KEY,
     activation_token CHAR(32),
     email            VARCHAR(128) UNIQUE NOT NULL,
@@ -14,8 +13,7 @@ CREATE TABLE IF NOT EXISTS "user"
     hash             CHAR(97)            NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS folder
-(
+CREATE TABLE IF NOT EXISTS folder (
     id               UUID PRIMARY KEY,
     parent_folder_id UUID,
     user_id          UUID,
@@ -26,16 +24,14 @@ CREATE TABLE IF NOT EXISTS folder
 CREATE INDEX ON folder (user_id);
 CREATE INDEX ON folder (parent_folder_id);
 
-CREATE TABLE IF NOT EXISTS category
-(
+CREATE TABLE IF NOT EXISTS category (
     id    UUID PRIMARY KEY   NOT NULL,
     color VARCHAR(32),
     icon  VARCHAR(128),
     name  VARCHAR(32) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS record
-(
+CREATE TABLE IF NOT EXISTS record (
     id               UUID PRIMARY KEY,
     folder_id        UUID,
     category_id      UUID,
@@ -55,8 +51,7 @@ CREATE TABLE IF NOT EXISTS record
 CREATE INDEX ON record (folder_id);
 CREATE INDEX ON record (category_id);
 
-CREATE TABLE IF NOT EXISTS file
-(
+CREATE TABLE IF NOT EXISTS file (
     id            UUID PRIMARY KEY,
     record_id     UUID,
     description   VARCHAR(256),
