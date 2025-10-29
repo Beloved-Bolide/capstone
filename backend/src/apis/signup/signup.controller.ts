@@ -35,11 +35,10 @@ export async function signupUserController(request: Request, response: Response)
     const mailGun: Mailgun = new Mailgun(formData)
     const mailgunClient = mailGun.client({username: 'api', key: process.env.MAILGUN_API_KEY as string})
     const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}activation/${activationToken}`
-    const message = `
-      <h2>Welcome to FileWise!</h2>
+    const message =
+     `<h2>Welcome to FileWise!</h2>
       <p>To start storing your documents, you must confirm your account.</p>
-      <p><a href="${basePath}">${basePath}</a></p>
-    `
+      <p><a href="${basePath}">${basePath}</a></p>`
     const mailgunMessage = {
       from: `Mailgun Sandbox <postmaster@${process.env.MAILGUN_DOMAIN as string}>`,
       to: email,
@@ -48,23 +47,20 @@ export async function signupUserController(request: Request, response: Response)
     }
     await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
 
-    // create a status message
-    const status: Status = {
+    const status: Status = { // create a status message
       status: 200,
       message: 'Profile successfully created! Please check your email.',
       data: null
     }
-    // return a success response
-    response.status(200).json(status)
+
+    response.status(200).json(status) // return a success response
 
   } catch (error: any) {
-    // create a status message
-    const status: Status = {
+    const status: Status = { // create a status message
       status: 500,
       message: error.message,
       data: null
     }
-    // return a server error response
-    response.status(200).json(status)
+    response.status(200).json(status) // return a server error response
   }
 }
