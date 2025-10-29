@@ -14,7 +14,7 @@ PrivateUserSchema
       .string('password confirmation is required')
       .min(8, 'profile password cannot be less than 8 characters long')
       .max(32, 'profile password cannot be over than 32 characters long')
-})
+  })
   .refine(data => data.password === data.passwordConfirm, {
     message: 'passwords do not match'
-})
+  })
