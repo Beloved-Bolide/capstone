@@ -1,5 +1,5 @@
-import {Router} from "express";
-import {signupUserController} from "./signup.controller.ts";
+import {Router} from 'express'
+import {signupUserController} from './signup.controller.ts'
 
 // define the base path for the route
 const basePath = '/apis/signup' as const
@@ -8,7 +8,11 @@ const basePath = '/apis/signup' as const
 const router = Router()
 
 // define the route
-router.route('/').post().post(signupUserController)
+router.route('/')
+  .post(signupUserController)
 
 // export the router
-export const signupRoute = {basePath, router}
+export const signupRoute = {
+  basePath,
+  router
+}

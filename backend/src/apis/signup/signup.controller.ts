@@ -48,19 +48,23 @@ export async function signupUserController(request: Request, response: Response)
     }
     await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
 
+    // create a status message
     const status: Status = {
       status: 200,
-      message: 'Profile successfully created please check your email.',
+      message: 'Profile successfully created! Please check your email.',
       data: null
     }
+    // return a success response
     response.status(200).json(status)
 
   } catch (error: any) {
+    // create a status message
     const status: Status = {
       status: 500,
       message: error.message,
       data: null
     }
+    // return a server error response
     response.status(200).json(status)
   }
 }

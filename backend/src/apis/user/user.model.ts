@@ -1,6 +1,7 @@
 import {z} from 'zod/v4'
 import {sql} from '../../utils/database.utils.ts'
 
+// define the schema for a user
 export const PrivateUserSchema = z.object({
   id: z
     .uuidv7('Please provide a valid uuid for id'),
@@ -23,11 +24,12 @@ export const PrivateUserSchema = z.object({
     .length(97, {message: 'please provide a valid hash (max 97 characters)'}),
 })
 
+// define the type for a user
 export type PrivateUser = z.infer<typeof PrivateUserSchema>
 
+// define a function to insert a user into the database
 export async function insertUser(user: PrivateUser): Promise<string> {
   PrivateUserSchema.parse(user)
-
   const {id, activationToken, email, notifications, name, hash} = user
   await sql`INSERT INTO "user"(id, activation_token, email, hash, name, notifications)
             VALUES (${id}, ${activationToken}, ${email}, ${hash}, ${name}, ${notifications})`

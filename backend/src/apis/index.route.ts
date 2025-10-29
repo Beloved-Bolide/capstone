@@ -4,6 +4,7 @@ import {indexController} from './index.controller'
 // define the base path for the route
 const basePath = '/apis'
 
+// create a new express router
 const router = Router()
 router.route('/')
   .get(indexController)
