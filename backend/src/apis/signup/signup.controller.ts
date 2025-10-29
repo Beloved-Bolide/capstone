@@ -9,18 +9,20 @@ import type {Status} from '../../utils/interfaces/Status.ts'
 
 export async function signupUserController(request: Request, response: Response) {
   try {
-
+    // validate the new user's data
     const validationResult = SignUpUserSchema.safeParse(request.body)
+    // if validation fails, return an error response
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
+    // if validation succeeds, create a new user
     const {id, email, name, password} = validationResult.data
     const hash = await setHash(password)
     const activationToken = setActivationToken()
     const user: PrivateUser = {
-      id: id,
+      id,
       activationToken,
       email,
       notifications: true,
@@ -33,20 +35,17 @@ export async function signupUserController(request: Request, response: Response)
     const mailGun: Mailgun = new Mailgun(formData)
     const mailgunClient = mailGun.client({username: 'api', key: process.env.MAILGUN_API_KEY as string})
     const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}activation/${activationToken}`
-
     const message = `
       <h2>Welcome to FileWise!</h2>
       <p>To start storing your documents, you must confirm your account.</p>
       <p><a href="${basePath}">${basePath}</a></p>
     `
-
     const mailgunMessage = {
       from: `Mailgun Sandbox <postmaster@${process.env.MAILGUN_DOMAIN as string}>`,
       to: email,
       subject: 'Please confirm your filewise account -- Account Activation',
       html: message
     }
-
     await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
 
     const status: Status = {
