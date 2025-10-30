@@ -120,7 +120,7 @@ export async function selectPrivateUserByUserEmail (email: string): Promise<Priv
     WHERE
       email = ${email}`
 
-  //enforce that the result is an array of one profile, or null
+  // enforce that the result is an array of one profile, or null
   const result = PrivateUserSchema.array().max(1).parse(rowList)
 
   // return the profile or null if no profile was found

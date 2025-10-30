@@ -1,9 +1,9 @@
 import express, {type Application} from 'express'
 import morgan from 'morgan'
-// Routes
 import session from 'express-session'
 import type {RedisClientType} from 'redis'
 import {RedisStore} from 'connect-redis'
+// Routes
 import {indexRoute} from './apis/index.route.ts'
 import {signupRoute} from './apis/signup/signup.route.ts'
 
@@ -41,6 +41,7 @@ export class App {
 	private routes (): void {
 		this.app.use(indexRoute.basePath, indexRoute.router)
     this.app.use(signupRoute.basePath, signupRoute.router)
+    // signin route
 	}
 
 	// starts the server and tells the terminal to post a message that the server is running and on what port

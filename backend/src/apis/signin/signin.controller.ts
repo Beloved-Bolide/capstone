@@ -2,8 +2,9 @@ import {type PrivateUser, PrivateUserSchema, selectPrivateUserByUserEmail} from 
 import {generateJwt, validatePassword} from '../../utils/auth.utils'
 import type {Request, Response} from 'express'
 import {zodErrorResponse} from '../../utils/response.utils'
+import {v4 as uuid} from 'uuid'
 import type {Status} from '../../utils/interfaces/Status'
-import {uuidv7, z} from 'zod/v4'
+import {z} from 'zod/v4'
 
 /**
  * Express controller for sign-in
@@ -65,7 +66,7 @@ export async function signinController (request: Request, response: Response): P
     const { id, name, notifications } = user
 
     // generate a new signature for the session
-    const signature: string = uuidv7()
+    const signature: string = uuid()
 
     // generate a new jwt for the session using the id, name, notifications, and signature
     const authorization: string = generateJwt({
