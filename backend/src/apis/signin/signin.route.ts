@@ -7,7 +7,7 @@ const basePath = '/apis/signin' as const
 // instantiate a new router object
 const router = Router()
 
-// define signup route for this router
+// define signin route for this router
 router.route('/')
   .post(signinController)
 

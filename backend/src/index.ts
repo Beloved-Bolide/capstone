@@ -22,8 +22,8 @@ async function main(): Promise<void> {
   try {
     const app = new App(redisClient)
     app.listen()
-  } catch (e) {
-    console.log(e)
+  } catch (error) {
+    console.log(error)
   }
 }
 
