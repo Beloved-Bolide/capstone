@@ -40,9 +40,9 @@ export type PrivateUser = z.infer<typeof PrivateUserSchema>
 // define a function to insert a user into the database
 export async function insertUser(user: PrivateUser): Promise<string> {
   PrivateUserSchema.parse(user)
-  const {id, activationToken, email, notifications, name, hash} = user
-  await sql`INSERT INTO "user"(id, activation_token, email, name, notifications, hash)
-            VALUES (${id}, ${activationToken}, ${email},  ${name}, ${notifications}, ${hash})`
+  const {id, activationToken, email, hash, name, notifications} = user
+  await sql`INSERT INTO "user"(id, activation_token, email, hash, name, notifications)
+            VALUES (${id}, ${activationToken}, ${email}, ${hash}, ${name}, ${notifications})`
   return 'User successfully created!'
 }
 
@@ -53,11 +53,13 @@ export async function insertUser(user: PrivateUser): Promise<string> {
 */
 export async function selectPrivateUserByUserActivationToken (activationToken: string): Promise<PrivateUser|null> {
 
-  const rowList = await sql`SELECT id, activation_token, email, name, notifications, hash FROM "user" WHERE activation_token = ${activationToken}`
+  const rowList = await sql`SELECT id, activation_token, email, hash, name, notifications FROM "user" WHERE activation_token = ${activationToken}`
   const result = PrivateUserSchema.array().max(1).parse(rowList)
   return result[0] ?? null
 }
 
 export async function updateUser(user:PrivateUser): Promise<string> {
-  const {id, activationToken, email, name, notifications, hash} = user
+  const {id, activationToken, email, hash, name, notifications} = user
+  await sql `UPDATE "user" SET activation_token = ${activationToken}, email = ${email}, hash = ${hash}, name = ${name}, notifications = ${notifications}`
+  return 'User successfully updated!'
 }
