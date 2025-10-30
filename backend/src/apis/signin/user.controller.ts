@@ -136,6 +136,7 @@ export async function putPrivateUserController (request: Request, response: Resp
         message: 'User does not exist!',
         data: null
       })
+      return
     }
 
     // update the user with the new data
