@@ -4,12 +4,11 @@ import {sql} from '../../utils/database.utils.ts'
 /**
  * Schema for validating private user objects
  * @shape id: string the primary key for the user
- * @shape about: string | null the about section for the user
  * @shape activationToken: string | null the activation token for the user
  * @shape email: string the email for the user
  * @shape hash: string the password hash for the user
- * @shape imageUrl: string  the image URL for the user
  * @shape name: string the name for the user
+ * @shape notifications: boolean the notifications for the user
  */
 
 export const PrivateUserSchema = z.object({
@@ -37,12 +36,11 @@ export const PrivateUserSchema = z.object({
 /**
  * this type is used to represent a private user object
  * @shape id: string the primary key for the user
- * @shape about: string | null the about section for the user
  * @shape activationToken: string | null the activation token for the user
  * @shape email: string the email for the user
  * @shape hash: string the password hash for the user
- * @shape imageUrl: string the image URL for the user
  * @shape name: string the name for the user
+ * @shape notifications: boolean the notifications for the user
  */
 
 export type PrivateUser = z.infer<typeof PrivateUserSchema>
@@ -57,7 +55,7 @@ export async function insertUser (user: PrivateUser): Promise<string> {
   // validate the profile object against the PrivateProfileSchema
   PrivateUserSchema.parse(user)
   const {id, activationToken, email, hash, name, notifications} = user
-  await sql`INSERT INTO "user"(id, activation_token, email, hash, name, notifications)
+  await sql`INSERT INTO "user" (id, activation_token, email, hash, name, notifications)
             VALUES (${id}, ${activationToken}, ${email}, ${hash}, ${name}, ${notifications})`
   return 'User successfully created!'
 }
@@ -103,7 +101,7 @@ export async function updateUser (user:PrivateUser): Promise<string> {
 }
 
 /**
- * Selects the privateuser from the user table by email
+ * Selects the private user from the user table by email
  * @param email  the user's email to search for in the user table
  * @returns user or null if no user was found
  */
@@ -118,11 +116,9 @@ export async function selectPrivateUserByUserEmail (email: string): Promise<Priv
       hash,
       name,
       notifications
-    FROM
-      "user"
+    FROM "user"
     WHERE
       email = ${email}`
-
   //enforce that the result is an array of one profile, or null
   const result = PrivateUserSchema.array().max(1).parse(rowList)
   // return the profile or null if no profile was found

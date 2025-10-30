@@ -1,9 +1,9 @@
 import {type PrivateUser, PrivateUserSchema, selectPrivateUserByUserEmail} from '../user/user.model'
-import { generateJwt, validatePassword } from '../../utils/auth.utils'
-import type { Request, Response } from 'express'
-import { zodErrorResponse } from '../../utils/response.utils'
-import type {Status} from "../../utils/interfaces/Status";
-import {uuidv7, z} from "zod/v4";
+import {generateJwt, validatePassword} from '../../utils/auth.utils'
+import type {Request, Response} from 'express'
+import {zodErrorResponse} from '../../utils/response.utils'
+import type {Status} from '../../utils/interfaces/Status'
+import {uuidv7, z} from 'zod/v4'
 
 /**
  * Express controller for sign-in
@@ -45,6 +45,7 @@ export async function signinController (request: Request, response: Response): P
       data: null
     }
 
+    // if the user is null, return a preformatted response to the client
     if (user === null) {
       response.json(signinFailedStatus)
       return
