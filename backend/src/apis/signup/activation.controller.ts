@@ -18,7 +18,7 @@ export async function activationController (request: Request, response: Response
         .length(32, 'please provide a valid activation token')
     }).safeParse(request.params)
 
-    // if the validation is unsuccessful, return a preformatted to the client
+    // if the validation is unsuccessful, return preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
