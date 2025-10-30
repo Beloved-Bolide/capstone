@@ -1,22 +1,22 @@
 import {Router} from 'express'
-import {signupUserController} from './signup.controller.ts'
+import {signUpUserController} from './sign-up.controller.ts'
 import {activationController} from './activation.controller.ts'
 
 // define the base path for the route
-const basePath = '/apis/signup' as const
+const basePath = '/apis/sign-up' as const
 
 // create a new express router
 const router = Router()
 
 // define the route
 router.route('/')
-  .post(signupUserController)
+  .post(signUpUserController)
 
 router.route('/activation/:activation')
   .get(activationController)
 
 // export the router
-export const signupRoute = {
+export const signUpRoute = {
   basePath,
   router
 }

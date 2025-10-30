@@ -1,4 +1,4 @@
-import {type PrivateUser, PrivateUserSchema, selectPrivateUserByUserEmail} from '../user/user.model'
+import {type User, UserSchema, selectUserByEmail} from '../user/user.model'
 import {generateJwt, validatePassword} from '../../utils/auth.utils'
 import type {Request, Response} from 'express'
 import {zodErrorResponse} from '../../utils/response.utils'
@@ -15,10 +15,10 @@ import {z} from 'zod/v4'
  * @throws {Error} an error indicating what went wrong
  */
 
-export async function signinController (request: Request, response: Response): Promise<void> {
+export async function signInController (request: Request, response: Response): Promise<void> {
   try {
     // validate the new user data coming from the request body
-    const validationResult = PrivateUserSchema
+    const validationResult = UserSchema
       .pick({email: true})
       .extend({
         password: z
@@ -37,10 +37,10 @@ export async function signinController (request: Request, response: Response): P
     const { email, password } = validationResult.data
 
     // select the user by the email from the database
-    const user: PrivateUser | null = await selectPrivateUserByUserEmail(email)
+    const user: User | null = await selectUserByEmail(email)
 
     // create a preformatted response to the client if the sign in fails
-    const signinFailedStatus: Status = {
+    const signInFailedStatus: Status = {
       status: 400,
       message: 'Email or password is incorrect; please try again.',
       data: null
@@ -48,7 +48,7 @@ export async function signinController (request: Request, response: Response): P
 
     // if the user is null, return a preformatted response to the client
     if (user === null) {
-      response.json(signinFailedStatus)
+      response.json(signInFailedStatus)
       return
     }
 
@@ -57,7 +57,7 @@ export async function signinController (request: Request, response: Response): P
 
     // if sign in failed, return a response to the client
     if (!isPasswordValid) {
-      response.json(signinFailedStatus)
+      response.json(signInFailedStatus)
       return
     }
 

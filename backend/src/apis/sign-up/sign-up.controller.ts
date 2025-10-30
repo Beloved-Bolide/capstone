@@ -1,13 +1,13 @@
 import type {Request, Response} from 'express'
 import Mailgun from 'mailgun.js'
 import formData from 'form-data'
-import {SignUpUserSchema} from './signup.schema.ts'
-import {type PrivateUser, insertUser} from '../user/user.model.ts'
+import {SignUpUserSchema} from './sign-up.schema.ts'
+import {type User, insertUser} from '../user/user.model.ts'
 import {zodErrorResponse} from '../../utils/response.utils.ts'
 import {setHash, setActivationToken} from '../../utils/auth.utils'
 import type {Status} from '../../utils/interfaces/Status.ts'
 
-export async function signupUserController(request: Request, response: Response) {
+export async function signUpUserController(request: Request, response: Response) {
   try {
     // validate the new user's data
     const validationResult = SignUpUserSchema.safeParse(request.body)
@@ -21,7 +21,7 @@ export async function signupUserController(request: Request, response: Response)
     const {id, email, name, password} = validationResult.data
     const hash = await setHash(password)
     const activationToken = setActivationToken()
-    const user: PrivateUser = {
+    const user: User = {
       id,
       activationToken,
       email,
@@ -31,7 +31,7 @@ export async function signupUserController(request: Request, response: Response)
     }
     await insertUser(user)
 
-    // prepare and send activation email to new user
+    // prepare and send activation email to a new user
     const mailGun: Mailgun = new Mailgun(formData)
     const mailgunClient = mailGun.client({username: 'api', key: process.env.MAILGUN_API_KEY as string})
     const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}activation/${activationToken}`

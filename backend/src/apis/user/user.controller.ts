@@ -2,9 +2,9 @@ import type {Request, Response} from 'express'
 import {
   updateUser,
   type
-    PrivateUser,
-    PrivateUserSchema,
-    //selectPrivateUserByUserId,
+    User,
+    UserSchema,
+    //selectUserById,
 
     // PublicUserSchema,
     // selectPublicFollowersByUserId,
@@ -89,11 +89,11 @@ import pkg from 'jsonwebtoken'; const {verify} = pkg
  * @return a promise containing the response with the updated user, or an error message if the user does not exist
  */
 
-export async function putPrivateUserController (request: Request, response: Response): Promise<void> {
+export async function putUserController (request: Request, response: Response): Promise<void> {
   try {
 
     // validate the updated user data coming from the request body
-    const validationResultForRequestBody = PrivateUserSchema.safeParse(request.body)
+    const validationResultForRequestBody = UserSchema.safeParse(request.body)
 
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResultForRequestBody.success) {
@@ -102,7 +102,7 @@ export async function putPrivateUserController (request: Request, response: Resp
     }
 
     // validate the id coming from the request parameters
-    const validationResultForRequestParams = PrivateUserSchema.pick({id: true}).safeParse(request.params)
+    const validationResultForRequestParams = UserSchema.pick({id: true}).safeParse(request.params)
 
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResultForRequestParams.success) {
@@ -130,7 +130,7 @@ export async function putPrivateUserController (request: Request, response: Resp
     const {name, notifications} = validationResultForRequestBody.data
 
     // grab the user by id
-    const user: PrivateUser | null = await selectPrivateUserByUserId(id)
+    const user: User | null = await selectUserById(id)
 
     // if the user does not exist, return an error response
     if (user === null) {
