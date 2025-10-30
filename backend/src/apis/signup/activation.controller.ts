@@ -29,6 +29,37 @@ export async function activationController(request: Request, response: Response)
       return
     }
 
-    //deconstruct the activationToken from the request only
+    //deconstruct the activationToken from the request body
+    const {activation} = validationResult.data
+
+    // select the user by activationToken
+    const user = await selectPrivateUserByUserActivationToken(activation)
+
+    // if the user is null, return a preformatted response to the client
+    if (user === null){
+      response.json({
+        status: 400,
+        data: null,
+        message: 'Account activation has failed. Have you already activated this account?'
+      })
+      return
+    }
+    // if the user is not null, update the activationToken to null and send a success response
+    user.activationToken = null
+    await updateUser(user)
+    response.json({
+      status: 200,
+      data: null,
+      message: 'Account activation was successful'
+    })
+
+  } catch (error) {
+    console.error(error)
+    // catch any errors and return them to the client
+    response.json({
+      status: 500,
+      data: null,
+      message: 'Internal server error try again later'
+    })
   }
 }

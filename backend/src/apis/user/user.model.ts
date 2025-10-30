@@ -1,6 +1,16 @@
 import {z} from 'zod/v4'
 import {sql} from '../../utils/database.utils.ts'
 
+/**
+ * Schema for validating private user objects
+ * @shape id: string the primary key for the user
+ * @shape about: string | null the about section for the user
+ * @shape activationToken: string | null the activation token for the user
+ * @shape email: string the email for the user
+ * @shape hash: string the password hash for the user
+ * @shape imageUrl: string  the image URL for the user
+ * @shape name: string the name for the user
+ */
 // define the schema for a user
 export const PrivateUserSchema = z.object({
   id: z
@@ -31,7 +41,23 @@ export type PrivateUser = z.infer<typeof PrivateUserSchema>
 export async function insertUser(user: PrivateUser): Promise<string> {
   PrivateUserSchema.parse(user)
   const {id, activationToken, email, notifications, name, hash} = user
-  await sql`INSERT INTO "user"(id, activation_token, email, hash, name, notifications)
-            VALUES (${id}, ${activationToken}, ${email}, ${hash}, ${name}, ${notifications})`
+  await sql`INSERT INTO "user"(id, activation_token, email, name, notifications, hash)
+            VALUES (${id}, ${activationToken}, ${email},  ${name}, ${notifications}, ${hash})`
   return 'User successfully created!'
+}
+
+/**
+* Selects a profile from the profile table by activationToken
+* @param activationToken the profile's activation token to search for in the profile table
+* @returns Profile or null if no profile was found
+*/
+export async function selectPrivateUserByUserActivationToken (activationToken: string): Promise<PrivateUser|null> {
+
+  const rowList = await sql`SELECT id, activation_token, email, name, notifications, hash FROM "user" WHERE activation_token = ${activationToken}`
+  const result = PrivateUserSchema.array().max(1).parse(rowList)
+  return result[0] ?? null
+}
+
+export async function updateUser(user:PrivateUser): Promise<string> {
+  const {id, activationToken, email, name, notifications, hash} = user
 }
