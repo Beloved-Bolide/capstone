@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS "user" (
     id               UUID PRIMARY KEY,
     activation_token CHAR(32),
     email            VARCHAR(128) UNIQUE NOT NULL,
+    hash             CHAR(97)            NOT NULL,
     name             VARCHAR(64)         NOT NULL,
-    notifications    BOOLEAN DEFAULT TRUE,
-    hash             CHAR(97)            NOT NULL
+    notifications    BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS folder (
