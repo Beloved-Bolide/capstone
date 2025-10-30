@@ -91,6 +91,7 @@ export async function signinController (request: Request, response: Response): P
     })
     return
 
+    // catch any errors that occurred during the sign-in process and return a response to the client
   } catch (error: any) {
     response.json({
       status: 500,
