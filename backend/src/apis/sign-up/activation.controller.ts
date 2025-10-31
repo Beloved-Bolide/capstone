@@ -5,7 +5,6 @@ import {zodErrorResponse} from '../../utils/response.utils'
 import {z} from 'zod/v4'
 
 export async function activationController (request: Request, response: Response): Promise<void> {
-
   try {
     const validationResult = z
       .object({
