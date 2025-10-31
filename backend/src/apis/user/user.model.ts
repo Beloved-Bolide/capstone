@@ -1,8 +1,7 @@
 import {z} from 'zod/v4'
 import {sql} from '../../utils/database.utils.ts'
 
-/**
- * Schema for validating private user objects
+/** Schema for validating private user objects
  * @shape id: string the primary key for the user
  * @shape activationToken: string | null the activation token for the user
  * @shape email: string the email for the user
@@ -33,14 +32,11 @@ export const PrivateUserSchema = z.object({
     .length(97, {message: 'please provide a valid hash (max 97 characters)'}),
 })
 
-/**
- * Schema for validating public user objects
+/* Schema for validating public user objects
  * @shape id: string the primary key for the user
  * @shape about: string | null the about section for the user
  * @shape imageUrl: string | null the image URL for the user
- * @shape name: string the name for the user
- */
-
+ * @shape name: string the name for the user */
 export const PublicUserSchema = PrivateUserSchema.omit({hash: true, activationToken: true, email: true})
 
 /**
@@ -75,8 +71,23 @@ export async function insertUser (user: PrivateUser): Promise<string> {
   // validate the user object against the PrivateUserSchema
   PrivateUserSchema.parse(user)
   const {id, activationToken, email, hash, name, notifications} = user
-  await sql`INSERT INTO "user" (id, activation_token, email, hash, name, notifications)
-            VALUES (${id}, ${activationToken}, ${email}, ${hash}, ${name}, ${notifications})`
+  await sql`
+    INSERT INTO "user" (
+      id, 
+      activation_token, 
+      email, 
+      hash, 
+      name, 
+      notifications
+    )
+    VALUES (
+      ${id}, 
+      ${activationToken}, 
+      ${email}, 
+      ${hash}, 
+      ${name}, 
+      ${notifications}
+    )`
   return 'User successfully created!'
 }
 
@@ -145,12 +156,11 @@ export async function selectPrivateUserByUserEmail (email: string): Promise<Priv
   return result[0] ?? null
 }
 
-/**
+/********************************************************
  * selects the PrivateUser from the user table by id
- * @param id the user's id to search for in the user table
- * @returns PrivateUser or null if no user was found
- */
-
+ *  @param id the user's id to search for in the user table
+ *  @returns PrivateUser or null if no user was found
+ *********************************************************/
 export async function selectPrivateUserByUserId(id: string): Promise<PrivateUser | null> {
   // create a prepared statement that selects the user by id and execute the statement
   const rowList = await sql`
