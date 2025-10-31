@@ -79,18 +79,3 @@ export async function selectPrivateFolderByFolderId(id: string): Promise<Private
   // return the folder or null if no folder was found
   return result[0] ?? null
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
