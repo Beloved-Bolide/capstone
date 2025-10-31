@@ -1,11 +1,11 @@
 import type {Request, Response} from 'express'
+import type {Status} from '../../utils/interfaces/Status.ts'
 import Mailgun from 'mailgun.js'
 import formData from 'form-data'
 import {SignUpUserSchema} from './sign-up.schema.ts'
-import {type User, insertUser} from '../user/user.model.ts'
+import {type PrivateUser, insertUser} from '../user/user.model.ts'
 import {zodErrorResponse} from '../../utils/response.utils.ts'
-import {setHash, setActivationToken} from '../../utils/auth.utils'
-import type {Status} from '../../utils/interfaces/Status.ts'
+import {setActivationToken, setHash} from '../../utils/auth.utils'
 
 export async function signUpUserController(request: Request, response: Response) {
   try {
@@ -21,7 +21,7 @@ export async function signUpUserController(request: Request, response: Response)
     const {id, email, name, password} = validationResult.data
     const hash = await setHash(password)
     const activationToken = setActivationToken()
-    const user: User = {
+    const user: PrivateUser = {
       id,
       activationToken,
       email,

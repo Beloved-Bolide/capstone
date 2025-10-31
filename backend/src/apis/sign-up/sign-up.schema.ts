@@ -1,9 +1,8 @@
 import {z} from 'zod/v4'
-import {UserSchema} from '../user/user.model.ts'
+import {PrivateUserSchema} from '../user/user.model.ts'
 
 // define the schema for signing up a user
-export const SignUpUserSchema =
-UserSchema
+export const SignUpUserSchema = PrivateUserSchema
   .omit({hash: true, activationToken: true})
   .extend({
     passwordConfirm: z

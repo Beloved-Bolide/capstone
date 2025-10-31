@@ -1,6 +1,6 @@
-import type {Response} from "express";
-import type {Status} from "./interfaces/Status";
-import type {ZodError} from "zod/v4";
+import type {Response} from 'express'
+import type {Status} from './interfaces/Status'
+import type {ZodError} from 'zod/v4'
 
 /**
  * factory function that creates a status object to send back to the client
@@ -8,6 +8,7 @@ import type {ZodError} from "zod/v4";
  * @param data to send back to the client
  * @param message
  */
+
 export function createStatus(status: number, data: unknown, message: string | null): Status {
   return {status, data, message}
 }
@@ -17,13 +18,13 @@ export function createStatus(status: number, data: unknown, message: string | nu
  * @param response an object modeling the response that will be sent to the client.
  * @param error an object containing the errors from zod validation
  */
+
 export function zodErrorResponse(response: Response, error: ZodError): Response<Status> {
   let message = 'validation error occurred'
   if (error.issues[0]) {
     message = error.issues[0].message
   }
   return errorResponse(response, createStatus(418, null, message))
-
 }
 
 /**

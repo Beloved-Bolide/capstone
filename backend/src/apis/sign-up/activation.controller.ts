@@ -1,11 +1,11 @@
 import type {NextFunction, Request, Response} from 'express'
-import {UserSchema, selectUserByActivationToken, updateUser} from '../user/user.model'
-import type {Status} from '../../utils/interfaces/Status'
+import {PrivateUserSchema, selectPrivateUserByUserActivationToken, updateUser} from '../user/user.model'
 import {zodErrorResponse} from '../../utils/response.utils'
 import {z} from 'zod/v4'
 
 export async function activationController (request: Request, response: Response): Promise<void> {
   try {
+    // store the new user data coming from the request body in a variable
     const validationResult = z
       .object({
         activation:z
@@ -23,7 +23,7 @@ export async function activationController (request: Request, response: Response
     const {activation} = validationResult.data
 
     // select the user by activationToken
-    const user = await selectUserByActivationToken(activation)
+    const user = await selectPrivateUserByUserActivationToken(activation)
 
     // if the user is null, return a preformatted response to the client
     if (user === null) {
@@ -45,7 +45,7 @@ export async function activationController (request: Request, response: Response
       message: 'Account activation was successful'
     })
 
-  } catch (error) {
+  } catch (error: unknown) {
     // catch any errors and return them to the client
     console.error(error)
     response.json({

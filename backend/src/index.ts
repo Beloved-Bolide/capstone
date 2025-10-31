@@ -1,11 +1,11 @@
-import {App} from "./App";
-import {createClient} from "redis";
-import type {RedisClientType} from "redis";
-import type {User} from "./apis/user/user.model.ts";
+import {App} from './App'
+import {createClient} from 'redis'
+import type {RedisClientType} from 'redis'
+import type {PrivateUser} from './apis/user/user.model.ts'
 
 declare module 'express-session' {
   export interface SessionData {
-    user: User | undefined
+    user: PrivateUser | undefined
     jwt: string | undefined
     signature: string | undefined
   }

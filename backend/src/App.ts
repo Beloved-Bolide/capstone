@@ -6,7 +6,7 @@ import {RedisStore} from 'connect-redis'
 // Routes
 import {indexRoute} from './apis/index.route.ts'
 import {signUpRoute} from './apis/sign-up/sign-up.route.ts'
-import {signInRoute} from "./apis/sign-in/sign-in.route.ts";
+import {signInRoute} from './apis/sign-in/sign-in.route.ts'
 
 // App class that extends the express application
 export class App {

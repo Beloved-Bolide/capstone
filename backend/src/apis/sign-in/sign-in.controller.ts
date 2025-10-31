@@ -1,6 +1,6 @@
-import {type User, UserSchema, selectUserByEmail} from '../user/user.model'
-import {generateJwt, validatePassword} from '../../utils/auth.utils'
 import type {Request, Response} from 'express'
+import {type PrivateUser, PrivateUserSchema, selectPrivateUserByUserEmail} from '../user/user.model'
+import {generateJwt, validatePassword} from '../../utils/auth.utils'
 import {zodErrorResponse} from '../../utils/response.utils'
 import {v4 as uuid} from 'uuid'
 import type {Status} from '../../utils/interfaces/Status'
@@ -11,14 +11,14 @@ import {z} from 'zod/v4'
  * @endpoint POST /apis/sign-in/
  * @param request an object containing the body contain an email and password.
  * @param response an object modeling the response that will be sent to the client.
- * @returns response to the client indicating whether the sign in was successful or not
+ * @returns response to the client indicating whether the sign-in was successful or not
  * @throws {Error} an error indicating what went wrong
  */
 
 export async function signInController (request: Request, response: Response): Promise<void> {
   try {
     // validate the new user data coming from the request body
-    const validationResult = UserSchema
+    const validationResult = PrivateUserSchema
       .pick({email: true})
       .extend({
         password: z
@@ -37,7 +37,7 @@ export async function signInController (request: Request, response: Response): P
     const { email, password } = validationResult.data
 
     // select the user by the email from the database
-    const user: User | null = await selectUserByEmail(email)
+    const user: PrivateUser | null = await selectPrivateUserByUserEmail(email)
 
     // create a preformatted response to the client if the sign in fails
     const signInFailedStatus: Status = {
