@@ -1,7 +1,7 @@
 import type {NextFunction, Request, Response} from 'express'
 import type {Status} from '../interfaces/Status'
 import pkg from 'jsonwebtoken';
-import type {User} frgit om "../../apis/user/user.model.ts"; const {verify} = pkg
+import type {PrivateUser} from "../../apis/user/user.model.ts"; const {verify} = pkg
 
 export function isLoggedInController (request: Request, response: Response, next: NextFunction): void {
 
@@ -15,7 +15,7 @@ export function isLoggedInController (request: Request, response: Response, next
   try {
 
     // grab the user from the session
-    const user: User | undefined = request.session?.user
+    const user: PrivateUser | undefined = request.session?.user
 
     // grab the signature from the session
     const signature: string | undefined = request.session?.signature ?? ''
