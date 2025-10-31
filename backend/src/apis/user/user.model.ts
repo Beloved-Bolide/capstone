@@ -145,3 +145,31 @@ export async function selectPrivateUserByUserEmail (email: string): Promise<Priv
   return result[0] ?? null
 }
 
+/**
+ * selects the PrivateUser from the user table by id
+ * @param id the user's id to search for in the user table
+ * @returns PrivateUser or null if no user was found
+ */
+
+export async function selectPrivateUserByUserId(id: string): Promise<PrivateUser | null> {
+  // create a prepared statement that selects the user by id and execute the statement
+  const rowList = await sql`
+    SELECT 
+      id, 
+      activation_token,
+      email, 
+      hash, 
+      name, 
+      notifications 
+    FROM "user" 
+    WHERE id = ${id}`
+
+  // enforce that the result is an array of one user, or null
+  const result = PrivateUserSchema.array().max(1).parse(rowList)
+
+  // return the profile or null if no profile was found
+  return result[0] ?? null
+
+}
+
+
