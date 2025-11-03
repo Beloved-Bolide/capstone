@@ -1,5 +1,10 @@
 import {Router} from 'express'
-import {postFolderController, updateFolderController} from './folder.controller.ts'
+import {
+  getFolderByFolderIdController,
+  getFolderByUserIdController,
+  postFolderController,
+  updateFolderController
+} from './folder.controller.ts'
 import {isLoggedInController} from "../../utils/controllers/is-logged-in.controller.ts";
 
 const basePath = '/apis/folder' as const
@@ -10,5 +15,9 @@ router.route('/')
 
 router.route('/:id')
   .patch(isLoggedInController, updateFolderController)
+  .get(isLoggedInController, getFolderByFolderIdController)
+
+router.route('/user/:userId')
+  .get(isLoggedInController, getFolderByUserIdController)
 
 export const folderRoute = { basePath, router }
