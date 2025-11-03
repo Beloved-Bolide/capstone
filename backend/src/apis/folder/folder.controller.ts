@@ -167,7 +167,7 @@ export async function getFolderByFolderIdController (request: Request, response:
     response.json({
       status: 200,
       data: folder,
-      message: 'Folders found successfully!'
+      message: 'Folder found successfully!'
     })
 
   } catch(error: any) {
