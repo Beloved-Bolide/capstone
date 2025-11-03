@@ -1,5 +1,5 @@
-import type {Request, Response} from 'express'
-import {z} from 'zod/v4'
+import type { Request, Response } from 'express'
+import { z } from 'zod/v4'
 import {
   type Folder,
   FolderSchema,
@@ -8,9 +8,8 @@ import {
   selectFoldersByUserId,
   updateFolder
 } from './folder.model.ts'
-import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils.ts'
-import type {Status} from '../../utils/interfaces/Status.ts'
-import {PrivateUserSchema} from "../user/user.model.ts";
+import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
+import type { Status } from '../../utils/interfaces/Status.ts'
 
 /** Controller for updating an existing user profile
  *
@@ -145,7 +144,6 @@ export async function getFolderByFolderIdController (request: Request, response:
   }
 }
 
-
 /** Express controller for getting threads by user ID
  * @endpoint GET /apis/folder/user/:id
  * @param request an object containing the user ID in params
@@ -194,6 +192,11 @@ export async function getFolderByUserIdController(request: Request, response: Re
   }
 }
 
+/** Express controller for updating a folder
+ * @endpoint PATCH /apis/folder/:id
+ * @param request an object containing the body with folder data
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response to the client indicating whether the folder update was successful **/
 export async function updateFolderController (request: Request, response: Response): Promise<void> {
   try {
 

@@ -1,7 +1,7 @@
-import type {NextFunction, Request, Response} from 'express'
-import type {Status} from '../interfaces/Status'
+import type  { NextFunction, Request, Response } from 'express'
+import type { Status } from '../interfaces/Status'
 import pkg from 'jsonwebtoken';
-import type {PrivateUser} from "../../apis/user/user.model.ts"; const {verify} = pkg
+import type { PrivateUser } from "../../apis/user/user.model.ts"; const { verify } = pkg
 
 export function isLoggedInController (request: Request, response: Response, next: NextFunction): void {
 
