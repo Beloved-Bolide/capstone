@@ -24,9 +24,9 @@ export const FolderSchema = z.object({
  * @shape parentFolderId: string the parent id for the folder
  * @shape userId: string the userId for the folder
  * @shape name: string the name for the folder **/
-export type PrivateFolder = z.infer<typeof FolderSchema>
+export type Folder = z.infer<typeof FolderSchema>
 
-export async function insertFolder (folder: PrivateFolder): Promise<string> {
+export async function insertFolder (folder: Folder): Promise<string> {
 
   // validate the folder object against the FolderSchema
   FolderSchema.parse(folder)
@@ -52,7 +52,7 @@ export async function insertFolder (folder: PrivateFolder): Promise<string> {
 /** updates a folder in the folder table
  * @param folder
  * @returns {Promise<string>} 'Folder successfully updated' **/
-export async function updateFolder (folder: PrivateFolder): Promise<string> {
+export async function updateFolder (folder: Folder): Promise<string> {
 
   const { id, parentFolderId, userId, name } = folder
 
@@ -64,13 +64,13 @@ export async function updateFolder (folder: PrivateFolder): Promise<string> {
     WHERE
       id = ${id}`
 
-  return 'Folder successfully updated!'
+  return 'updateFolder: Folder successfully updated!'
 }
 
-/** Selects the PrivateFolder from the folder table by id
+/** Selects the Folder from the folder table by id
  * @param id the folder's id to search for in the folder table
  * @returns Folder or null if no folder was found **/
-export async function selectPrivateFolderByFolderId(id: string): Promise<PrivateFolder | null> {
+export async function selectFolderByFolderId(id: string): Promise<Folder | null> {
 
   // create a prepared statement that selects the profile by email and execute the statement
   const rowList = await sql`
