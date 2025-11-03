@@ -200,7 +200,7 @@ export async function getFolderByUserIdController(request: Request, response: Re
 export async function getFolderByFolderNameController(request: Request, response: Response): Promise<void> {
   try {
     // validate the folder name from params
-    const validationResult = FolderSchema.pick({name: true}).safeParse({ name: request.params.name })
+    const validationResult = FolderSchema.pick({name: true}).safeParse({name: request.params.name})
 
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
@@ -215,9 +215,10 @@ export async function getFolderByFolderNameController(request: Request, response
     const folder: Folder | null = await selectFolderByFolderName(name)
     response.json({status: 200, data: folder, message: "Folder selected successfully!"})
 
-  } catch(error: any) {
-  console.error(error)
-  serverErrorResponse(response, error.message)
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
 }
 
 /** Express controller for updating a folder

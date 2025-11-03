@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import {
-  getFolderByFolderIdController,
+  getFolderByFolderIdController, getFolderByFolderNameController,
   getFolderByUserIdController,
   postFolderController,
   updateFolderController
@@ -16,6 +16,9 @@ router.route('/')
 router.route('/:id')
   .patch(isLoggedInController, updateFolderController)
   .get(isLoggedInController, getFolderByFolderIdController)
+
+router.route('/:name')
+  .get(isLoggedInController, getFolderByFolderNameController)
 
 router.route('/user/:userId')
   .get(isLoggedInController, getFolderByUserIdController)
