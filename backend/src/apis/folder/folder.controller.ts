@@ -188,8 +188,8 @@ export async function updateFolderController (request: Request, response: Respon
 
     response.json({
       status: 200,
-      data: updatedFolder,
-      message: 'updateFolderController: Folder successfully updated.'
+      data: null,
+      message: 'Folder successfully updated.'
     })
 
   } catch (error: any) {

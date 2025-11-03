@@ -64,7 +64,7 @@ export async function updateFolder (folder: Folder): Promise<string> {
     WHERE
       id = ${id}`
 
-  return 'updateFolder: Folder successfully updated!'
+  return 'Folder successfully updated!'
 }
 
 /** Selects the Folder from the folder table by id
