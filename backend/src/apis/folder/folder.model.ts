@@ -72,7 +72,7 @@ export async function updateFolder (folder: Folder): Promise<string> {
  * @returns Folder or null if no folder was found **/
 export async function selectFolderByFolderId(id: string): Promise<Folder | null> {
 
-  // create a prepared statement that selects the profile by email and execute the statement
+  // create a prepared statement that selects the folder by folder ID
   const rowList = await sql`
     SELECT 
       id,
@@ -107,4 +107,24 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
 
   // Enforce that the result is an array of folders
   return FolderSchema.array().parse(rowList)
+}
+
+/** Selects the Folder from the folder table by name
+ * @param name the folder's name to search for in the folder table
+ * @returns Folder or null if no folder was found **/
+export async function selectFolderByFolderName (name: string): Promise<Folder | null> {
+  // create a prepared statement that selects the folder by name
+  const rowList = await sql`
+    SELECT 
+      id,
+      parent_folder_id,
+      user_id,
+      name
+    FROM
+      folder
+    WHERE
+      name = ${name}`
+  const result = FolderSchema.array().max(1).parse(rowList)
+
+  return result[0] ?? null
 }

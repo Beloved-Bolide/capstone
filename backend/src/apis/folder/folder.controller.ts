@@ -1,10 +1,10 @@
-import type { Request, Response } from 'express'
+import {type Request, response, type Response} from 'express'
 import { z } from 'zod/v4'
 import {
   type Folder,
   FolderSchema,
   insertFolder,
-  selectFolderByFolderId,
+  selectFolderByFolderId, selectFolderByFolderName,
   selectFoldersByUserId,
   updateFolder
 } from './folder.model.ts'
@@ -192,6 +192,34 @@ export async function getFolderByUserIdController(request: Request, response: Re
   }
 }
 
+/** Express controller for getting folders by name
+ * @endpoint GET /apis/folder/name
+ * @param request an object containing the folder name in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response with array of folders or error **/
+export async function getFolderByFolderNameController(request: Request, response: Response): Promise<void> {
+  try {
+    // validate the folder name from params
+    const validationResult = FolderSchema.pick({name: true}).safeParse({ name: request.params.name })
+
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+    const {name} = validationResult.data
+    if (name === null) {
+      response.json({status: 404, data: null, message: "Folder name not found!"})
+      return
+    }
+    // get the folder
+    const folder: Folder | null = await selectFolderByFolderName(name)
+    response.json({status: 200, data: folder, message: "Folder selected successfully!"})
+
+  } catch(error: any) {
+  console.error(error)
+  serverErrorResponse(response, error.message)
+}
+
 /** Express controller for updating a folder
  * @endpoint PATCH /apis/folder/:id
  * @param request an object containing the body with folder data
@@ -266,33 +294,3 @@ export async function updateFolderController (request: Request, response: Respon
     serverErrorResponse(response, error.message)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
