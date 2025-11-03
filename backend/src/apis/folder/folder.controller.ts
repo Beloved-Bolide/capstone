@@ -101,7 +101,7 @@ export async function getFolderByFolderIdController (request: Request, response:
   try {
 
     // validate the folder ID from parameters
-    const validationResult = FolderSchema.pick({ id: true })
+    const validationResult = FolderSchema.pick({ id: true }).safeParse({id:request.params.folderId})
 
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
@@ -127,6 +127,35 @@ export async function getFolderByFolderIdController (request: Request, response:
   }
 }
 
+
+/**
+ * Express controller for getting threads by user ID
+ * @endpoint GET /apis/folder/user/:id
+ * @param request an object containing the user ID in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response with array of threads or error
+ */
+
+export async function getFolderByUserIdController(request: Request, response: Response): Promise<void> {
+  try{
+    //validate the user ID from params
+    const validationResult = FolderSchema.pick({ id: true }).safeParse({id:request.params.folderId})
+
+    if(!validationResult.success){
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+    const { id} = validationResult.data
+
+    // get threads by profile ID
+    const folder: Folder | null = await selectFolderByFolderId(id)
+
+    response.json({ status: 200, message: null, data: folder})
+  }catch(error: any){
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
 
 export async function updateFolderController (request: Request, response: Response): Promise<void> {
   try {

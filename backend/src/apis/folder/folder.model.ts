@@ -90,3 +90,20 @@ export async function selectFolderByFolderId(id: string): Promise<Folder | null>
   // return the folder or null if no folder was found
   return result[0] ?? null
 }
+/**
+ * Select all threads by a specific UserID
+ * @param userId the id of the user
+ * @returns array of folders
+ */
+
+
+export async function selectFolderByUserId(userId:string): Promise<Folder[]>{
+
+  const rowList = await sql`
+  SELECT id, user_id, parent_folder_Id ,name
+  FROM folder
+  WHERE user_id = ${userId}`
+
+  // Enforce that the result is an array of folders
+  return FolderSchema.array().parse(rowList)
+}
