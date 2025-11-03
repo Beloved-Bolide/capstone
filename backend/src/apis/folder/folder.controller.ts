@@ -1,6 +1,13 @@
 import type {Request, Response} from 'express'
 import {z} from 'zod/v4'
-import {type Folder, FolderSchema, insertFolder, selectFolderByFolderId, updateFolder} from './folder.model.ts'
+import {
+  type Folder,
+  FolderSchema,
+  insertFolder,
+  selectFolderByFolderId,
+  selectFoldersByUserId,
+  updateFolder
+} from './folder.model.ts'
 import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils.ts'
 import type {Status} from '../../utils/interfaces/Status.ts'
 import {PrivateUserSchema} from "../user/user.model.ts";
@@ -101,7 +108,7 @@ export async function getFolderByFolderIdController (request: Request, response:
   try {
 
     // validate the folder ID from parameters
-    const validationResult = FolderSchema.pick({ id: true }).safeParse({id:request.params.folderId})
+    const validationResult = FolderSchema.pick({ id: true }).safeParse({ id: request.params.id })
 
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
@@ -111,14 +118,25 @@ export async function getFolderByFolderIdController (request: Request, response:
 
     // deconstruct the folder ID from the parameters
     const { id } = validationResult.data
-    
+
+    // if the folder is not found, return a preformatted response to the client
+    if (validationResult.data === null) {
+      response.json({
+        status: 404,
+        data: validationResult,
+        message: 'Please provide a valid folder id!', // change this to a more descriptive message
+      })
+      return
+    }
+
     // get the folder
     const folder: Folder | null = await selectFolderByFolderId(id)
-    
+
+    // if the folder is found, return the folder attributes and a preformatted response to the client
     response.json({
       status: 200,
       data: folder,
-      message: null
+      message: 'Folders found successfully!'
     })
 
   } catch(error: any) {
@@ -128,30 +146,49 @@ export async function getFolderByFolderIdController (request: Request, response:
 }
 
 
-/**
- * Express controller for getting threads by user ID
+/** Express controller for getting threads by user ID
  * @endpoint GET /apis/folder/user/:id
  * @param request an object containing the user ID in params
  * @param response an object modeling the response that will be sent to the client
- * @returns response with array of threads or error
- */
-
+ * @returns response with array of threads or error **/
 export async function getFolderByUserIdController(request: Request, response: Response): Promise<void> {
   try{
-    //validate the user ID from params
-    const validationResult = FolderSchema.pick({ id: true }).safeParse({id:request.params.folderId})
 
-    if(!validationResult.success){
+    // validate the user ID from params
+    const validationResult = z.object ({
+      userId: z
+        .uuidv7('Please provide a valid user id') })
+        .safeParse({ userId: request.params.userId })
+
+    // if the validation is unsuccessful, return a preformatted response to the client
+    if (!validationResult.success){
       zodErrorResponse(response, validationResult.error)
       return
     }
-    const { id} = validationResult.data
 
-    // get threads by profile ID
-    const folder: Folder | null = await selectFolderByFolderId(id)
+    // deconstruct the user ID from the parameters
+    const { userId } = validationResult.data
 
-    response.json({ status: 200, message: null, data: folder})
-  }catch(error: any){
+    // create a folder array using the user ID
+    const folders: Folder[] | null = await selectFoldersByUserId(userId)
+
+    if (!folders[0]) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No folders found for this user.'
+      })
+      return
+    }
+
+    // if the user is found, return all folders
+    response.json({
+      status: 200,
+      data: folders,
+      message: 'Found all folders successfully!'
+    })
+
+  } catch(error: any) {
     console.error(error)
     serverErrorResponse(response, error.message)
   }

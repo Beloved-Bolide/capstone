@@ -15,11 +15,9 @@ router.route('/')
 
 router.route('/:id')
   .patch(isLoggedInController, updateFolderController)
+  .get(isLoggedInController, getFolderByFolderIdController)
 
-router.route('/:userId')
-.get(isLoggedInController, getFolderByUserIdController)
-
-router.route('/:folderId')
-.get(isLoggedInController, getFolderByFolderIdController)
+router.route('/user/:userId')
+  .get(isLoggedInController, getFolderByUserIdController)
 
 export const folderRoute = { basePath, router }

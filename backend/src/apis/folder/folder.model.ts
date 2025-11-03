@@ -7,12 +7,12 @@ import {sql} from '../../utils/database.utils.ts'
  * @shape userId: string the primary key for the folder
  * @shape name: string the name for the folder **/
 export const FolderSchema = z.object({
-  id: z.uuidv7('Please provide a valid uuid for id.'),
-  parentFolderId: z.uuidv7('Please provide a valid uuid for parent folder id.')
+  id: z.string().uuid('Please provide a valid uuid for id.'),
+  parentFolderId: z.string().uuid('Please provide a valid uuid for parent folder id.')
     .nullable(),
-  userId: z.uuidv7('Please provide a valid uuid for user id.')
+  userId: z.string().uuid('Please provide a valid uuid for user id.')
     .nullable(),
-  name: z.string('Please provide a valid uuid for name')
+  name: z.string('Please provide a valid name')
     .trim()
     .min(1, 'Please provide a valid name. (min 1 characters)')
     .max(64, 'Please provide a valid name. (max 64 characters)')
@@ -90,19 +90,20 @@ export async function selectFolderByFolderId(id: string): Promise<Folder | null>
   // return the folder or null if no folder was found
   return result[0] ?? null
 }
-/**
- * Select all threads by a specific UserID
- * @param userId the id of the user
- * @returns array of folders
- */
-
-
-export async function selectFolderByUserId(userId:string): Promise<Folder[]>{
+/** Select all threads by a specific User ID
+ * @param id the id of the user
+ * @returns array of folders **/
+export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
 
   const rowList = await sql`
-  SELECT id, user_id, parent_folder_Id ,name
-  FROM folder
-  WHERE user_id = ${userId}`
+    SELECT 
+      id,
+      parent_folder_id,
+      user_id,
+      name
+    FROM
+      folder
+    WHERE user_id = ${id}`
 
   // Enforce that the result is an array of folders
   return FolderSchema.array().parse(rowList)
