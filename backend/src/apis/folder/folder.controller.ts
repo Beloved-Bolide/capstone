@@ -198,7 +198,7 @@ export async function getFolderByUserIdController(request: Request, response: Re
     // create a folder array using the user id
     const folders: Folder[] | null = await selectFoldersByUserId(userId)
 
-    if (!folders[0]) {
+    if (!folders[0] || folders === null) {
       response.json({
         status: 404,
         data: null,
