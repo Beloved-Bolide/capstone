@@ -4,7 +4,7 @@ import{
   CategorySchema
 } from './category.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
-import  {selectPrivateUserByUserActivationToken } from '../user/user.model.ts'
+import  { selectPrivateUserByUserActivationToken } from '../user/user.model.ts'
 import { selectCategoryByCategoryId } from './category.model.ts'
 
 
