@@ -1,5 +1,5 @@
 import { z } from 'zod/v4'
-import { sql } from "../../utils/database.utils.ts";
+import { sql } from '../../utils/database.utils.ts'
 
 /** schema for validating private category objects
  * @shape id: string the primary key for the category
