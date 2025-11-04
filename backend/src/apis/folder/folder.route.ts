@@ -13,11 +13,11 @@ const router = Router()
 router.route('/')
   .post(isLoggedInController, postFolderController)
 
-router.route('/folderId/:id')
+router.route('/id/:folderId')
   .put(isLoggedInController, updateFolderController)
   .get(isLoggedInController, getFolderByFolderIdController)
 
-router.route('/folderName/:name')
+router.route('/name/:folderName')
   .get(isLoggedInController, getFolderByFolderNameController)
 
 router.route('/user/:userId')
