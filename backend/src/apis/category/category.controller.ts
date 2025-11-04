@@ -17,7 +17,7 @@ export async function getCategoryByCategoryIdController (request: Request, respo
   try {
 
     //validate the id coming from the request parameters
-    const validationResult = CategorySchema.pick({id: true}).safeParse(request.params)
+    const validationResult = CategorySchema.pick({ id: true }).safeParse(request.params)
 
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
@@ -35,7 +35,7 @@ export async function getCategoryByCategoryIdController (request: Request, respo
     response.json({
       status: 200,
       data,
-      message: 'Successfully retrieved category by id'
+      message: 'Successfully retrieved category by id.'
     })
 
   }catch (error: unknown){
