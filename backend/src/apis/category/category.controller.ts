@@ -1,12 +1,13 @@
 import type { Request, Response } from 'express'
-import{
+import {
   type Category,
-  CategorySchema
+  CategorySchema, insertCategory
 } from './category.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import  { selectPrivateUserByUserActivationToken } from '../user/user.model.ts'
 import { selectCategoryByCategoryId } from './category.model.ts'
 import {sql} from "../../utils/database.utils.ts";
+import type {Status} from "../../utils/interfaces/Status.ts";
 
 
 /** Express controller for creating a new category
@@ -35,11 +36,24 @@ export async function postCategoryController (request: Request, response: Respon
         message: 'Please login to create a category.'
       })
     }
+    //inser the new category data into the database
+    const message = await insertCategory(validationResult.data)
 
-    // check if the user is authorized to create a category
+    // create a preformatted response to the client
+    const status: Status = {
+      status: 200,
+      data: null,
+      message: message
+    }
+
+    // return the response to the client
+    response.json(status)
 
   } catch (error: any) {
 
+    //catch any errors that occurred during the update process and return a response to the client
+    console.error(error)
+    serverErrorResponse(response, error.message)
   }
 }
 
