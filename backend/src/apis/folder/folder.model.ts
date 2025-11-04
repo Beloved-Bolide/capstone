@@ -7,10 +7,10 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape userId: string the primary key for the folder
  * @shape name: string the name for the folder **/
 export const FolderSchema = z.object({
-  id: z.string().uuid('Please provide a valid uuid for id.'),
-  parentFolderId: z.string().uuid('Please provide a valid uuid for parent folder id.')
+  id: z.uuidv7('Please provide a valid uuid for id.'),
+  parentFolderId: z.uuidv7('Please provide a valid uuid for parent folder id.')
     .nullable(),
-  userId: z.string().uuid('Please provide a valid uuid for user id.')
+  userId: z.uuidv7('Please provide a valid uuid for user id.')
     .nullable(),
   name: z.string('Please provide a valid name')
     .trim()
