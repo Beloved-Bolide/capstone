@@ -13,7 +13,7 @@ import { selectCategoryByCategoryId } from './category.model.ts'
  * @param response from the server to the client with all Categories by CategoryID or an error message
  * @return  A promise containing the response for the client with the requested information,
  * or null if the information could not be found, set to the data field. **/
-export async function getCategoryByCategoryIdController (request: Request, response: Response) : Promise<void> {
+export async function getCategoryByCategoryIdController (request: Request, response: Response): Promise<void> {
   try {
 
     //validate the id coming from the request parameters
