@@ -6,8 +6,8 @@ import {
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import  { selectPrivateUserByUserActivationToken } from '../user/user.model.ts'
 import { selectCategoryByCategoryId } from './category.model.ts'
-import {sql} from "../../utils/database.utils.ts";
-import type {Status} from "../../utils/interfaces/Status.ts";
+import {sql} from '../../utils/database.utils.ts'
+import type { Status } from '../../utils/interfaces/Status.ts'
 
 
 /** Express controller for creating a new category
@@ -36,7 +36,7 @@ export async function postCategoryController (request: Request, response: Respon
         message: 'Please login to create a category.'
       })
     }
-    //inser the new category data into the database
+    // insert the new category data into the database
     const message = await insertCategory(validationResult.data)
 
     // create a preformatted response to the client
