@@ -26,6 +26,9 @@ export const FolderSchema = z.object({
  * @shape name: string the name for the folder **/
 export type Folder = z.infer<typeof FolderSchema>
 
+/** inserts a new folder into the folder table
+ * @param folder the folder to insert
+ * @returns {Promise<string>} 'Folder successfully created' **/
 export async function insertFolder (folder: Folder): Promise<string> {
 
   // validate the folder object against the FolderSchema

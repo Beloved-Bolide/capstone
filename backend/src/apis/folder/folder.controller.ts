@@ -67,7 +67,7 @@ export async function postFolderController (request: Request, response: Response
       return
     }
 
-    // check if the user is authorized to update the profile
+    // check if the user is authorized to create a folder
     if (validationResult.data.userId !== user.id) {
       response.json({
         status: 403,

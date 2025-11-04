@@ -29,6 +29,35 @@ export const CategorySchema = z.object({
  * @shape name: string the name for the category **/
 export type Category = z.infer<typeof CategorySchema>
 
+/** creates a predefined category in the category table
+ * @param category the category to insert
+ * @returns {Promise<string>} 'Category successfully created' **/
+export async function insertCategory (category: Category): Promise<string> {
+
+  // validate the folder object against the FolderSchema
+  CategorySchema.parse(category)
+
+  // extract the category's properties
+  const { id, color, icon, name } = category
+
+  //insert the category into the category table
+  const rowList = await sql `
+    INSERT INTO category (
+      id,
+      color,
+      icon,
+      name
+    )
+    VALUES (
+      ${id}, 
+      ${color}, 
+      ${icon}, 
+      ${name}
+    )`
+
+  return 'Category successfully created!'
+}
+
 /** selects the Category from the Category table by id
  * @param id the Category's id to search for in the Category table
  * @returns Category or null if no Category was found **/
