@@ -1,5 +1,9 @@
 import { Router } from 'express'
-import { getCategoryByCategoryIdController, postCategoryController } from './category.controller.ts'
+import {
+  getCategoryByCategoryIdController,
+  postCategoryController,
+  updateCategoryController
+} from './category.controller.ts'
 import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 
 const basePath = '/apis/category' as const
@@ -10,6 +14,6 @@ router.route('/')
 
 router.route('/id/:categoryIdGoesHere')
   .get(isLoggedInController, getCategoryByCategoryIdController)
-  .put(isLoggedInController, postCategoryController)
+  .put(isLoggedInController, updateCategoryController)
 
 export const categoryRoute = { basePath, router }
