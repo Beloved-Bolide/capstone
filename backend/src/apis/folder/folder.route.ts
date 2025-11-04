@@ -14,7 +14,7 @@ router.route('/')
   .post(isLoggedInController, postFolderController)
 
 router.route('/folderId/:id')
-  .patch(isLoggedInController, updateFolderController)
+  .put(isLoggedInController, updateFolderController)
   .get(isLoggedInController, getFolderByFolderIdController)
 
 router.route('/folderName/:name')

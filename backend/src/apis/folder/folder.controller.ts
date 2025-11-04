@@ -271,15 +271,15 @@ export async function updateFolderController (request: Request, response: Respon
       return
     }
 
-    // if the folder name is unchanged, return a preformatted response to the client
-    if (folder.name === name) {
-      response.json({
-        status: 200,
-        data: folder,
-        message: 'Folder name unchanged.'
-      })
-      return
-    }
+    // // if the folder name is unchanged, return a preformatted response to the client
+    // if (folder.name === name) {
+    //   response.json({
+    //     status: 200,
+    //     data: folder,
+    //     message: 'Folder name unchanged.'
+    //   })
+    //   return
+    // }
 
     // update the folder
     const updatedFolder = await updateFolder(validationResult.data)
