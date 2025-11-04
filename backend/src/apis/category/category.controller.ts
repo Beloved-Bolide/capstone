@@ -6,7 +6,7 @@ import {
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import  { selectPrivateUserByUserActivationToken } from '../user/user.model.ts'
 import { selectCategoryByCategoryId } from './category.model.ts'
-import {sql} from '../../utils/database.utils.ts'
+import { sql } from '../../utils/database.utils.ts'
 import type { Status } from '../../utils/interfaces/Status.ts'
 
 
