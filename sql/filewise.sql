@@ -28,9 +28,9 @@ CREATE INDEX ON folder (parent_folder_id);
 
 CREATE TABLE IF NOT EXISTS category
 (
-  id    UUID PRIMARY KEY   NOT NULL,
-  color VARCHAR(32),
-  icon  VARCHAR(128),
+  id    UUID PRIMARY KEY,
+  color VARCHAR(32)        NOT NULL,
+  icon  VARCHAR(128)       NOT NULL,
   name  VARCHAR(32) UNIQUE NOT NULL
 );
 
@@ -40,11 +40,12 @@ CREATE TABLE IF NOT EXISTS record
   folder_id        UUID,
   category_id      UUID,
   amount           DECIMAL(10, 2),
-  company_name     VARCHAR(64),
+  company_name     VARCHAR(64) NOT NULL,
   coupon_code      VARCHAR(32),
   description      VARCHAR(512),
   exp_date         DATE,
   last_accessed_at TIMESTAMPTZ,
+  name             VARCHAR(32) NOT NULL,
   notify_on        BOOLEAN DEFAULT FALSE,
   product_id       VARCHAR(32),
   purchase_date    DATE,
@@ -59,12 +60,11 @@ CREATE TABLE IF NOT EXISTS file
 (
   id            UUID PRIMARY KEY,
   record_id     UUID,
-  description   VARCHAR(256),
-  document_date DATE,
+--description   VARCHAR(256),
+  file_date     DATE,
   file_key      VARCHAR(32),
   file_url      VARCHAR(256) NOT NULL,
   is_starred    BOOLEAN DEFAULT FALSE,
-  name          VARCHAR(32)  NOT NULL,
   ocr_data      TEXT,
   FOREIGN KEY (record_id) REFERENCES record (id)
 );
