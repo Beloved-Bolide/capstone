@@ -8,8 +8,8 @@ const router = Router()
 router.route('/')
   .post(isLoggedInController, postCategoryController)
 
-router.route('/:id')
+router.route('/id/:categoryIdGoesHere')
   .get(isLoggedInController, getCategoryByCategoryIdController)
+  .put(isLoggedInController, postCategoryController)
 
 export const categoryRoute = { basePath, router }
-

@@ -53,8 +53,8 @@ export async function insertFolder (folder: Folder): Promise<string> {
 }
 
 /** updates a folder in the folder table
- * @param folder
- * @returns {Promise<string>} 'Folder successfully updated' **/
+ * @param folder the folder to update
+ * @returns {Promise<string>} 'Folder successfully updated!' **/
 export async function updateFolder (folder: Folder): Promise<string> {
 
   const { id, parentFolderId, userId, name } = folder

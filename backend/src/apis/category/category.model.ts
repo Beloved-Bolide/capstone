@@ -58,6 +58,25 @@ export async function insertCategory (category: Category): Promise<string> {
   return 'Category successfully created!'
 }
 
+/** updates a category in the category table
+ * @param category the category to update
+ * @returns {Promise<string>} 'Category successfully updated!' **/
+export async function updateCategory (category: Category): Promise<string> {
+
+  const { id, color, icon, name } = category
+
+  await sql `
+    UPDATE category
+    SET 
+      color = ${color},
+      icon = ${icon},
+      name = ${name}
+    WHERE
+      id = ${id}`
+
+  return 'Category successfully updated!'
+}
+
 /** selects the Category from the Category table by id
  * @param id the Category's id to search for in the Category table
  * @returns Category or null if no Category was found **/

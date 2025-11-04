@@ -4,9 +4,7 @@ import {
   CategorySchema, insertCategory
 } from './category.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
-import  { selectPrivateUserByUserActivationToken } from '../user/user.model.ts'
-import { selectCategoryByCategoryId } from './category.model.ts'
-import { sql } from '../../utils/database.utils.ts'
+import { selectCategoryByCategoryId, updateCategory } from './category.model.ts'
 import type { Status } from '../../utils/interfaces/Status.ts'
 
 
@@ -52,6 +50,61 @@ export async function postCategoryController (request: Request, response: Respon
   } catch (error: any) {
 
     //catch any errors that occurred during the update process and return a response to the client
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for updating a category
+ * @endpoint PUT /apis/category/:id
+ * @param request an object containing the body with category data
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response to the client indicating whether the category update was successful **/
+export async function updateCategoryController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // validate the category data coming from the request body
+    const validationResult = CategorySchema.safeParse(request.body)
+
+    // if the validation is unsuccessful, return a preformatted response to the client
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // check if the user is authenticated
+    const user = request.session?.user
+    if (!user) {
+      response.json({
+        status: 401,
+        data: null,
+        message: 'Please login to update a category.'
+      })
+      return
+    }
+
+    // get the category
+    const category = await selectCategoryByCategoryId(validationResult.data.id)
+    if (category === null) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Category not found.'
+      })
+      return
+    }
+
+    // update the category
+    await updateCategory(validationResult.data)
+
+    // if the category update was successful, return a preformatted response to the client
+    response.json({
+      status: 200,
+      data: null,
+      message: 'Category successfully updated.'
+    })
+
+  } catch (error: any) {
     console.error(error)
     serverErrorResponse(response, error.message)
   }
