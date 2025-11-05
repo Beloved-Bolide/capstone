@@ -25,12 +25,12 @@ export async function postCategoryController (request: Request, response: Respon
     }
 
     // NEEDS WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // // grab the user ID from the session
+    // // grab the user id from the session
     // const userFromSession = request.session?.user
     // const idFromSession = userFromSession?.id
     // // grab the new data from the request body
     // const { userId } = validationResult.data
-    // // if the user ID from the request body does not match the user ID from the session, return a preformatted response to the client
+    // // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
     // if (userId !== idFromSession) {
     //   response.json({
     //     status: 403,
@@ -71,7 +71,7 @@ export async function postCategoryController (request: Request, response: Respon
 export async function updateCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the category ID coming from the request parameters
+    // validate the category id coming from the request parameters
     const validationResultForRequestParams = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
     // if the validation of the params is unsuccessful, return a preformatted response to the client
     if (!validationResultForRequestParams.success) {
@@ -102,7 +102,7 @@ export async function updateCategoryController (request: Request, response: Resp
     }
 
     // NEEDS WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // // grab the user ID from the session
+    // // grab the user id from the session
     // const userFromSession = request.session?.user
     // const userIdFromSession = userFromSession?.id
     // // if the user is not authorized to update the category, return a preformatted response to the client

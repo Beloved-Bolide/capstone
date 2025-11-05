@@ -79,7 +79,7 @@ export async function updateFolder (folder: Folder): Promise<string> {
  * @returns Folder or null if no folder was found **/
 export async function selectFolderByFolderId(id: string): Promise<Folder | null> {
 
-  // create a prepared statement that selects the folder by folder ID
+  // create a prepared statement that selects the folder by folder id
   const rowList = await sql`
     SELECT 
       id,
@@ -97,11 +97,13 @@ export async function selectFolderByFolderId(id: string): Promise<Folder | null>
   // return the folder or null if no folder was found
   return result[0] ?? null
 }
-/** Select all threads by a specific User ID
+
+/** Select all threads by a specific User id
  * @param id the id of the user
  * @returns array of folders **/
 export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
 
+  // create a prepared statement that selects the folders by user id
   const rowList = await sql`
     SELECT 
       id,
@@ -120,6 +122,7 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
  * @param name the folder's name to search for in the folder table
  * @returns Folder or null if no folder was found **/
 export async function selectFolderByFolderName (name: string): Promise<Folder | null> {
+
   // create a prepared statement that selects the folder by name
   const rowList = await sql`
     SELECT 

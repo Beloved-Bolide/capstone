@@ -32,12 +32,12 @@ export async function postFolderController (request: Request, response: Response
       return
     }
 
-    // grab the user ID from the session
+    // grab the user id from the session
     const userFromSession = request.session?.user
     const idFromSession = userFromSession?.id
     // grab the new data from the request body
     const { userId } = validationResult.data
-    // if the user ID from the request body does not match the user ID from the session, return a preformatted response to the client
+    // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
     if (userId !== idFromSession) {
       response.json({
         status: 403,
@@ -71,7 +71,7 @@ export async function postFolderController (request: Request, response: Response
 export async function updateFolderController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the folder ID coming from the request parameters
+    // validate the folder id coming from the request parameters
     const validationResultForRequestParams = FolderSchema.pick({ id: true }).safeParse({ id: request.params.id })
     // if the validation of the params is unsuccessful, return a preformatted response to the client
     if (!validationResultForRequestParams.success) {
@@ -101,7 +101,7 @@ export async function updateFolderController (request: Request, response: Respon
       return
     }
 
-    // grab the user ID from the session
+    // grab the user id from the session
     const userFromSession = request.session?.user
     const userIdFromSession = userFromSession?.id
     // if the user is not authorized to update the folder, return a preformatted response to the client
@@ -136,35 +136,34 @@ export async function updateFolderController (request: Request, response: Respon
   }
 }
 
-/** Express controller for getting a folder by its ID
+/** Express controller for getting a folder by its id
  * @endpoint GET /apis/folder/id/:folderIdGoesHere
- * @param request an object containing the folder ID in params
+ * @param request an object containing the folder id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with the folder data or null if not found **/
 export async function getFolderByFolderIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the folder ID from parameters
+    // validate the folder id from parameters
     const validationResult = FolderSchema.pick({ id: true }).safeParse({ id: request.params.id })
-
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    // deconstruct the folder ID from the parameters
-    const { id } = validationResult.data
-
     // if the folder is not found, return a preformatted response to the client
     if (validationResult.data === null) {
       response.json({
         status: 404,
-        data: validationResult,
-        message: 'Please provide a valid folder id!', // change this to a more descriptive message
+        data: null,
+        message: 'Folder not found!'
       })
       return
     }
+
+    // grab the folder id from the parameters
+    const { id } = validationResult.data
 
     // get the folder
     const folder: Folder | null = await selectFolderByFolderId(id)
@@ -182,30 +181,26 @@ export async function getFolderByFolderIdController (request: Request, response:
   }
 }
 
-/** Express controller for getting folders by user ID
+/** Express controller for getting folders by user id
  * @endpoint GET /apis/folder/user/:userIdGoesHere
- * @param request an object containing the user ID in params
+ * @param request an object containing the user id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
 export async function getFolderByUserIdController(request: Request, response: Response): Promise<void> {
   try{
 
-    // validate the user ID from params
-    const validationResult = z.object ({
-      userId: z
-        .uuidv7('Please provide a valid user id') })
-        .safeParse({ userId: request.params.userId })
-
+    // validate the user id from params
+    const validationResult = FolderSchema.pick({ userId: true }).safeParse({ userId: request.params.id })
     // if the validation is unsuccessful, return a preformatted response to the client
-    if (!validationResult.success){
+    if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    // deconstruct the user ID from the parameters
+    // deconstruct the user id from the parameters
     const { userId } = validationResult.data
 
-    // create a folder array using the user ID
+    // create a folder array using the user id
     const folders: Folder[] | null = await selectFoldersByUserId(userId)
 
     if (!folders[0]) {
@@ -235,11 +230,10 @@ export async function getFolderByUserIdController(request: Request, response: Re
  * @param request an object containing the folder name in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
-export async function getFolderByFolderNameController(request: Request, response: Response): Promise<void> {
+export async function getFolderByFolderNameController (request: Request, response: Response): Promise<void> {
   try {
     // validate the folder name from params
-    const validationResult = FolderSchema.pick({name: true}).safeParse({name: request.params.name})
-
+    const validationResult = FolderSchema.pick({ name: true }).safeParse({ name: request.params.name })
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
@@ -254,7 +248,7 @@ export async function getFolderByFolderNameController(request: Request, response
       response.json({
         status: 404,
         data: null,
-        message: "Folder name not found!"})
+        message: "Folder not found!"})
       return
     }
 
