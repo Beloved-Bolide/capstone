@@ -60,10 +60,42 @@ export async function updateRecordController (request: Request, response: Respon
   try {
     // validate the record id coming from the request parameters
     const validationResultForRequestParams = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id})
+    // if the validation of the params is unsuccessful, return a preformatted response to the client
+    if (!validationResultForRequestParams.success){
+      zodErrorResponse(response,validationResultForRequestParams.error)
+      return
+    }
+    // validate the record update request data coming from the request body
+    const validationResultForRequestBody = RecordSchema.safeParse(request.body)
+    // if the validation of the body is unsuccessful, return a preformatted response to the client
+    if (!validationResultForRequestBody.success){
+      zodErrorResponse(response,validationResultForRequestBody.error)
+      return
+    }
 
-  } catch {}
+    // grab the record id from the validated request parameters
+    const { id } = validationResultForRequestParams.data
+    // grab the record by id
+    const record: Record | null = await selectRecordByRecordId(id)
+    // if the record does not exist, return a preformatted response to the client
+    if (record === null) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Record not found.'
+      })
+      return
+    }
+
+  } catch (error:any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
 }
 
+/** Express controller for getting a record by its id
+ *
+ */
 
 
 
