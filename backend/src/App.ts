@@ -3,18 +3,18 @@ import morgan from 'morgan'
 import session from 'express-session'
 import type { RedisClientType } from 'redis'
 import { RedisStore } from 'connect-redis'
-// Routes
+// routes
 import { indexRoute } from './apis/index.route.ts'
 import { signUpRoute } from './apis/sign-up/sign-up.route.ts'
 import { signInRoute } from './apis/sign-in/sign-in.route.ts'
 import { folderRoute } from './apis/folder/folder.route.ts'
 import { categoryRoute } from './apis/category/category.route.ts'
 
-// App class that extends the express application
+// app class that extends the express application
 export class App {
   // properties for the app, settings, middlewares, and routes
 	app: Application
-	redisStore : RedisStore
+	redisStore: RedisStore
 
   // constructor that takes in a redis client and sets up the app, settings, middlewares, and routes
 	constructor (redisClient: RedisClientType) {
