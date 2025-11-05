@@ -32,7 +32,7 @@ export class App {
 	private middlewares (): void {
 		this.app.use(morgan('dev'))
 		this.app.use(express.json())
-		this.app.use(session( {
+		this.app.use(session({
 			store: this.redisStore,
 			saveUninitialized: false,
 			secret: process.env.SESSION_SECRET as string,
