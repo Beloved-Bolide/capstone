@@ -33,23 +33,24 @@ export const RecordSchema = z.object({
   description: z.string('Please provide a valid description')
     .max(512,'Please provide a valid description (max 512 characters)')
     .nullable(),
-  expirationDate: z.date('Please provide a valid expiration date')
+  expirationDate: z.coerce.date('Please provide a valid expiration date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
-  lastAccessedAt: z.iso.datetime('Please provide a valid last accessed at date and time'),
+  lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time')
+    .min(new Date('1900-01-01'), { error: 'Too old!' })
+    .nullable(),
   name: z.string('Please provide a valid name')
     .trim()
     .max(32,'Please provide a valid name (max 32 characters)')
     .nullable(),
-  notifyOn: z.boolean('Please provide either true or false')
-    .nullable(),
+  notifyOn: z.boolean('Please provide either true or false'),
   productId: z.string('Please provide a valid productId')
     .max(32,'Please provide a valid productId (max 32 characters)')
     .nullable(),
-  purchaseDate: z.date('Please provide a valid purchase date')
+  purchaseDate: z.coerce.date('Please provide a valid purchase date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
-  warrantyExpiration: z.date('Please provide a valid expiration date')
+  warrantyExpiration: z.coerce.date('Please provide a valid expiration date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable()
 })
@@ -116,7 +117,7 @@ export async function insertRecord (record: Record): Promise<string> {
       ${expirationDate},
       ${lastAccessedAt},
       ${name},
-      ${notifyOn}
+      ${notifyOn},
       ${productId},
       ${purchaseDate},
       ${warrantyExpiration}    
