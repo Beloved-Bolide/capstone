@@ -62,7 +62,7 @@ export type Record = z.infer<typeof RecordSchema>
 
 /**
  * inserts a new record into the record table
- * @param folder the folder to insert
+ * @param record the record to insert
  * @returns {Promise<string>} 'Record successfully created.' */
 export async function insertRecord (record: Record): Promise<string> {
 
