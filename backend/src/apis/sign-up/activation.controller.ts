@@ -1,6 +1,6 @@
 import type {NextFunction, Request, Response} from 'express'
 import {PrivateUserSchema, selectPrivateUserByUserActivationToken, updateUser} from '../user/user.model'
-import {zodErrorResponse} from '../../utils/response.utils'
+import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils'
 import {z} from 'zod/v4'
 
 export async function activationController (request: Request, response: Response): Promise<void> {
@@ -45,13 +45,8 @@ export async function activationController (request: Request, response: Response
       message: 'Account activation was successful'
     })
 
-  } catch (error: unknown) {
-    // catch any errors and return them to the client
+  } catch (error: any) {
     console.error(error)
-    response.json({
-      status: 500,
-      data: null,
-      message: 'Internal server error try again later'
-    })
+    serverErrorResponse(response, error.message)
   }
 }

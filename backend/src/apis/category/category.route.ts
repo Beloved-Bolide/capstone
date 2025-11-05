@@ -12,7 +12,7 @@ const router = Router()
 router.route('/')
   .post(isLoggedInController, postCategoryController)
 
-router.route('/id/:categoryIdGoesHere')
+router.route('/id/:id')
   .get(isLoggedInController, getCategoryByCategoryIdController)
   .put(isLoggedInController, updateCategoryController)
 

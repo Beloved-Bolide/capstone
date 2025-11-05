@@ -1,7 +1,8 @@
 import { z } from 'zod/v4'
 import { sql } from '../../utils/database.utils.ts'
 
-/** schema for validating private folder objects
+
+/** schema for validating folder objects
  * @shape id: string the primary key for the folder
  * @shape parentFolderId: string the primary key for the folder
  * @shape userId: string the primary key for the folder
@@ -10,16 +11,14 @@ export const FolderSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id.'),
   parentFolderId: z.uuidv7('Please provide a valid uuid for parent folder id.')
     .nullable(),
-  userId: z.uuidv7('Please provide a valid uuid for user id.')
-    .nullable(),
+  userId: z.uuidv7('Please provide a valid uuid for user id.'),
   name: z.string('Please provide a valid name')
     .trim()
     .min(1, 'Please provide a valid name. (min 1 characters)')
     .max(64, 'Please provide a valid name. (max 64 characters)')
-    .nullable()
 })
 
-/** this type is used to represent a private folder object
+/** this type is used to represent a folder object
  * @shape id: string the primary key for the folder
  * @shape parentFolderId: string the parent id for the folder
  * @shape userId: string the userId for the folder
@@ -28,14 +27,17 @@ export type Folder = z.infer<typeof FolderSchema>
 
 /** inserts a new folder into the folder table
  * @param folder the folder to insert
- * @returns {Promise<string>} 'Folder successfully created' **/
+ * @returns { Promise<string> } 'Folder successfully created' **/
 export async function insertFolder (folder: Folder): Promise<string> {
 
   // validate the folder object against the FolderSchema
   FolderSchema.parse(folder)
 
+  // extract the folder's properties
   const { id, parentFolderId, userId, name } = folder
-  await sql`
+
+  // insert the folder into the folder table
+  await sql `
     INSERT INTO folder (
       id,
       parent_folder_id,
@@ -54,12 +56,14 @@ export async function insertFolder (folder: Folder): Promise<string> {
 
 /** updates a folder in the folder table
  * @param folder the folder to update
- * @returns {Promise<string>} 'Folder successfully updated!' **/
+ * @returns { Promise<string> } 'Folder successfully updated!' **/
 export async function updateFolder (folder: Folder): Promise<string> {
 
+  // validate the folder object against the FolderSchema
   const { id, parentFolderId, userId, name } = folder
 
-  await sql`
+  // update the folder in the folder table
+  await sql `
     UPDATE folder
     SET
       parent_folder_id = ${parentFolderId},

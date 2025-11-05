@@ -16,7 +16,4 @@ router.route('/activation/:activation')
   .get(activationController)
 
 // export the router
-export const signUpRoute = {
-  basePath,
-  router
-}
+export const signUpRoute = { basePath, router }

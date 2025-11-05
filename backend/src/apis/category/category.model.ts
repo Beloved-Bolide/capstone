@@ -63,8 +63,10 @@ export async function insertCategory (category: Category): Promise<string> {
  * @returns {Promise<string>} 'Category successfully updated!' **/
 export async function updateCategory (category: Category): Promise<string> {
 
+  // validate the folder object against the CategorySchema
   const { id, color, icon, name } = category
 
+  // update the category in the category table
   await sql `
     UPDATE category
     SET 

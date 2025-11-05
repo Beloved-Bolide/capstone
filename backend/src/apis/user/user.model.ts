@@ -179,7 +179,6 @@ export async function selectPrivateUserByUserId(id: string): Promise<PrivateUser
 
   // return the profile or null if no profile was found
   return result[0] ?? null
-
 }
 
 
