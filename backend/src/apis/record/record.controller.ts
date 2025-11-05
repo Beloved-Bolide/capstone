@@ -1,14 +1,13 @@
-import { type Request, type Response } from 'express';
-import type {NextFunction} from "express";
-import {insertRecord, RecordSchema} from "./record.model.ts";
-import {serverErrorResponse, zodErrorResponse} from "../../utils/response.utils.ts";
+import { type Request, type Response } from 'express'
+import type {NextFunction} from 'express'
+import { insertRecord, RecordSchema } from './record.model.ts'
+import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 
-/**
- * Express controller for creating a new record
- * @endpoint POST/apis/record
+/** Express controller for creating a new record
+ * @endpoint POST /apis/record
  * @param request an object containing the body with record data
  * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the record creation was successful */
+ * @returns response to the client indicating whether the record creation was successful **/
 export async function postRecordController (request: Request, response: Response): Promise<void> {
   try {
     // validate the full record object from the request body
@@ -50,12 +49,11 @@ export async function postRecordController (request: Request, response: Response
   }
 }
 
-/**
- * Express controller for updating a record
- * @endpoint PUT/apis/record/id
+/** Express controller for updating a record
+ * @endpoint PUT /apis/record/id
  * @param request an object containing the body with the record data
  * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the folder update was successful */
+ * @returns response to the client indicating whether the folder update was successful **/
 export async function updateRecordController (request: Request, response: Response): Promise<void> {
   try {
     // validate the record id coming from the request parameters
