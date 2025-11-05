@@ -11,6 +11,7 @@ import { folderRoute } from './apis/folder/folder.route.ts'
 import { categoryRoute } from './apis/category/category.route.ts'
 import { recordRoute } from './apis/record/record.route.ts'
 
+
 // app class that extends the express application
 export class App {
   // properties for the app, settings, middlewares, and routes
