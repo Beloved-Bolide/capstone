@@ -1,22 +1,20 @@
-import type {Request, Response} from 'express'
-import {type PrivateUser, PrivateUserSchema, selectPrivateUserByUserEmail} from '../user/user.model'
-import {generateJwt, validatePassword} from '../../utils/auth.utils'
-import {zodErrorResponse} from '../../utils/response.utils'
-import {v4 as uuid} from 'uuid'
-import type {Status} from '../../utils/interfaces/Status'
-import {z} from 'zod/v4'
+import type { Request, Response } from 'express'
+import { type PrivateUser, PrivateUserSchema, selectPrivateUserByUserEmail } from '../user/user.model'
+import { generateJwt, validatePassword } from '../../utils/auth.utils'
+import { zodErrorResponse } from '../../utils/response.utils'
+import { v4 as uuid } from 'uuid'
+import type { Status } from '../../utils/interfaces/Status'
+import { z } from 'zod/v4'
 
-/**
- * Express controller for sign-in
+/** Express controller for sign-in
  * @endpoint POST /apis/sign-in/
  * @param request an object containing the body contain an email and password.
  * @param response an object modeling the response that will be sent to the client.
  * @returns response to the client indicating whether the sign-in was successful or not
- * @throws {Error} an error indicating what went wrong
- */
-
+ * @throws { Error } an error indicating what went wrong **/
 export async function signInController (request: Request, response: Response): Promise<void> {
   try {
+
     // validate the new user data coming from the request body
     const validationResult = PrivateUserSchema
       .pick({email: true})
@@ -45,8 +43,7 @@ export async function signInController (request: Request, response: Response): P
       message: 'Email or password is incorrect; please try again.',
       data: null
     }
-
-    // if the user is null, return a preformatted response to the client
+    // if the user is null, return the preformatted response to the client
     if (user === null) {
       response.json(signInFailedStatus)
       return
@@ -93,7 +90,6 @@ export async function signInController (request: Request, response: Response): P
     })
     return
 
-    // catch any errors that occurred during the sign-in process and return a response to the client
   } catch (error: any) {
     response.json({
       status: 500,
