@@ -3,7 +3,7 @@ import {isLoggedInController} from "../../utils/controllers/is-logged-in.control
 import {postRecordController} from "./record.controller.ts";
 
 
-const basePath = 'apis/record' as const
+const basePath = '/apis/record' as const
 const router = Router()
 
 router.route('/')
