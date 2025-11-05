@@ -33,8 +33,8 @@ export async function postFolderController (request: Request, response: Response
     }
 
     // grab the user ID from the session
-    const profileFromSession = request.session?.user
-    const idFromSession = profileFromSession?.id
+    const userFromSession = request.session?.user
+    const idFromSession = userFromSession?.id
     // grab the new data from the request body
     const { userId } = validationResult.data
     // if the user ID from the request body does not match the user ID from the session, return a preformatted response to the client
@@ -53,8 +53,8 @@ export async function postFolderController (request: Request, response: Response
     // return the success response to the client
     response.json({
       status: 200,
-      data: insertedFolder,
-      message: 'Inserted folder successfully!'
+      data: null,
+      message: insertedFolder
     })
 
   } catch (error: any) {
