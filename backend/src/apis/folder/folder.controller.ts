@@ -26,35 +26,28 @@ export async function postFolderController (request: Request, response: Response
 
     // validate the new user data coming from the request body
     const validationResult = FolderSchema.safeParse(request.body)
-
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    // check if the user is authenticated
-    const user = request.session?.user
-    if (!user) {
-      response.json({
-        status: 401,
-        data: null,
-        message: 'Please login to create a folder.'
-      })
-      return
-    }
-
-    // check if the user is authorized to create a folder
-    if (validationResult.data.userId !== user.id) {
+    // grab the user ID from the session
+    const profileFromSession = request.session?.user
+    const idFromSession = profileFromSession?.id
+    // grab the new data from the request body
+    const { userId } = validationResult.data
+    // if the user ID from the request body does not match the user ID from the session, return a preformatted response to the client
+    if (userId !== idFromSession) {
       response.json({
         status: 403,
         data: null,
-        message: 'User ID in request does not match authenticated user ID.'
+        message: 'Forbidden: You cannot create a folder for another user.'
       })
       return
     }
 
-    // insert the new user data into the database
+    // insert the new folder data into the database
     const insertedFolder = await insertFolder(validationResult.data)
 
     // return the success response to the client
