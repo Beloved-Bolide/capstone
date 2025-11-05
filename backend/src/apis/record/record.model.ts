@@ -1,12 +1,11 @@
 import { z } from 'zod/v4'
 
 
-/**
- * Schema for validating record objects
- * @shape id: string the primary key for the record
- * @shape folderId: string the foreign key for the folder
- * @shape categoryId: string the foreign key for the category
- * @shape amount: float the amount for the record
+/** Schema for validating record objects
+ * @shape id: string for the primary key for the record
+ * @shape folderId: string for the foreign key for the folder
+ * @shape categoryId: string for the foreign key for the category
+ * @shape amount: float for the amount for the record
  * @shape companyName: string for the name of the company
  * @shape couponCode: string for the coupon code
  * @shape description: string for the description
@@ -16,17 +15,16 @@ import { z } from 'zod/v4'
  * @shape notifyOn: boolean for the notifications
  * @shape productId: string for the id of the product
  * @shape purchaseDate: date for the day of purchase
- * @shape warrantyExpiration : date for the warranty expiration
- */
+ * @shape warrantyExpiration: date for the warranty expiration **/
 export const RecordSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id'),
   folderId: z.uuidv7('Please provide a valid uuid for folderId'),
   categoryId: z.uuidv7('Please provide a valid uuid for categoryId'),
   amount: z.float32('Please provide a valid amount')
     .nullable(),
-  companyName: z.string('Please provide a valid Company name')
+  companyName: z.string('Please provide a valid company name')
     .trim()
-    .max(64,'Please provide a valid name(max 64 characters)')
+    .max(64,'Please provide a valid name (max 64 characters)')
     .nullable(),
   couponCode: z.string('Please provide a valid coupon code')
     .max(32,'Please provide a valid coupon code (max 32 characters)')
