@@ -33,10 +33,10 @@ export const RecordSchema = z.object({
   description: z.string('Please provide a valid description')
     .max(512,'Please provide a valid description (max 512 characters)')
     .nullable(),
-  expirationDate: z.date('Please provide a valid date')
+  expirationDate: z.date('Please provide a valid expiration date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
-  lastAccessedAt: z.iso.datetime('Please provide a valid datetime'),
+  lastAccessedAt: z.iso.datetime('Please provide a valid last accessed at date and time'),
   name: z.string('Please provide a valid name')
     .trim()
     .max(32,'Please provide a valid name (max 32 characters)')
@@ -46,10 +46,10 @@ export const RecordSchema = z.object({
   productId: z.string('Please provide a valid productId')
     .max(32,'Please provide a valid productId (max 32 characters)')
     .nullable(),
-  purchaseDate: z.date('Please provide a valid date')
+  purchaseDate: z.date('Please provide a valid purchase date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
-  warrantyExpiration: z.date('Please provide a valid date')
+  warrantyExpiration: z.date('Please provide a valid expiration date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable()
 })
