@@ -1,7 +1,7 @@
-import type {NextFunction, Request, Response} from 'express'
-import {PrivateUserSchema, selectPrivateUserByUserActivationToken, updateUser} from '../user/user.model'
-import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils'
-import {z} from 'zod/v4'
+import type { NextFunction, Request, Response } from 'express'
+import { PrivateUserSchema, selectPrivateUserByUserActivationToken, updateUser } from '../user/user.model'
+import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils'
+import { z } from 'zod/v4'
 
 export async function activationController (request: Request, response: Response): Promise<void> {
   try {

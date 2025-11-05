@@ -1,5 +1,5 @@
-import {Router} from 'express'
-import {indexController} from './index.controller'
+import { Router } from 'express'
+import { indexController } from './index.controller'
 
 
 // define the base path for the route

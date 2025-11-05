@@ -1,11 +1,11 @@
-import type {Request, Response} from 'express'
-import type {Status} from '../../utils/interfaces/Status.ts'
+import type { Request, Response } from 'express'
+import type { Status } from '../../utils/interfaces/Status.ts'
 import Mailgun from 'mailgun.js'
 import formData from 'form-data'
-import {SignUpUserSchema} from './sign-up.schema.ts'
-import {type PrivateUser, insertUser} from '../user/user.model.ts'
-import {zodErrorResponse} from '../../utils/response.utils.ts'
-import {setActivationToken, setHash} from '../../utils/auth.utils'
+import { SignUpUserSchema } from './sign-up.schema.ts'
+import { type PrivateUser, insertUser } from '../user/user.model.ts'
+import { zodErrorResponse } from '../../utils/response.utils.ts'
+import { setActivationToken, setHash } from '../../utils/auth.utils'
 
 
 export async function signUpUserController (request: Request, response: Response) {

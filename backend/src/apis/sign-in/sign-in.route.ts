@@ -1,5 +1,5 @@
-import {Router} from 'express'
-import {signInController} from './sign-in.controller.ts'
+import { Router } from 'express'
+import { signInController } from './sign-in.controller.ts'
 
 
 // declare a basePath for this router

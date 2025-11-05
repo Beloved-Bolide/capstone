@@ -1,5 +1,4 @@
 import { type Request, type Response } from 'express'
-import { z } from 'zod/v4'
 import {
   type Folder,
   FolderSchema,
@@ -10,10 +9,6 @@ import {
   selectFoldersByUserId
 } from './folder.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
-import { generateJwt } from '../../utils/auth.utils.ts'
-import pkg from 'jsonwebtoken'
-
-const { verify } = pkg
 
 
 /** Express controller for creating a new folder

@@ -1,6 +1,6 @@
-import {Router} from 'express'
-import {signUpUserController} from './sign-up.controller.ts'
-import {activationController} from './activation.controller.ts'
+import { Router } from 'express'
+import { signUpUserController } from './sign-up.controller.ts'
+import { activationController } from './activation.controller.ts'
 
 
 // define the base path for the route
