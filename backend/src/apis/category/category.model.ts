@@ -1,6 +1,7 @@
 import { z } from 'zod/v4'
 import { sql } from '../../utils/database.utils.ts'
 
+
 /** schema for validating private category objects
  * @shape id: string the primary key for the category
  * @shape color: string the color for the category
@@ -55,6 +56,7 @@ export async function insertCategory (category: Category): Promise<string> {
       ${name}
     )`
 
+  // return a success message
   return 'Category successfully created!'
 }
 
@@ -76,6 +78,7 @@ export async function updateCategory (category: Category): Promise<string> {
     WHERE
       id = ${id}`
 
+  // return a success message
   return 'Category successfully updated!'
 }
 
@@ -84,7 +87,7 @@ export async function updateCategory (category: Category): Promise<string> {
  * @returns Category or null if no Category was found **/
 export async function selectCategoryByCategoryId (id: string): Promise<Category | null> {
 
-  // create a prepared statement that selects the profile by id and execute the statement
+  // update the category in the category table
   const rowList = await sql`
     SELECT 
       id,
@@ -97,6 +100,6 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
   // enforce that the result is an array of one category, or null
   const result = CategorySchema.array().max(1).parse(rowList)
 
-  // return the Category or null if no Category was found
+  // return the category or null if no Category was found
   return result[0] ?? null
 }
