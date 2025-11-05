@@ -87,29 +87,10 @@ export async function updateFolderController (request: Request, response: Respon
     }
 
     // validate the folder update request data coming from the request body
-    const validationResultForRequestBody = FolderSchema.pick({
-      parentFolderId: true,
-      userId: true,
-      name: true
-    }).safeParse(request.body)
+    const validationResultForRequestBody = FolderSchema.safeParse(request.body)
     // if the validation of the body is unsuccessful, return a preformatted response to the client
     if (!validationResultForRequestBody.success) {
       zodErrorResponse(response, validationResultForRequestBody.error)
-      return
-    }
-
-    // grab the user ID from the session
-    const userFromSession = request.session?.user
-    const userIdFromSession = userFromSession?.id
-    // grab the user ID from the validated request body
-    const { userId } = validationResultForRequestBody.data
-    // if the user is not authorized to update the folder, return a preformatted response to the client
-    if (userIdFromSession !== userId) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You do not own this folder.'
-      })
       return
     }
 
@@ -127,6 +108,19 @@ export async function updateFolderController (request: Request, response: Respon
       return
     }
 
+    // grab the user ID from the session
+    const userFromSession = request.session?.user
+    const userIdFromSession = userFromSession?.id
+    // if the user is not authorized to update the folder, return a preformatted response to the client
+    if (userIdFromSession !== folder.userId) {
+      response.json({
+        status: 403,
+        data: null,
+        message: 'Forbidden: You do not own this folder.'
+      })
+      return
+    }
+
     // grab the folder data from the validated request body
     const { parentFolderId, name } = validationResultForRequestBody.data
     // update the folder with the new data
@@ -135,40 +129,6 @@ export async function updateFolderController (request: Request, response: Respon
 
     // update the folder in the database
     await updateFolder(folder)
-
-    // reissue the jwt token with the updated profile
-    const jwt = request.session.jwt ?? ''
-    // grab the signature off of the session
-    const signature = request.session.signature ?? ''
-    // if the jwt token or signature are undefined, return a preformatted response to the client
-    const parsedJwt = verify(jwt, signature)
-    // if the jwt token is invalid, return a preformatted response to the client
-    if (typeof parsedJwt === 'string') {
-      response.json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized: Invalid jwt token.'
-      })
-      return
-    }
-
-    // NEEDS WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // refresh the session with the updated folder
-    // request.session.folder = {
-    //   id: folder.id,
-    //   parentFolderId: folder.parentFolderId,
-    //   userId: folder.userId,
-    //   name: folder.name
-    // }
-
-    // generate a new jwt token with the updated folder
-    const newJwt = generateJwt(parsedJwt.auth, signature)
-    // set the new jwt token in the session
-    request.session.jwt = newJwt
-    // set the authorization header with the new jwt token
-    response.header({
-      authorization: newJwt
-    })
 
     // if the folder update was successful, return a preformatted response to the client
     response.json({

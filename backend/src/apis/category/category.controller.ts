@@ -63,28 +63,27 @@ export async function postCategoryController (request: Request, response: Respon
 export async function updateCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
+    // validate the category ID coming from the request parameters
+    const validationResultForRequestParams = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
+    // if the validation of the params is unsuccessful, return a preformatted response to the client
+    if (!validationResultForRequestParams.success) {
+      zodErrorResponse(response, validationResultForRequestParams.error)
+      return
+    }
+
     // validate the category data coming from the request body
-    const validationResult = CategorySchema.safeParse(request.body)
-
+    const validationResultForRequestBody = CategorySchema.safeParse(request.body)
     // if the validation is unsuccessful, return a preformatted response to the client
-    if (!validationResult.success) {
-      zodErrorResponse(response, validationResult.error)
+    if (!validationResultForRequestBody.success) {
+      zodErrorResponse(response, validationResultForRequestBody.error)
       return
     }
 
-    // check if the user is authenticated
-    const user = request.session?.user
-    if (!user) {
-      response.json({
-        status: 401,
-        data: null,
-        message: 'Please login to update a category.'
-      })
-      return
-    }
-
-    // get the category
-    const category = await selectCategoryByCategoryId(validationResult.data.id)
+    // grab the category id from the validated request parameters
+    const { id } = validationResultForRequestParams.data
+    // grab the category by id
+    const category: Category | null = await selectCategoryByCategoryId(id)
+    // if the category does not exist, return a preformatted response to the client
     if (category === null) {
       response.json({
         status: 404,
@@ -94,14 +93,34 @@ export async function updateCategoryController (request: Request, response: Resp
       return
     }
 
-    // update the category
-    await updateCategory(validationResult.data)
+    // NEEDS WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // grab the user ID from the session
+    // const userFromSession = request.session?.user
+    // const userIdFromSession = userFromSession?.id
+    // // if the user is not authorized to update the category, return a preformatted response to the client
+    // if (userIdFromSession !== category.userId) {
+    //   response.json({
+    //     status: 403,
+    //     data: null,
+    //     message: 'Forbidden: You do not own this category.'
+    //   })
+    // }
+
+    // grab the category data from the validated request body
+    const { color, icon, name } = validationResultForRequestBody.data
+    // update the category with the new data
+    category.color = color
+    category.icon = icon
+    category.name = name
+
+    // update the category in the database
+    await updateCategory(category)
 
     // if the category update was successful, return a preformatted response to the client
     response.json({
       status: 200,
       data: null,
-      message: 'Category successfully updated.'
+      message: 'Category successfully updated!'
     })
 
   } catch (error: any) {
