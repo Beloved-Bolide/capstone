@@ -1,5 +1,5 @@
 import { z } from 'zod/v4'
-
+import {sql} from "../../utils/database.utils.ts";
 
 /** Schema for validating record objects
  * @shape id: string for the primary key for the record
@@ -54,3 +54,72 @@ export const RecordSchema = z.object({
     .nullable()
 })
 
+/**
+ * Record type inferred from Schema
+ */
+
+export type Record = z.infer<typeof RecordSchema>
+
+/**
+ * inserts a new record into the record table
+ * @param folder the folder to insert
+ * @returns {Promise<string>} 'Record successfully created.' */
+export async function insertRecord (record: Record): Promise<string> {
+
+  // validate the record object against the record schema
+  RecordSchema.parse(record)
+
+  // extract the record's properties
+  const {
+    id,
+    folderId,
+    categoryId,
+    amount,
+    companyName,
+    couponCode,
+    description,
+    expirationDate,
+    lastAccessedAt,
+    name,
+    notifyOn,
+    productId,
+    purchaseDate,
+    warrantyExpiration
+  } = record
+
+  // insert the record into the record table
+  await sql`
+    INSERT INTO record (
+      id,
+      folder_id,
+      category_id,
+      amount,
+      company_name,
+      coupon_code,
+      description,
+      exp_date,
+      last_accessed_at,
+      name,
+      notify_on,
+      product_id,
+      purchase_date,
+      warranty_exp
+    ) 
+    VALUES (
+      ${id},
+      ${folderId},
+      ${categoryId},
+      ${amount},
+      ${companyName},
+      ${couponCode},
+      ${description},
+      ${expirationDate},
+      ${lastAccessedAt},
+      ${name},
+      ${notifyOn}
+      ${productId},
+      ${purchaseDate},
+      ${warrantyExpiration}    
+    )`
+return 'Record successfully created!'
+}
