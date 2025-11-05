@@ -7,8 +7,10 @@ import {type PrivateUser, insertUser} from '../user/user.model.ts'
 import {zodErrorResponse} from '../../utils/response.utils.ts'
 import {setActivationToken, setHash} from '../../utils/auth.utils'
 
-export async function signUpUserController(request: Request, response: Response) {
+
+export async function signUpUserController (request: Request, response: Response) {
   try {
+
     // validate the new user's data
     const validationResult = SignUpUserSchema.safeParse(request.body)
     // if validation fails, return an error response
@@ -47,20 +49,24 @@ export async function signUpUserController(request: Request, response: Response)
     }
     await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
 
-    const status: Status = { // create a status message
+    // create a status message
+    const status: Status = {
       status: 200,
       message: 'Profile successfully created! Please check your email.',
       data: null
     }
 
-    response.status(200).json(status) // return a success response
+    // return a success response
+    response.status(200).json(status)
 
   } catch (error: any) {
-    const status: Status = { // create a status message
+    // create a status message
+    const status: Status = {
       status: 500,
       message: error.message,
       data: null
     }
-    response.status(200).json(status) // return a server error response
+    // return a server error response
+    response.status(200).json(status)
   }
 }

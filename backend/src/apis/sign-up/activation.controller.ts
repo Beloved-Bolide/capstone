@@ -20,7 +20,7 @@ export async function activationController (request: Request, response: Response
     }
 
     // deconstruct the activationToken from the request body
-    const {activation} = validationResult.data
+    const { activation } = validationResult.data
 
     // select the user by activationToken
     const user = await selectPrivateUserByUserActivationToken(activation)

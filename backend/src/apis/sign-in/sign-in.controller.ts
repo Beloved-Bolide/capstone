@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid'
 import type { Status } from '../../utils/interfaces/Status'
 import { z } from 'zod/v4'
 
+
 /** Express controller for sign-in
  * @endpoint POST /apis/sign-in/
  * @param request an object containing the body contain an email and password.
