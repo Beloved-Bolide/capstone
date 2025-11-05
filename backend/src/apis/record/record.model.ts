@@ -1,5 +1,5 @@
 import { z } from 'zod/v4'
-import {sql} from "../../utils/database.utils.ts";
+import { sql } from '../../utils/database.utils.ts'
 
 /** Schema for validating record objects
  * @shape id: string for the primary key for the record
@@ -55,16 +55,12 @@ export const RecordSchema = z.object({
     .nullable()
 })
 
-/**
- * Record type inferred from Schema
- */
-
+/** Record type inferred from Schema **/
 export type Record = z.infer<typeof RecordSchema>
 
-/**
- * inserts a new record into the record table
+/** inserts a new record into the record table
  * @param record the record to insert
- * @returns {Promise<string>} 'Record successfully created.' */
+ * @returns {Promise<string>} 'Record successfully created!' **/
 export async function insertRecord (record: Record): Promise<string> {
 
   // validate the record object against the record schema
@@ -122,5 +118,5 @@ export async function insertRecord (record: Record): Promise<string> {
       ${purchaseDate},
       ${warrantyExpiration}    
     )`
-return 'Record successfully created!'
+  return 'Record successfully created!'
 }
