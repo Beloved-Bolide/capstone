@@ -33,7 +33,7 @@ export async function postRecordController (request: Request, response: Response
     //   response.json ({
     //     status: 403,
     //     data: null,
-    //     message: 'Forbidden:  You cannot create a record for another user.'
+    //     message: 'Forbidden: You cannot create a record for another user.'
     //   })
     //   return
     // }
@@ -55,7 +55,7 @@ export async function postRecordController (request: Request, response: Response
 }
 
 /** Express controller for updating a record
- * @endpoint PUT /apis/record/id
+ * @endpoint PUT /apis/record/id/:id
  * @param request an object containing the body with the record data
  * @param response an object modeling the response that will be sent to the client
  * @returns response to the client indicating whether the folder update was successful **/
@@ -100,11 +100,11 @@ export async function updateRecordController (request: Request, response: Respon
 
 /** Express controller for getting a record by its id
  * @endpoint GET /apis/record/id/:id
- * @param request an object containing the folder id in params
+ * @param request an object containing the record id in params
  * @param response an object modeling the response that will be sent to the client
- * @returns response with the folder data or null if not found **/
+ * @returns response with the record data or null if not found **/
 export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
-  try{
+  try {
 
     // validate the record id from parameters
     const validationResult = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id })

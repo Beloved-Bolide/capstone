@@ -85,7 +85,7 @@ export async function insertRecord (record: Record): Promise<string> {
   } = record
 
   // insert the record into the record table
-  await sql`
+  await sql `
     INSERT INTO record (
       id,
       folder_id,
@@ -120,10 +120,11 @@ export async function insertRecord (record: Record): Promise<string> {
     )`
   return 'Record successfully created!'
 }
-/** Selects the Record from the record table by id
+
+/** Selects the record from the record table by id
  * @param id the record's id to search for in the record table
  * @returns Record or null if no folder was found **/
-export async function selectRecordByRecordId(id: string): Promise<Record | null> {
+export async function selectRecordByRecordId (id: string): Promise<Record | null> {
 
   // create a prepared statement that selects the record by record id
   const rowList = await sql`

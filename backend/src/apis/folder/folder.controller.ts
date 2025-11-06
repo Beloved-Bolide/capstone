@@ -59,7 +59,7 @@ export async function postFolderController (request: Request, response: Response
 }
 
 /** Express controller for updating a folder
- * @endpoint PUT /apis/folder/id/:folderIdGoesHere
+ * @endpoint PUT /apis/folder/id/:id
  * @param request an object containing the body with folder data
  * @param response an object modeling the response that will be sent to the client
  * @returns response to the client indicating whether the folder update was successful **/
@@ -177,7 +177,7 @@ export async function getFolderByFolderIdController (request: Request, response:
 }
 
 /** Express controller for getting folders by user id
- * @endpoint GET /apis/folder/user/:userIdGoesHere
+ * @endpoint GET /apis/folder/user/:id
  * @param request an object containing the user id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
@@ -221,7 +221,7 @@ export async function getFolderByUserIdController(request: Request, response: Re
 }
 
 /** Express controller for getting folders by name
- * @endpoint GET /apis/folder/name
+ * @endpoint GET /apis/folder/:name
  * @param request an object containing the folder name in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
