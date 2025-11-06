@@ -56,13 +56,15 @@ export async function postRecordController (request: Request, response: Response
  * @returns response to the client indicating whether the folder update was successful **/
 export async function updateRecordController (request: Request, response: Response): Promise<void> {
   try {
+
     // validate the record id coming from the request parameters
-    const validationResultForRequestParams = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id})
+    const validationResultForRequestParams = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id })
     // if the validation of the params is unsuccessful, return a preformatted response to the client
     if (!validationResultForRequestParams.success){
       zodErrorResponse(response,validationResultForRequestParams.error)
       return
     }
+
     // validate the record update request data coming from the request body
     const validationResultForRequestBody = RecordSchema.safeParse(request.body)
     // if the validation of the body is unsuccessful, return a preformatted response to the client
