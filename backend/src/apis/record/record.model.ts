@@ -1,6 +1,7 @@
 import { z } from 'zod/v4'
 import { sql } from '../../utils/database.utils.ts'
 
+
 /** Schema for validating record objects
  * @shape id: string for the primary key for the record
  * @shape folderId: string for the foreign key for the folder

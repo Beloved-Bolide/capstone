@@ -8,6 +8,7 @@ import {
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
 
+
 /** Express controller for creating a new record
  * @endpoint POST /apis/record
  * @param request an object containing the body with record data
