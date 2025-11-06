@@ -12,7 +12,4 @@ router.route('/')
 router.route('/id/:id')
   .get(isLoggedInController, getRecordByRecordIdController)
 
-
-
-
 export const recordRoute = { basePath, router }

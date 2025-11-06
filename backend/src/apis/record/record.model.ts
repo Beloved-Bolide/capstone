@@ -14,8 +14,7 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape name: string for the name
  * @shape notifyOn: boolean for the notifications
  * @shape productId: string for the id of the product
- * @shape purchaseDate: date for the day of purchase
- * @shape warrantyExpiration: date for the warranty expiration **/
+ * @shape purchaseDate: date for the day of purchase **/
 export const RecordSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id'),
   folderId: z.uuidv7('Please provide a valid uuid for folderId'),
@@ -50,9 +49,6 @@ export const RecordSchema = z.object({
     .nullable(),
   purchaseDate: z.coerce.date('Please provide a valid purchase date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
-    .nullable(),
-  warrantyExp: z.coerce.date('Please provide a valid expiration date')
-    .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable()
 })
 
@@ -61,7 +57,7 @@ export type Record = z.infer<typeof RecordSchema>
 
 /** inserts a new record into the record table
  * @param record the record to insert
- * @returns {Promise<string>} 'Record successfully created!' **/
+ * @returns { Promise<string> } 'Record successfully created!' **/
 export async function insertRecord (record: Record): Promise<string> {
 
   // validate the record object against the record schema
@@ -81,8 +77,7 @@ export async function insertRecord (record: Record): Promise<string> {
     name,
     notifyOn,
     productId,
-    purchaseDate,
-    warrantyExp
+    purchaseDate
   } = record
 
   // insert the record into the record table
@@ -100,8 +95,7 @@ export async function insertRecord (record: Record): Promise<string> {
       name,
       notify_on,
       product_id,
-      purchase_date,
-      warranty_exp
+      purchase_date
     ) 
     VALUES (
       ${id},
@@ -116,8 +110,7 @@ export async function insertRecord (record: Record): Promise<string> {
       ${name},
       ${notifyOn},
       ${productId},
-      ${purchaseDate},
-      ${warrantyExp}    
+      ${purchaseDate}  
     )`
   return 'Record successfully created!'
 }
@@ -142,8 +135,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
       name,
       notify_on,
       product_id,
-      purchase_date,
-      warranty_exp
+      purchase_date
     FROM
       record
     WHERE
