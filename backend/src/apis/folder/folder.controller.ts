@@ -132,7 +132,7 @@ export async function updateFolderController (request: Request, response: Respon
 }
 
 /** Express controller for getting a folder by its id
- * @endpoint GET /apis/folder/id/:folderIdGoesHere
+ * @endpoint GET /apis/folder/id/:id
  * @param request an object containing the folder id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with the folder data or null if not found **/
