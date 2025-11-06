@@ -25,4 +25,4 @@ router.route('/folder/:folderId')
 router.route('/category/:categoryId')
   .get(isLoggedInController, getRecordByCategoryIdController)
 
-export const recordRoute = { basePath, router }
+export const recordRoute = {basePath, router}

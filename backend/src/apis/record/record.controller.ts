@@ -1,11 +1,11 @@
-import { type Request, type Response } from 'express'
+import {type Request, type Response} from 'express'
 import {
   type Record,
   RecordSchema,
   insertRecord,
   selectRecordByRecordId, updateRecord, selectRecordByFolderId, selectRecordByCategoryId
 } from './record.model.ts'
-import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
+import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils.ts'
 import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
 
 
@@ -14,7 +14,7 @@ import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
  * @param request an object containing the body with record data
  * @param response an object modeling the response that will be sent to the client
  * @returns response to the client indicating whether the record creation was successful **/
-export async function postRecordController (request: Request, response: Response): Promise<void> {
+export async function postRecordController(request: Request, response: Response): Promise<void> {
   try {
 
     // validate the full record object from the request body
@@ -35,7 +35,7 @@ export async function postRecordController (request: Request, response: Response
     const idFromSession = userFromSession?.id
     // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
     if (userId !== idFromSession) {
-      response.json ({
+      response.json({
         status: 403,
         data: null,
         message: 'Forbidden: You cannot create a record for another user.'
@@ -48,9 +48,9 @@ export async function postRecordController (request: Request, response: Response
 
     // return the success response to the client
     response.json({
-      status:200,
+      status: 200,
       data: null,
-      message: insertedRecord
+      message: 'Record successfully inserted!'
     })
 
   } catch (error: any) {
@@ -64,22 +64,22 @@ export async function postRecordController (request: Request, response: Response
  * @param request an object containing the body with the record data
  * @param response an object modeling the response that will be sent to the client
  * @returns response to the client indicating whether the folder update was successful **/
-export async function updateRecordController (request: Request, response: Response): Promise<void> {
+export async function updateRecordController(request: Request, response: Response): Promise<void> {
   try {
 
     // validate the record id coming from the request parameters
-    const validationResultForRequestParams = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id })
+    const validationResultForRequestParams = RecordSchema.pick({id: true}).safeParse({id: request.params.id})
     // if the validation of the params is unsuccessful, return a preformatted response to the client
-    if (!validationResultForRequestParams.success){
-      zodErrorResponse(response,validationResultForRequestParams.error)
+    if (!validationResultForRequestParams.success) {
+      zodErrorResponse(response, validationResultForRequestParams.error)
       return
     }
 
     // validate the record update request data coming from the request body
     const validationResultForRequestBody = RecordSchema.safeParse(request.body)
     // if the validation of the body is unsuccessful, return a preformatted response to the client
-    if (!validationResultForRequestBody.success){
-      zodErrorResponse(response,validationResultForRequestBody.error)
+    if (!validationResultForRequestBody.success) {
+      zodErrorResponse(response, validationResultForRequestBody.error)
       return
     }
 
@@ -92,7 +92,7 @@ export async function updateRecordController (request: Request, response: Respon
     const idFromSession = userFromSession?.id
     // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
     if (userId !== idFromSession) {
-      response.json ({
+      response.json({
         status: 403,
         data: null,
         message: 'Forbidden: You cannot create a record for another user.'
@@ -101,7 +101,7 @@ export async function updateRecordController (request: Request, response: Respon
     }
 
     // grab the record id from the validated request parameters
-    const { id } = validationResultForRequestParams.data
+    const {id} = validationResultForRequestParams.data
     // grab the record by id
     const record: Record | null = await selectRecordByRecordId(id)
     // if the record does not exist, return a preformatted response to the client
@@ -114,20 +114,21 @@ export async function updateRecordController (request: Request, response: Respon
       return
     }
 
-   // grab the record data from the validated request body
-    const{
+    // grab the record data from the validated request body
+    const {
       folderId,
       categoryId,
       amount,
-      companyName ,
-      couponCode ,
-      description ,
+      companyName,
+      couponCode,
+      description,
       expDate,
       lastAccessedAt,
       name,
       notifyOn,
       productId,
-      purchaseDate } = validationResultForRequestBody.data
+      purchaseDate
+    } = validationResultForRequestBody.data
 
     //update the record with the new data
     record.folderId = folderId
@@ -150,10 +151,10 @@ export async function updateRecordController (request: Request, response: Respon
     response.json({
       status: 200,
       data: null,
-      message: 'record successfully updated!'
+      message: 'Record successfully updated!'
     })
 
-  } catch (error:any) {
+  } catch (error: any) {
     console.error(error)
     serverErrorResponse(response, error.message)
   }
@@ -164,14 +165,14 @@ export async function updateRecordController (request: Request, response: Respon
  * @param request an object containing the record id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with the record data or null if not found **/
-export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
+export async function getRecordByRecordIdController(request: Request, response: Response): Promise<void> {
   try {
 
     // validate the record id from parameters
-    const validationResult = RecordSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validationResult = RecordSchema.pick({id: true}).safeParse({id: request.params.id})
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
-      zodErrorResponse(response,validationResult.error)
+      zodErrorResponse(response, validationResult.error)
       return
     }
 
@@ -186,7 +187,7 @@ export async function getRecordByRecordIdController (request: Request, response:
     }
 
     // grab the record id from the parameters
-    const { id } = validationResult.data
+    const {id} = validationResult.data
 
     // get the record
     const record: Record | null = await selectRecordByRecordId(id)
@@ -195,10 +196,10 @@ export async function getRecordByRecordIdController (request: Request, response:
     response.json({
       status: 200,
       data: record,
-      message: 'Record found successfully!'
+      message: 'Record selected by record id successfully selected!'
     })
 
-  } catch (error:any) {
+  } catch (error: any) {
     console.error(error)
     serverErrorResponse(response, error.message)
   }
@@ -209,12 +210,11 @@ export async function getRecordByRecordIdController (request: Request, response:
  * @param request an object containing the folderId in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of record or error **/
-
 export async function getRecordByFolderIdController(request: Request, response: Response): Promise<void> {
-  try{
+  try {
 
     //validate the folderId from params
-    const validationResult = RecordSchema.pick({ folderId: true }).safeParse({ folderId: request.params.folderId })
+    const validationResult = RecordSchema.pick({folderId: true}).safeParse({folderId: request.params.folderId})
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
@@ -230,7 +230,7 @@ export async function getRecordByFolderIdController(request: Request, response: 
     const idFromSession = userFromSession?.id
     // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
     if (userId !== idFromSession) {
-      response.json ({
+      response.json({
         status: 403,
         data: null,
         message: 'Forbidden: You cannot create a record for another user.'
@@ -239,10 +239,10 @@ export async function getRecordByFolderIdController(request: Request, response: 
     }
 
     //deconstruct the folderId from the parameters
-    const { folderId} = validationResult.data
+    const {folderId} = validationResult.data
 
     // if the folderId is not found,return a preformatted response to the client
-    if (folderId === null){
+    if (folderId === null) {
       response.json({
         status: 404,
         data: null,
@@ -258,7 +258,7 @@ export async function getRecordByFolderIdController(request: Request, response: 
     response.json({
       status: 200,
       data: record,
-      message:"Record selected successfully!"
+      message: "Record got by folder id successfully selected!"
     })
 
   } catch (error: any) {
@@ -272,12 +272,11 @@ export async function getRecordByFolderIdController(request: Request, response: 
  * @param request an object containing the categoryId in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of record or error **/
-
 export async function getRecordByCategoryIdController(request: Request, response: Response): Promise<void> {
-  try{
+  try {
 
     // validate the categoryId from params
-    const validationResult = RecordSchema.pick({ categoryId: true }).safeParse({ categoryId: request.params.categoryId })
+    const validationResult = RecordSchema.pick({categoryId: true}).safeParse({categoryId: request.params.categoryId})
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
@@ -306,10 +305,10 @@ export async function getRecordByCategoryIdController(request: Request, response
     // }
 
     // deconstruct the categoryId from the parameters
-    const { categoryId } = validationResult.data
+    const {categoryId} = validationResult.data
 
     // if the categoryId is not found, return a preformatted response to the client
-    if (categoryId === null){
+    if (categoryId === null) {
       response.json({
         status: 404,
         data: null,
@@ -325,7 +324,7 @@ export async function getRecordByCategoryIdController(request: Request, response
     response.json({
       status: 200,
       data: record,
-      message:"Record selected successfully!"
+      message: "Record got by category id successfully selected!"
     })
 
   } catch (error: any) {
