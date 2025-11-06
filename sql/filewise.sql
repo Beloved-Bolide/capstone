@@ -39,13 +39,13 @@ CREATE TABLE IF NOT EXISTS record (
   company_name     VARCHAR(64) NOT NULL,
   coupon_code      VARCHAR(32),
   description      VARCHAR(512),
-  exp_date         DATE,
+  exp_date         TIMESTAMPTZ,
   last_accessed_at TIMESTAMPTZ,
   name             VARCHAR(32) NOT NULL,
   notify_on        BOOLEAN DEFAULT FALSE,
   product_id       VARCHAR(32),
-  purchase_date    DATE,
-  warranty_exp     DATE,
+  purchase_date    TIMESTAMPTZ,
+  warranty_exp     TIMESTAMPTZ,
   FOREIGN KEY (folder_id) REFERENCES folder (id),
   FOREIGN KEY (category_id) REFERENCES category (id)
 );

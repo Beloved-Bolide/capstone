@@ -77,7 +77,7 @@ export async function updateFolder (folder: Folder): Promise<string> {
 /** Selects the Folder from the folder table by id
  * @param id the folder's id to search for in the folder table
  * @returns Folder or null if no folder was found **/
-export async function selectFolderByFolderId(id: string): Promise<Folder | null> {
+export async function selectFolderByFolderId (id: string): Promise<Folder | null> {
 
   // create a prepared statement that selects the folder by folder id
   const rowList = await sql`

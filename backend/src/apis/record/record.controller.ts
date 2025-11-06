@@ -1,9 +1,8 @@
 import { type Request, type Response } from 'express'
-import type {NextFunction} from 'express'
 import {
   type Record,
-  insertRecord,
   RecordSchema,
+  insertRecord,
   selectRecordByRecordId
 } from './record.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
@@ -24,6 +23,7 @@ export async function postRecordController (request: Request, response: Response
       zodErrorResponse(response, validationResult.error)
       return
     }
+
     // // get the user id from the session
     // const userFromSession = request.session?.user
     // const idFromSession = userFromSession?.id
@@ -108,7 +108,7 @@ export async function getRecordByRecordIdController (request: Request, response:
   try {
 
     // validate the record id from parameters
-    const validationResult = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id })
+    const validationResult = RecordSchema.pick({ id: true }).safeParse({ id: request.params.id })
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response,validationResult.error)
@@ -133,7 +133,7 @@ export async function getRecordByRecordIdController (request: Request, response:
 
     //if the record is found, return the record attributes and a preformatted response to the client
     response.json({
-      status:200,
+      status: 200,
       data: record,
       message: 'Record found successfully!'
     })

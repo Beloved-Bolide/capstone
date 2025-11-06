@@ -20,7 +20,7 @@ export const RecordSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id'),
   folderId: z.uuidv7('Please provide a valid uuid for folderId'),
   categoryId: z.uuidv7('Please provide a valid uuid for categoryId'),
-  amount: z.float32('Please provide a valid amount')
+  amount: z.coerce.number('Please provide a valid amount')
     .nullable(),
   companyName: z.string('Please provide a valid company name')
     .trim()
@@ -33,7 +33,7 @@ export const RecordSchema = z.object({
   description: z.string('Please provide a valid description')
     .max(512,'Please provide a valid description (max 512 characters)')
     .nullable(),
-  expirationDate: z.coerce.date('Please provide a valid expiration date')
+  expDate: z.coerce.date('Please provide a valid expiration date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
   lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time')
@@ -50,7 +50,7 @@ export const RecordSchema = z.object({
   purchaseDate: z.coerce.date('Please provide a valid purchase date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
-  warrantyExpiration: z.coerce.date('Please provide a valid expiration date')
+  warrantyExp: z.coerce.date('Please provide a valid expiration date')
     .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable()
 })
@@ -75,13 +75,13 @@ export async function insertRecord (record: Record): Promise<string> {
     companyName,
     couponCode,
     description,
-    expirationDate,
+    expDate,
     lastAccessedAt,
     name,
     notifyOn,
     productId,
     purchaseDate,
-    warrantyExpiration
+    warrantyExp
   } = record
 
   // insert the record into the record table
@@ -110,13 +110,13 @@ export async function insertRecord (record: Record): Promise<string> {
       ${companyName},
       ${couponCode},
       ${description},
-      ${expirationDate},
+      ${expDate},
       ${lastAccessedAt},
       ${name},
       ${notifyOn},
       ${productId},
       ${purchaseDate},
-      ${warrantyExpiration}    
+      ${warrantyExp}    
     )`
   return 'Record successfully created!'
 }
@@ -148,10 +148,12 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
     WHERE
       id = ${id}`
 
+  console.log(rowList[0])
+
   // enforce that the result is an array of one record, or null
   const result = RecordSchema.array().max(1).parse(rowList)
 
   // return the folder or null if no folder was found
-  return result [0] ?? null
+  return result[0] ?? null
 }
 
