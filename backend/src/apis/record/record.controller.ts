@@ -83,6 +83,23 @@ export async function updateRecordController (request: Request, response: Respon
       return
     }
 
+    // get the folder from the validated request body
+    const folder: Folder | null = await selectFolderByFolderId(validationResultForRequestBody.data.folderId)
+    // get the user id from the folder
+    const userId: string | undefined | null = folder?.userId
+    // get the user id from the session
+    const userFromSession = request.session?.user
+    const idFromSession = userFromSession?.id
+    // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
+    if (userId !== idFromSession) {
+      response.json ({
+        status: 403,
+        data: null,
+        message: 'Forbidden: You cannot create a record for another user.'
+      })
+      return
+    }
+
     // grab the record id from the validated request parameters
     const { id } = validationResultForRequestParams.data
     // grab the record by id
@@ -96,6 +113,11 @@ export async function updateRecordController (request: Request, response: Respon
       })
       return
     }
+
+   // grab the record data from the validated request body
+    const{ folderId, categoryId, amount, companyName , couponCode , description ,expDate, lastAccessedAt, name, notifyOn, productId , purchaseDate } = validationResultForRequestBody.data
+
+    //update the record with
 
   } catch (error:any) {
     console.error(error)
