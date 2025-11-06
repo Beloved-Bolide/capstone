@@ -6,6 +6,7 @@ import {
   selectRecordByRecordId
 } from './record.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
+import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
 
 /** Express controller for creating a new record
  * @endpoint POST /apis/record
@@ -24,20 +25,24 @@ export async function postRecordController (request: Request, response: Response
       return
     }
 
-    // // get the user id from the session
-    // const userFromSession = request.session?.user
-    // const idFromSession = userFromSession?.id
-    // // get the new data from the request body
-    // const { userId } = validationResult.data
-    // // if the userId from the request body does not match the user id from the session, return a preformatted response to the client
-    // if (userId !== idFromSession) {
-    //   response.json ({
-    //     status: 403,
-    //     data: null,
-    //     message: 'Forbidden: You cannot create a record for another user.'
-    //   })
-    //   return
-    // }
+    //
+    const folder: Folder | null = await selectFolderByFolderId(validationResult.data.folderId)
+
+    //
+    const userId: string | undefined | null = folder?.userId
+
+    // get the user id from the session
+    const userFromSession = request.session?.user
+    const idFromSession = userFromSession?.id
+    // if the userId from the request body does not match the user id from the session, return a preformatted response to the client
+    if (userId !== idFromSession) {
+      response.json ({
+        status: 403,
+        data: null,
+        message: 'Forbidden: You cannot create a record for another user.'
+      })
+      return
+    }
 
     // insert the new record data into the database
     const insertedRecord = await insertRecord(validationResult.data)
