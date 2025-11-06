@@ -25,16 +25,14 @@ export async function postRecordController (request: Request, response: Response
       return
     }
 
-    //
+    // get the folder from the validated request body
     const folder: Folder | null = await selectFolderByFolderId(validationResult.data.folderId)
-
-    //
+    // get the user id from the folder
     const userId: string | undefined | null = folder?.userId
-
     // get the user id from the session
     const userFromSession = request.session?.user
     const idFromSession = userFromSession?.id
-    // if the userId from the request body does not match the user id from the session, return a preformatted response to the client
+    // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
     if (userId !== idFromSession) {
       response.json ({
         status: 403,
