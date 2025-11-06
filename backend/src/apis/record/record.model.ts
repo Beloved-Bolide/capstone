@@ -190,8 +190,6 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
     WHERE
       id = ${id}`
 
-  console.log(rowList[0])
-
   // enforce that the result is an array of one record, or null
   const result = RecordSchema.array().max(1).parse(rowList)
 
@@ -199,3 +197,32 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
   return result[0] ?? null
 }
 
+/** Selects the record from the record table by folderId
+ * @param folderId the record to search for in the record table
+ * @returns Record or null if no record was found **/
+export async function selectRecordByFolderId (folderId: string): Promise<Record | null>{
+
+  // create a prepared statement that selects the folder by folderId
+  const rowList = await sql`
+SELECT
+    id,
+    folder_id,
+    category_id,
+    amount,
+    company_name,
+    coupon_code,
+    description,
+    exp_date,
+    last_accessed_at,
+    name,
+    notify_on,
+    product_id,
+    purchase_date
+   FROM
+       record
+   WHERE 
+       folder_id = ${folderId}`
+  const result = RecordSchema.array().max(1).parse(rowList)
+
+  return result[0] ?? null
+}

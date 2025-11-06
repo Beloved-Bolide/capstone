@@ -3,7 +3,7 @@ import {
   type Record,
   RecordSchema,
   insertRecord,
-  selectRecordByRecordId, updateRecord
+  selectRecordByRecordId, updateRecord, selectRecordByFolderId
 } from './record.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
@@ -199,6 +199,69 @@ export async function getRecordByRecordIdController (request: Request, response:
     })
 
   } catch (error:any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting record by folderId
+ * @endpoint GET /apis/record/folder/:id
+ * @param request an object containing the folderId in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response with an array of record or error **/
+
+export async function getRecordByFolderIdController(request: Request, response: Response): Promise<void> {
+  try{
+
+    //validate the folderId from params
+    const validationResult = RecordSchema.pick({ folderId: true}).safeParse({folder_id :request.params.folderId})
+    // if the validation is unsuccessful, return a preformatted response to the client
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // get the folder from the validated request body
+    const folder: Folder | null = await selectFolderByFolderId(validationResult.data.folderId)
+    // get the user id from the folder
+    const userId: string | undefined | null = folder?.userId
+    // get the user id from the session
+    const userFromSession = request.session?.user
+    const idFromSession = userFromSession?.id
+    // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
+    if (userId !== idFromSession) {
+      response.json ({
+        status: 403,
+        data: null,
+        message: 'Forbidden: You cannot create a record for another user.'
+      })
+      return
+    }
+
+    //deconstruct the folderId from the parameters
+    const { folderId} = validationResult.data
+
+    // if the folderId is not found,return a preformatted response to the client
+    if( folderId === null){
+      response.json({
+        status: 404,
+        data: null,
+        message: "Record not found"
+      })
+      return
+    }
+
+    //get the record
+    const record: Record | null = await selectRecordByFolderId(folderId)
+
+    //if the record is found, return the record attributes and a preformatted response to the client
+    response.json({
+      status: 200,
+      data: record,
+      message:"Record selected successfully!"
+    })
+
+  } catch (error: any) {
     console.error(error)
     serverErrorResponse(response, error.message)
   }
