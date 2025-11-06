@@ -1,6 +1,11 @@
 import { type Request, type Response } from 'express'
 import type {NextFunction} from 'express'
-import {insertRecord, RecordSchema, selectRecordByRecordId} from './record.model.ts'
+import {
+  type Record,
+  insertRecord,
+  RecordSchema,
+  selectRecordByRecordId
+} from './record.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 
 /** Express controller for creating a new record
