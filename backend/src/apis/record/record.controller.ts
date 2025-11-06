@@ -3,7 +3,7 @@ import {
   type Record,
   RecordSchema,
   insertRecord,
-  selectRecordByRecordId, updateRecord, selectRecordByFolderId
+  selectRecordByRecordId, updateRecord, selectRecordByFolderId, selectRecordByCategoryId
 } from './record.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
@@ -267,7 +267,72 @@ export async function getRecordByFolderIdController(request: Request, response: 
   }
 }
 
+/** Express controller for getting record by categoryId
+ * @endpoint GET /apis/record/category/:id
+ * @param request an object containing the categoryId in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response with an array of record or error **/
 
+export async function getRecordByCategoryIdController(request: Request, response: Response): Promise<void> {
+  try{
+
+    // validate the categoryId from params
+    const validationResult = RecordSchema.pick({ categoryId: true }).safeParse({ categoryId: request.params.categoryId })
+    // if the validation is unsuccessful, return a preformatted response to the client
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // // get the record from the validated request parameters
+    // const record: Record | null = await selectRecordByCategoryId(validationResult.data.categoryId)
+    //
+    // const folderId: string = record?.folderId
+    //
+    // const folder: Folder | null = await selectFolderByFolderId(folderId)
+    // // get the user id from the category
+    // const userId: string | undefined | null = folder?.userId
+    // // get the user id from the session
+    // const userFromSession = request.session?.user
+    // const idFromSession = userFromSession?.id
+    // // if the user id from the request parameters does not match the user id from the session, return a preformatted response to the client
+    // if (userId !== idFromSession) {
+    //   response.json ({
+    //     status: 403,
+    //     data: null,
+    //     message: 'Forbidden: You cannot create a record for another user.'
+    //   })
+    //   return
+    // }
+
+    // deconstruct the categoryId from the parameters
+    const { categoryId } = validationResult.data
+
+    // if the categoryId is not found, return a preformatted response to the client
+    if (categoryId === null){
+      response.json({
+        status: 404,
+        data: null,
+        message: "Record not found"
+      })
+      return
+    }
+
+    //get the record
+    const record: Record | null = await selectRecordByCategoryId(categoryId)
+
+    //if the record is found, return the record attributes and a preformatted response to the client
+    response.json({
+      status: 200,
+      data: record,
+      message:"Record selected successfully!"
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
 
 
 

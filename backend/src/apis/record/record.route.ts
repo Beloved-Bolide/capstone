@@ -1,6 +1,7 @@
 import {Router} from "express";
 import {isLoggedInController} from "../../utils/controllers/is-logged-in.controller.ts";
 import {
+  getRecordByCategoryIdController,
   getRecordByFolderIdController,
   getRecordByRecordIdController,
   postRecordController,
@@ -20,5 +21,8 @@ router.route('/:id')
 
 router.route('/folder/:folderId')
   .get(isLoggedInController, getRecordByFolderIdController)
+
+router.route('/category/:categoryId')
+  .get(isLoggedInController, getRecordByCategoryIdController)
 
 export const recordRoute = { basePath, router }
