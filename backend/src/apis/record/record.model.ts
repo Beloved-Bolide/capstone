@@ -120,3 +120,37 @@ export async function insertRecord (record: Record): Promise<string> {
     )`
   return 'Record successfully created!'
 }
+/** Selects the Record from the record table by id
+ * @param id the record's id to search for in the record table
+ * @returns Record or null if no folder was found **/
+export async function selectRecordByRecordId(id: string): Promise<string> {
+
+  // create a prepared statement that selects the record by record id
+  const rowList = await sql`
+    SELECT
+    id,
+    folder_id,
+    category_id,
+    amount,
+    company_name,
+    coupon_code,
+    description,
+    exp_date,
+    last_accessed_at,
+    name,
+    notify_on,
+    product_id,
+    purchase_date,
+    warranty_exp
+    FROM
+    record
+    WHERE
+     id = ${id}`
+
+  // enforce that the result is an array of one record, or null
+  const result = RecordSchema.array().max(1).parse(rowList)
+
+  // return the folder or null if no folder was found
+  return result [0] ?? null
+}
+

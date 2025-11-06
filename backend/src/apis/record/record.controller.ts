@@ -1,6 +1,6 @@
 import { type Request, type Response } from 'express'
 import type {NextFunction} from 'express'
-import { insertRecord, RecordSchema } from './record.model.ts'
+import {insertRecord, RecordSchema, selectRecordByRecordId} from './record.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 
 /** Express controller for creating a new record
@@ -87,6 +87,8 @@ export async function updateRecordController (request: Request, response: Respon
       return
     }
 
+
+
   } catch (error:any) {
     console.error(error)
     serverErrorResponse(response, error.message)
@@ -96,6 +98,47 @@ export async function updateRecordController (request: Request, response: Respon
 /** Express controller for getting a record by its id
  *
  */
+
+export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
+  try{
+
+  // validate the record id from parameters
+    const validationResult = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id })
+    // if the validation is unsuccessful, return a preformatted response to the client
+    if (!validationResult.success) {
+      zodErrorResponse(response,validationResult.error)
+      return
+    }
+
+    //if the record is not found, return a preformatted response to the client
+    if (validationResult.data === null) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Record not found!'
+      })
+      return
+    }
+
+    // grab the record id from the parameters
+    const { id } = validationResult.data
+
+    // get the record
+    const record: Record | null = await selectRecordByRecordId(id)
+
+    //if the record is found, return the record attributes and a preformatted response to the client
+    response.json({
+      status:200,
+      data: record,
+      message: 'Record found successfully!'
+    })
+
+  } catch (error:any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
 
 
 
