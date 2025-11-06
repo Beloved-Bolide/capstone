@@ -182,7 +182,7 @@ export async function getFolderByFolderIdController (request: Request, response:
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
 export async function getFolderByUserIdController(request: Request, response: Response): Promise<void> {
-  try{
+  try {
 
     // validate the user id from params
     const validationResult = FolderSchema.pick({ userId: true }).safeParse({ userId: request.params.id })
@@ -227,6 +227,7 @@ export async function getFolderByUserIdController(request: Request, response: Re
  * @returns response with an array of folders or error **/
 export async function getFolderByFolderNameController (request: Request, response: Response): Promise<void> {
   try {
+
     // validate the folder name from params
     const validationResult = FolderSchema.pick({ name: true }).safeParse({ name: request.params.name })
     // if the validation is unsuccessful, return a preformatted response to the client

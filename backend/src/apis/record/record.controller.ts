@@ -15,6 +15,7 @@ import { serverErrorResponse, zodErrorResponse } from '../../utils/response.util
  * @returns response to the client indicating whether the record creation was successful **/
 export async function postRecordController (request: Request, response: Response): Promise<void> {
   try {
+
     // validate the full record object from the request body
     const validationResult = RecordSchema.safeParse(request.body);
 
