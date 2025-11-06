@@ -214,7 +214,7 @@ export async function getRecordByFolderIdController(request: Request, response: 
   try{
 
     //validate the folderId from params
-    const validationResult = RecordSchema.pick({ folderId: true}).safeParse({folder_id :request.params.folderId})
+    const validationResult = RecordSchema.pick({ folderId: true }).safeParse({ folderId: request.params.folderId })
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
@@ -242,7 +242,7 @@ export async function getRecordByFolderIdController(request: Request, response: 
     const { folderId} = validationResult.data
 
     // if the folderId is not found,return a preformatted response to the client
-    if( folderId === null){
+    if (folderId === null){
       response.json({
         status: 404,
         data: null,

@@ -14,11 +14,11 @@ const router = Router()
 router.route('/')
   .post(isLoggedInController, postRecordController)
 
-router.route('/id/:id')
+router.route('/:id')
   .get(isLoggedInController, getRecordByRecordIdController)
   .put(isLoggedInController, updateRecordController)
 
-router.route('/folder/:id')
+router.route('/folder/:folderId')
   .get(isLoggedInController, getRecordByFolderIdController)
 
 export const recordRoute = { basePath, router }
