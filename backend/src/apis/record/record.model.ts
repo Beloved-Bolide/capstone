@@ -43,7 +43,8 @@ export const RecordSchema = z.object({
     .trim()
     .max(32,'Please provide a valid name (max 32 characters)')
     .nullable(),
-  notifyOn: z.boolean('Please provide either true or false'),
+  notifyOn: z.boolean('Please provide either true or false')
+    .nullable(),
   productId: z.string('Please provide a valid productId')
     .max(32,'Please provide a valid productId (max 32 characters)')
     .nullable(),

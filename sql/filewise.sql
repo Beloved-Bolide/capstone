@@ -36,16 +36,15 @@ CREATE TABLE IF NOT EXISTS record (
   folder_id        UUID,
   category_id      UUID,
   amount           DECIMAL(10, 2),
-  company_name     VARCHAR(64) NOT NULL,
+  company_name     VARCHAR(64),
   coupon_code      VARCHAR(32),
   description      VARCHAR(512),
   exp_date         TIMESTAMPTZ,
   last_accessed_at TIMESTAMPTZ,
-  name             VARCHAR(32) NOT NULL,
+  name             VARCHAR(32),
   notify_on        BOOLEAN DEFAULT FALSE,
   product_id       VARCHAR(32),
   purchase_date    TIMESTAMPTZ,
-  warranty_exp     TIMESTAMPTZ,
   FOREIGN KEY (folder_id) REFERENCES folder (id),
   FOREIGN KEY (category_id) REFERENCES category (id)
 );
