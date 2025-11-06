@@ -87,8 +87,6 @@ export async function updateRecordController (request: Request, response: Respon
       return
     }
 
-
-
   } catch (error:any) {
     console.error(error)
     serverErrorResponse(response, error.message)
@@ -96,13 +94,14 @@ export async function updateRecordController (request: Request, response: Respon
 }
 
 /** Express controller for getting a record by its id
- *
- */
-
+ * @endpoint GET /apis/record/id/:id
+ * @param request an object containing the folder id in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response with the folder data or null if not found **/
 export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
   try{
 
-  // validate the record id from parameters
+    // validate the record id from parameters
     const validationResult = RecordSchema.pick({ id : true }).safeParse({ id: request.params.id })
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
