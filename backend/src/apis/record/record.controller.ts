@@ -3,7 +3,7 @@ import {
   type Record,
   RecordSchema,
   insertRecord,
-  selectRecordByRecordId
+  selectRecordByRecordId, updateRecord
 } from './record.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
@@ -115,9 +115,43 @@ export async function updateRecordController (request: Request, response: Respon
     }
 
    // grab the record data from the validated request body
-    const{ folderId, categoryId, amount, companyName , couponCode , description ,expDate, lastAccessedAt, name, notifyOn, productId , purchaseDate } = validationResultForRequestBody.data
+    const{
+      folderId,
+      categoryId,
+      amount,
+      companyName ,
+      couponCode ,
+      description ,
+      expDate,
+      lastAccessedAt,
+      name,
+      notifyOn,
+      productId,
+      purchaseDate } = validationResultForRequestBody.data
 
-    //update the record with
+    //update the record with the new data
+    record.folderId = folderId
+    record.categoryId = categoryId
+    record.amount = amount
+    record.companyName = companyName
+    record.couponCode = couponCode
+    record.description = description
+    record.expDate = expDate
+    record.lastAccessedAt = lastAccessedAt
+    record.name = name
+    record.notifyOn = notifyOn
+    record.productId = productId
+    record.purchaseDate = purchaseDate
+
+    // update the record in the database
+    await updateRecord(record)
+
+    //if the record update was successful, return a preformatted response to the client
+    response.json({
+      status: 200,
+      data: null,
+      message: 'record successfully updated!'
+    })
 
   } catch (error:any) {
     console.error(error)

@@ -53,6 +53,7 @@ export const RecordSchema = z.object({
     .nullable()
 })
 
+
 /** Record type inferred from Schema **/
 export type Record = z.infer<typeof RecordSchema>
 
@@ -114,6 +115,53 @@ export async function insertRecord (record: Record): Promise<string> {
       ${purchaseDate}  
     )`
   return 'Record successfully created!'
+}
+
+/** updates a Record in the Record table
+ * @param record the record to update
+ * @returns {Promise<string>}'Record successfully updated!'
+ **/
+
+export async function updateRecord (record: Record): Promise<string> {
+
+  //validate the record object against the record schema
+  const {
+    id,
+    folderId,
+    categoryId,
+    amount,
+    companyName,
+    couponCode,
+    description,
+    expDate,
+    lastAccessedAt,
+    name,
+    notifyOn,
+    productId,
+    purchaseDate
+  } = record
+
+  //update the record in the record table
+  await sql `
+   UPDATE record
+   SET
+    folder_id = ${folderId},   
+    category_id = ${categoryId},
+    amount = ${amount},
+    company_name = ${companyName},
+    coupon_code = ${couponCode},
+    description = ${description},
+    exp_date = ${expDate},
+    last_accessed_at = ${lastAccessedAt},
+    name = ${name},
+    notify_on = ${notifyOn},
+    product_id = ${productId},
+    purchase_date = ${purchaseDate}
+   
+   WHERE
+       id = ${id} `
+
+  return 'Folder successfully updated!'
 }
 
 /** Selects the record from the record table by id
