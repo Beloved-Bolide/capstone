@@ -14,10 +14,10 @@
   "author": "George Kephart",
   "license": "Apache-2.0",
   "dependencies": {
-    "@swc/core": "^1.14.0",
+    "@swc/core": "^1.15.0",
     "@swc/helpers": "^0.5.17",
     "argon2": "^0.44.0",
-    "axios": "^1.13.1",
+    "axios": "^1.13.2",
     "cloudinary": "^2.8.0",
     "connect-redis": "^9.0.0",
     "express": "^5.1.0",
@@ -42,7 +42,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.9.2",
+    "@types/node": "^24.10.0",
     "@types/uuid": "^11.0.0",
     "@types/validator": "^13.15.4",
     "ts-standard": "^12.0.2"
