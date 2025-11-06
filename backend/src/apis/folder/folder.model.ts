@@ -3,10 +3,10 @@ import { sql } from '../../utils/database.utils.ts'
 
 
 /** schema for validating folder objects
- * @shape id: string the primary key for the folder
- * @shape parentFolderId: string the primary key for the folder
- * @shape userId: string the primary key for the folder
- * @shape name: string the name for the folder **/
+ * @shape id: string for the primary key for the folder
+ * @shape parentFolderId: string for the primary key for the folder
+ * @shape userId: string for the primary key for the folder
+ * @shape name: string for the name for the folder **/
 export const FolderSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id.'),
   parentFolderId: z.uuidv7('Please provide a valid uuid for parent folder id.')
@@ -19,15 +19,15 @@ export const FolderSchema = z.object({
 })
 
 /** this type is used to represent a folder object
- * @shape id: string the primary key for the folder
- * @shape parentFolderId: string the parent id for the folder
- * @shape userId: string the userId for the folder
- * @shape name: string the name for the folder **/
+ * @shape id: string for the primary key for the folder
+ * @shape parentFolderId: string for the parent id for the folder
+ * @shape userId: string for the userId for the folder
+ * @shape name: string for the name for the folder **/
 export type Folder = z.infer<typeof FolderSchema>
 
 /** inserts a new folder into the folder table
  * @param folder the folder to insert
- * @returns { Promise<string> } 'Folder successfully created' **/
+ * @returns { Promise<string> } 'Folder successfully created!' **/
 export async function insertFolder (folder: Folder): Promise<string> {
 
   // validate the folder object against the FolderSchema
@@ -94,11 +94,10 @@ export async function selectFolderByFolderId (id: string): Promise<Folder | null
   // enforce that the result is an array of one folder, or null
   const result = FolderSchema.array().max(1).parse(rowList)
 
-  // return the folder or null if no folder was found
   return result[0] ?? null
 }
 
-/** Select all threads by a specific User id
+/** select all folders from a user's id
  * @param id the id of the user
  * @returns array of folders **/
 export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
@@ -118,9 +117,9 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
   return FolderSchema.array().parse(rowList)
 }
 
-/** Selects the Folder from the folder table by name
+/** selects the folder from the folder table by name
  * @param name the folder's name to search for in the folder table
- * @returns Folder or null if no folder was found **/
+ * @returns the folder or null if no folder was found **/
 export async function selectFolderByFolderName (name: string): Promise<Folder | null> {
 
   // create a prepared statement that selects the folder by name
