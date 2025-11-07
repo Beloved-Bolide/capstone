@@ -1,5 +1,5 @@
-import { z } from 'zod/v4'
-import { sql } from '../../utils/database.utils.ts'
+import {z} from 'zod/v4'
+import {sql} from '../../utils/database.utils.ts'
 
 
 /** Schema for validating record objects
@@ -24,34 +24,35 @@ export const RecordSchema = z.object({
     .nullable(),
   companyName: z.string('Please provide a valid company name')
     .trim()
-    .max(64,'Please provide a valid name (max 64 characters)')
+    .max(64, 'Please provide a valid name (max 64 characters)')
     .nullable(),
   couponCode: z.string('Please provide a valid coupon code')
-    .max(32,'Please provide a valid coupon code (max 32 characters)')
+    .max(32, 'Please provide a valid coupon code (max 32 characters)')
     .trim()
     .nullable(),
   description: z.string('Please provide a valid description')
-    .max(512,'Please provide a valid description (max 512 characters)')
+    .max(512, 'Please provide a valid description (max 512 characters)')
     .nullable(),
   expDate: z.coerce.date('Please provide a valid expiration date')
-    .min(new Date('1900-01-01'), { error: 'Too old!' })
+    .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
   lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time')
-    .min(new Date('1900-01-01'), { error: 'Too old!' })
+    .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
   name: z.string('Please provide a valid name')
     .trim()
-    .max(32,'Please provide a valid name (max 32 characters)')
+    .max(32, 'Please provide a valid name (max 32 characters)')
     .nullable(),
   notifyOn: z.boolean('Please provide either true or false')
     .nullable(),
   productId: z.string('Please provide a valid productId')
-    .max(32,'Please provide a valid productId (max 32 characters)')
+    .max(32, 'Please provide a valid productId (max 32 characters)')
     .nullable(),
   purchaseDate: z.coerce.date('Please provide a valid purchase date')
-    .min(new Date('1900-01-01'), { error: 'Too old!' })
+    .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable()
 })
+
 
 /** Record type inferred from Schema **/
 export type Record = z.infer<typeof RecordSchema>
@@ -59,7 +60,7 @@ export type Record = z.infer<typeof RecordSchema>
 /** inserts a new record into the record table
  * @param record the record to insert
  * @returns { Promise<string> } 'Record successfully created!' **/
-export async function insertRecord (record: Record): Promise<string> {
+export async function insertRecord(record: Record): Promise<string> {
 
   // validate the record object against the record schema
   RecordSchema.parse(record)
@@ -82,67 +83,103 @@ export async function insertRecord (record: Record): Promise<string> {
   } = record
 
   // insert the record into the record table
-  await sql `
-    INSERT INTO record (
-      id,
-      folder_id,
-      category_id,
-      amount,
-      company_name,
-      coupon_code,
-      description,
-      exp_date,
-      last_accessed_at,
-      name,
-      notify_on,
-      product_id,
-      purchase_date
-    ) 
-    VALUES (
-      ${id},
-      ${folderId},
-      ${categoryId},
-      ${amount},
-      ${companyName},
-      ${couponCode},
-      ${description},
-      ${expDate},
-      ${lastAccessedAt},
-      ${name},
-      ${notifyOn},
-      ${productId},
-      ${purchaseDate}  
-    )`
+  await sql`
+      INSERT INTO record (id,
+                          folder_id,
+                          category_id,
+                          amount,
+                          company_name,
+                          coupon_code,
+                          description,
+                          exp_date,
+                          last_accessed_at,
+                          name,
+                          notify_on,
+                          product_id,
+                          purchase_date)
+      VALUES (${id},
+              ${folderId},
+              ${categoryId},
+              ${amount},
+              ${companyName},
+              ${couponCode},
+              ${description},
+              ${expDate},
+              ${lastAccessedAt},
+              ${name},
+              ${notifyOn},
+              ${productId},
+              ${purchaseDate})`
   return 'Record successfully created!'
+}
+
+/** updates a Record in the Record table
+ * @param record the record to update
+ * @returns {Promise<string>}'Record successfully updated!'
+ **/
+
+export async function updateRecord(record: Record): Promise<string> {
+
+  //validate the record object against the record schema
+  const {
+    id,
+    folderId,
+    categoryId,
+    amount,
+    companyName,
+    couponCode,
+    description,
+    expDate,
+    lastAccessedAt,
+    name,
+    notifyOn,
+    productId,
+    purchaseDate
+  } = record
+
+  //update the record in the record table
+  await sql`
+      UPDATE record
+      SET folder_id        = ${folderId},
+          category_id      = ${categoryId},
+          amount           = ${amount},
+          company_name     = ${companyName},
+          coupon_code      = ${couponCode},
+          description      = ${description},
+          exp_date         = ${expDate},
+          last_accessed_at = ${lastAccessedAt},
+          name             = ${name},
+          notify_on        = ${notifyOn},
+          product_id       = ${productId},
+          purchase_date    = ${purchaseDate}
+
+      WHERE id = ${id} `
+
+  return 'Folder successfully updated!'
 }
 
 /** Selects the record from the record table by id
  * @param id the record's id to search for in the record table
  * @returns Record or null if no folder was found **/
-export async function selectRecordByRecordId (id: string): Promise<Record | null> {
+export async function selectRecordByRecordId(id: string): Promise<Record | null> {
 
   // create a prepared statement that selects the record by record id
   const rowList = await sql`
-    SELECT
-      id,
-      folder_id,
-      category_id,
-      amount,
-      company_name,
-      coupon_code,
-      description,
-      exp_date,
-      last_accessed_at,
-      name,
-      notify_on,
-      product_id,
-      purchase_date
-    FROM
-      record
-    WHERE
-      id = ${id}`
-
-  console.log(rowList[0])
+      SELECT id,
+             folder_id,
+             category_id,
+             amount,
+             company_name,
+             coupon_code,
+             description,
+             exp_date,
+             last_accessed_at,
+             name,
+             notify_on,
+             product_id,
+             purchase_date
+      FROM record
+      WHERE id = ${id}`
 
   // enforce that the result is an array of one record, or null
   const result = RecordSchema.array().max(1).parse(rowList)
@@ -151,3 +188,56 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
   return result[0] ?? null
 }
 
+/** Selects the record from the record table by folderId
+ * @param folderId the record to search for in the record table
+ * @returns Record or null if no record was found **/
+export async function selectRecordByFolderId(folderId: string): Promise<Record | null> {
+
+  // create a prepared statement that selects the folder by folderId
+  const rowList = await sql`
+      SELECT id,
+             folder_id,
+             category_id,
+             amount,
+             company_name,
+             coupon_code,
+             description,
+             exp_date,
+             last_accessed_at,
+             name,
+             notify_on,
+             product_id,
+             purchase_date
+      FROM record
+      WHERE folder_id = ${folderId}`
+  const result = RecordSchema.array().max(1).parse(rowList)
+
+  return result[0] ?? null
+}
+
+/** Selects the record from the record table by categoryId
+ * @param categoryId the record to search for in the record table
+ * @returns Record or null if no record was found **/
+export async function selectRecordByCategoryId(categoryId: string): Promise<Record | null> {
+
+  // create a prepared statement that selects the folder by categoryId
+  const rowList = await sql`
+      SELECT id,
+             folder_id,
+             category_id,
+             amount,
+             company_name,
+             coupon_code,
+             description,
+             exp_date,
+             last_accessed_at,
+             name,
+             notify_on,
+             product_id,
+             purchase_date
+      FROM record
+      WHERE category_id = ${categoryId}`
+  const result = RecordSchema.array().max(1).parse(rowList)
+
+  return result[0] ?? null
+}
