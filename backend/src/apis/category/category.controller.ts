@@ -16,7 +16,7 @@ import type { Status } from '../../utils/interfaces/Status.ts'
 export async function postCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the new user data coming from the request body
+    // validate the new category data coming from the request body
     const validationResult = CategorySchema.safeParse(request.body)
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
