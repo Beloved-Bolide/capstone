@@ -2,7 +2,8 @@ import {type Request, type Response} from 'express'
 import {type PrivateUser, PrivateUserSchema, selectPrivateUserByUserId, updateUser} from './user.model.ts'
 import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils.ts'
 import {generateJwt} from '../../utils/auth.utils.ts'
-import {verify} from 'jsonwebtoken'
+import pkg from 'jsonwebtoken'
+const {verify} = pkg
 
 /** Express controller for updating a user
  * @endpoint PUT /apis/user/:id
