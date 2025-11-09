@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import {
   getFolderByFolderIdController,
-  getFolderByFolderNameController,
+  getFolderByFolderNameController, getFolderByParentFolderIdController,
   getFoldersByUserIdController,
   postFolderController,
   updateFolderController
@@ -24,5 +24,8 @@ router.route('/name/:name')
 
 router.route('/user/id/:id')
   .get(isLoggedInController, getFoldersByUserIdController)
+
+router.route('/parent/:parentFolderId')
+  .get(isLoggedInController, getFolderByParentFolderIdController)
 
 export const folderRoute = { basePath, router }

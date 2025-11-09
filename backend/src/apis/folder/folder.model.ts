@@ -137,3 +137,36 @@ export async function selectFolderByFolderName (name: string): Promise<Folder | 
 
   return result[0] ?? null
 }
+
+/**
+ * Selects all folders by parent folder ID
+ * @param parentFolderId - the parent folder's ID (can be null for root folders)
+ * @param userId - the user's ID for security check
+ * @returns Array of folders
+ */
+export async function selectFoldersByParentFolderId(
+parentFolderId: string | null,
+userId: string
+): Promise<Folder[]> {
+  let rowList
+
+  if (parentFolderId === null) {
+    // Get root folders (folders with no parent)
+    rowList = await sql`
+      SELECT id, user_id, name, parent_folder_id 
+      FROM folder 
+      WHERE user_id = ${userId} AND parent_folder_id IS NULL
+      ORDER BY name ASC
+    `
+  } else {
+    // Get subfolders of a specific parent
+    rowList = await sql`
+      SELECT id, user_id, name, parent_folder_id 
+      FROM folder 
+      WHERE parent_folder_id = ${parentFolderId} AND user_id = ${userId}
+      ORDER BY name ASC
+    `
+  }
+
+  return FolderSchema.array().parse(rowList)
+}
