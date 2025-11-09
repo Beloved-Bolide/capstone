@@ -47,7 +47,7 @@ export async function updateUserController(request: Request, response: Response)
     }
 
     // get the user data from the validated request body
-    const {email, name, notifications, hash} = validationResultForRequestBody.data
+    const {email, hash, name, notifications} = validationResultForRequestBody.data
 
     // get the user by id
     const user: PrivateUser | null = await selectPrivateUserByUserId(id)
@@ -64,9 +64,9 @@ export async function updateUserController(request: Request, response: Response)
 
     // update the user with the new data
     user.email = email
+    user.hash = hash
     user.name = name
     user.notifications = notifications
-    user.hash = hash
 
     // update the user in the database
     await updateUser(user)
