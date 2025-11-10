@@ -157,15 +157,17 @@ export async function getFileByRecordIdController (request: Request, response: R
   try {
 
     // validate the record id from params
-    const validationResult = FileSchema.pick({ recordId: true }).safeParse({ recordId: request.params.id })
+    const validationResult = FileSchema.pick({ recordId: true })
+    .safeParse(request.params)
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
+    const {recordId} = validationResult.data
     // create a file array using the record id
-    const files: File[] | null = await selectFilesByRecordId(validationResult.data.recordId)
+    const files: File[] | null = await selectFilesByRecordId(recordId)
 
     // if no files are found, return a preformatted response to the client
     if (!files[0] || files === null) {
