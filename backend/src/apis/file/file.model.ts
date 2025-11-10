@@ -11,8 +11,8 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape ocrData: string containing OCR extracted text data **/
 export const FileSchema = z.object({
   id: z.string().uuid('Please provide a valid uuid for id.'),
-  recordId: z.string().uuid('Please provide a valid uuid for record id.')
-  .nullable(),
+  recordId: z.string().uuid('Please provide a valid uuid for record id.'),
+
   fileDate: z.coerce.date().nullable(),
   fileKey: z.string('Please provide a valid file key')
   .trim()
