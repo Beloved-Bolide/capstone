@@ -3,6 +3,7 @@ import {type PrivateUser, PrivateUserSchema, selectPrivateUserByUserId, updateUs
 import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils.ts'
 import {generateJwt} from '../../utils/auth.utils.ts'
 import pkg from 'jsonwebtoken'
+import {type Folder, FolderSchema, selectFoldersByUserId} from "../folder/folder.model.ts";
 const {verify} = pkg
 
 /** Express controller for updating a user
@@ -128,6 +129,71 @@ export async function updateUserController(request: Request, response: Response)
     serverErrorResponse(response, error.message)
   }
 }
+
+
+/** Express controller for getting user by user id
+ * @endpoint GET /apis/user/id/:idGoesHere
+ * @param request an object containing the user id in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response with the user data or error
+ **/
+export async function getUserByUserIdController(request: Request, response: Response): Promise<void> {
+  try {
+
+    // validate the user id from params
+    const validationResult = PrivateUserSchema.pick({id: true}).safeParse({id: request.params.id})
+    // if the validation is unsuccessful, return a preformatted response to the client
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // Get the user id from the validated parameters
+    const {id} = validationResult.data
+
+    // Get the logged-in user from session
+    const userFromSession = request.session?.user
+    const idFromSession = userFromSession?.id
+
+    // Security check: Only allow users to view their own data
+    if (id !== idFromSession) {
+      response.json({
+        status: 403,
+        data: null,
+        message: 'Forbidden: You can only view your own user data.'
+      })
+      return
+    }
+
+    // Get the user by id
+    const user: PrivateUser | null = await selectPrivateUserByUserId(id)
+
+    // If the user is not found, return 404
+    if (user === null) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'User not found.'
+      })
+      return
+    }
+
+    // Return the user data (without sensitive fields for public endpoints)
+    // For now returning full private user since it's authenticated
+    response.json({
+      status: 200,
+      data: user,
+      message: 'User found successfully!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+
+
 
 
 
