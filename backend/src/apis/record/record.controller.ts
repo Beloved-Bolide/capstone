@@ -3,10 +3,10 @@ import {
   type Record,
   RecordSchema,
   insertRecord,
-  selectRecordByRecordId, updateRecord, selectRecordByFolderId, selectRecordByCategoryId
+  selectRecordByRecordId, updateRecord, selectRecordsByFolderId, selectRecordsByCategoryId
 } from './record.model.ts'
 import {serverErrorResponse, zodErrorResponse} from '../../utils/response.utils.ts'
-import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
+import {type Folder, selectFolderByFolderId} from '../folder/folder.model.ts'
 
 
 /** Express controller for creating a new record
@@ -14,7 +14,7 @@ import {type Folder, selectFolderByFolderId} from "../folder/folder.model.ts";
  * @param request an object containing the body with record data
  * @param response an object modeling the response that will be sent to the client
  * @returns response to the client indicating whether the record creation was successful **/
-export async function postRecordController(request: Request, response: Response): Promise<void> {
+export async function postRecordController (request: Request, response: Response): Promise<void> {
   try {
 
     // validate the full record object from the request body
@@ -64,7 +64,7 @@ export async function postRecordController(request: Request, response: Response)
  * @param request an object containing the body with the record data
  * @param response an object modeling the response that will be sent to the client
  * @returns response to the client indicating whether the folder update was successful **/
-export async function updateRecordController(request: Request, response: Response): Promise<void> {
+export async function updateRecordController (request: Request, response: Response): Promise<void> {
   try {
 
     // validate the record id coming from the request parameters
@@ -165,7 +165,7 @@ export async function updateRecordController(request: Request, response: Respons
  * @param request an object containing the record id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with the record data or null if not found **/
-export async function getRecordByRecordIdController(request: Request, response: Response): Promise<void> {
+export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
   try {
 
     // validate the record id from parameters
@@ -210,7 +210,7 @@ export async function getRecordByRecordIdController(request: Request, response: 
  * @param request an object containing the folderId in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of record or error **/
-export async function getRecordByFolderIdController(request: Request, response: Response): Promise<void> {
+export async function getRecordsByFolderIdController (request: Request, response: Response): Promise<void> {
   try {
 
     //validate the folderId from params
@@ -221,13 +221,14 @@ export async function getRecordByFolderIdController(request: Request, response: 
       return
     }
 
-    // get the folder from the validated request body
+    // get the user id from the folder in the validated request body
     const folder: Folder | null = await selectFolderByFolderId(validationResult.data.folderId)
-    // get the user id from the folder
     const userId: string | undefined | null = folder?.userId
+    
     // get the user id from the session
     const userFromSession = request.session?.user
     const idFromSession = userFromSession?.id
+    
     // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
     if (userId !== idFromSession) {
       response.json({
@@ -238,7 +239,7 @@ export async function getRecordByFolderIdController(request: Request, response: 
       return
     }
 
-    //deconstruct the folderId from the parameters
+    // deconstruct the folderId from the parameters
     const {folderId} = validationResult.data
 
     // if the folderId is not found,return a preformatted response to the client
@@ -251,13 +252,13 @@ export async function getRecordByFolderIdController(request: Request, response: 
       return
     }
 
-    //get the record
-    const record: Record | null = await selectRecordByFolderId(folderId)
+    // get the records
+    const records: Record[] | null = await selectRecordsByFolderId(folderId)
 
-    //if the record is found, return the record attributes and a preformatted response to the client
+    // if the records are found, return the records
     response.json({
       status: 200,
-      data: record,
+      data: records,
       message: "Record got by folder id successfully selected!"
     })
 
@@ -268,41 +269,64 @@ export async function getRecordByFolderIdController(request: Request, response: 
 }
 
 /** Express controller for getting record by categoryId
- * @endpoint GET /apis/record/category/:id
+ * @endpoint GET /apis/record/category/id/:id
  * @param request an object containing the categoryId in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of record or error **/
-export async function getRecordByCategoryIdController(request: Request, response: Response): Promise<void> {
+export async function getRecordsByCategoryIdController (request: Request, response: Response): Promise<void> {
   try {
 
     // validate the categoryId from params
-    const validationResult = RecordSchema.pick({categoryId: true}).safeParse({categoryId: request.params.categoryId})
+    const validationResult = RecordSchema.safeParse(request.params)
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    // // get the record from the validated request parameters
-    // const record: Record | null = await selectRecordByCategoryId(validationResult.data.categoryId)
-    //
-    // const folderId: string = record?.folderId
-    //
-    // const folder: Folder | null = await selectFolderByFolderId(folderId)
-    // // get the user id from the category
-    // const userId: string | undefined | null = folder?.userId
-    // // get the user id from the session
-    // const userFromSession = request.session?.user
-    // const idFromSession = userFromSession?.id
-    // // if the user id from the request parameters does not match the user id from the session, return a preformatted response to the client
-    // if (userId !== idFromSession) {
-    //   response.json ({
-    //     status: 403,
-    //     data: null,
-    //     message: 'Forbidden: You cannot create a record for another user.'
-    //   })
-    //   return
-    // }
+    // get the record from the validated request parameters
+    const records: Record[] | null = await selectRecordsByCategoryId(validationResult.data.categoryId)
+    // if no records with this category id is not found, return a preformatted response to the client
+    if (!records) {
+      response.json({
+        status: 404,
+        data: null,
+        message: "Records with that category id not found!"
+      })
+      return
+    }
+
+    // get the folder from the record array
+    const folderId = records[0]?.folderId
+    // if no folder with this folder id isn't found, return a preformatted response to the client
+    if (!folderId) {
+      response.json({
+        status: 404,
+        data: null,
+        message: "Records with that category id not found!"
+      })
+      return
+    }
+    
+    // get the folder using the folder id
+    const folder: Folder | null = await selectFolderByFolderId(folderId)
+    
+    // get the user id from the category
+    const userId: string | undefined | null = folder?.userId
+    
+    // get the user id from the session
+    const userFromSession = request.session?.user
+    const idFromSession = userFromSession?.id
+    
+    // if the user id from the request parameters does not match the user id from the session, return a preformatted response to the client
+    if (userId !== idFromSession) {
+      response.json ({
+        status: 403,
+        data: null,
+        message: 'Forbidden: You cannot create a record for another user.'
+      })
+      return
+    }
 
     // deconstruct the categoryId from the parameters
     const {categoryId} = validationResult.data
@@ -312,19 +336,16 @@ export async function getRecordByCategoryIdController(request: Request, response
       response.json({
         status: 404,
         data: null,
-        message: "Record not found"
+        message: "Records with that category id not found"
       })
       return
     }
 
-    //get the record
-    const record: Record | null = await selectRecordByCategoryId(categoryId)
-
     //if the record is found, return the record attributes and a preformatted response to the client
     response.json({
       status: 200,
-      data: record,
-      message: "Record got by category id successfully selected!"
+      data: records,
+      message: "Records with that category id successfully selected!"
     })
 
   } catch (error: any) {

@@ -1,12 +1,12 @@
-import {Router} from "express";
-import {isLoggedInController} from "../../utils/controllers/is-logged-in.controller.ts";
+import {Router} from 'express'
+import {isLoggedInController} from '../../utils/controllers/is-logged-in.controller.ts'
 import {
-  getRecordByCategoryIdController,
-  getRecordByFolderIdController,
+  getRecordsByCategoryIdController,
+  getRecordsByFolderIdController,
   getRecordByRecordIdController,
   postRecordController,
   updateRecordController
-} from "./record.controller.ts";
+} from './record.controller.ts'
 
 
 const basePath = '/apis/record' as const
@@ -19,10 +19,10 @@ router.route('/:id')
   .get(isLoggedInController, getRecordByRecordIdController)
   .put(isLoggedInController, updateRecordController)
 
-router.route('/folder/:folderId')
-  .get(isLoggedInController, getRecordByFolderIdController)
+router.route('/folder/id/:id')
+  .get(isLoggedInController, getRecordsByFolderIdController)
 
-router.route('/category/:categoryId')
-  .get(isLoggedInController, getRecordByCategoryIdController)
+router.route('/category/id/:id')
+  .get(isLoggedInController, getRecordsByCategoryIdController)
 
 export const recordRoute = {basePath, router}
