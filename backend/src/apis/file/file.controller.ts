@@ -124,21 +124,6 @@ export async function getFileByFileIdController (request: Request, response: Res
 
     // get the file from the validated request body
     const file: File | null = await selectFileByFileId(validationResult.data.id)
-    // get the user id from the file
-    const userId: string | undefined | null = file?.userId
-    // grab the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
-
-    // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You cannot access a file for another user.'
-      })
-      return
-    }
 
     // if the file is not found, return a preformatted response to the client
     if (file === null) {
@@ -188,22 +173,6 @@ export async function getFileByRecordIdController (request: Request, response: R
         status: 404,
         data: null,
         message: 'No files found for this record.'
-      })
-      return
-    }
-
-    // get the user id from the first file
-    const userId: string | undefined | null = files[0]?.userId
-    // grab the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
-
-    // if the user id from the files does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You cannot access files for another user.'
       })
       return
     }
