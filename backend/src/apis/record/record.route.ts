@@ -15,7 +15,7 @@ const router = Router()
 router.route('/')
   .post(isLoggedInController, postRecordController)
 
-router.route('/:id')
+router.route('/id/:id')
   .get(isLoggedInController, getRecordByRecordIdController)
   .put(isLoggedInController, updateRecordController)
 

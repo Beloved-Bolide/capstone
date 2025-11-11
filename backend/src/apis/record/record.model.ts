@@ -82,7 +82,7 @@ export async function insertRecord (record: Record): Promise<string> {
   } = record
 
   // insert the record into the record table
-  await sql`
+  await sql `
     INSERT INTO record (
       id,
       folder_id,
@@ -112,7 +112,7 @@ export async function insertRecord (record: Record): Promise<string> {
       ${notifyOn},
       ${productId},
       ${purchaseDate}
-    )`
+    ) `
   return 'Record successfully created!'
 }
 
@@ -143,19 +143,20 @@ export async function updateRecord (record: Record): Promise<string> {
   // update the record in the record table
   await sql`
     UPDATE record
-    SET folder_id        = ${folderId},
-        category_id      = ${categoryId},
-        amount           = ${amount},
-        company_name     = ${companyName},
-        coupon_code      = ${couponCode},
-        description      = ${description},
-        exp_date         = ${expDate},
-        last_accessed_at = ${lastAccessedAt},
-        name             = ${name},
-        notify_on        = ${notifyOn},
-        product_id       = ${productId},
-        purchase_date    = ${purchaseDate}
-    WHERE id = ${id} `
+    SET 
+      folder_id        = ${folderId},
+      category_id      = ${categoryId},
+      amount           = ${amount},
+      company_name     = ${companyName},
+      coupon_code      = ${couponCode},
+      description      = ${description},
+      exp_date         = ${expDate},
+      last_accessed_at = ${lastAccessedAt},
+      name             = ${name},
+      notify_on        = ${notifyOn},
+      product_id       = ${productId},
+      purchase_date    = ${purchaseDate}
+    WHERE id = ${id}`
 
   return 'Folder successfully updated!'
 }
@@ -190,7 +191,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
 
 /** Selects the record from the record table by folderId
  * @param folderId the record to search for in the record table
- * @returns Record or null if no record was found **/
+ * @returns Record array or null if no records were found **/
 export async function selectRecordsByFolderId (folderId: string): Promise<Record[] | null> {
 
   // create a prepared statement that selects the folder by folderId
@@ -218,7 +219,7 @@ export async function selectRecordsByFolderId (folderId: string): Promise<Record
 
 /** Selects the record from the record table by categoryId
  * @param categoryId the record to search for in the record table
- * @returns Record or null if no record was found **/
+ * @returns Record array or null if no records were found **/
 export async function selectRecordsByCategoryId (categoryId: string): Promise<Record[] | null> {
 
   // create a prepared statement that selects the folder by categoryId
@@ -242,27 +243,11 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
 
   // enforce that the result is an array of one record, or null
   const records: Record[] = RecordSchema.array().parse(rowList)
-
   // return the records or null if no records were found
   return records ?? null
 }
 
-export async function selectRecordsByCompanyName (companyName: string): Promise<Record[] | null> {
-
-  let records
-
-
-
-  return records ?? null
-}
-
-
-
-
-
-
-
-
-
-
-
+// export async function selectRecordsByCompanyName (companyName: string): Promise<Record[] | null> {
+//
+//
+// }

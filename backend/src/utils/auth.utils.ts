@@ -34,10 +34,9 @@ export async function setHash (password: string): Promise<string> {
 }
 
 // validate a password
-export async function validatePassword(hash: string, password: string): Promise<boolean> {
+export async function validatePassword (hash: string, password: string): Promise<boolean> {
   return await argon2.verify (
     hash,
     password
   )
 }
-
