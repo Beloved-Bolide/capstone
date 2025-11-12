@@ -39,10 +39,15 @@ export async function insertCategory (category: Category): Promise<string> {
   CategorySchema.parse(category)
 
   // extract the category's properties
-  const { id, color, icon, name } = category
+  const {
+    id,
+    color,
+    icon,
+    name
+  } = category
 
-  //insert the category into the category table
-  const rowList = await sql `
+  // insert the category into the category table
+  await sql `
     INSERT INTO category (
       id,
       color,
@@ -87,7 +92,7 @@ export async function updateCategory (category: Category): Promise<string> {
  * @returns Category or null if no Category was found **/
 export async function selectCategoryByCategoryId (id: string): Promise<Category | null> {
 
-  // update the category in the category table
+  // query the category table by id
   const rowList = await sql`
     SELECT 
       id,
@@ -98,8 +103,5 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
     WHERE id = ${id}`
 
   // enforce that the result is an array of one category, or null
-  const result = CategorySchema.array().max(1).parse(rowList)
-
-  // return the category or null if no Category was found
-  return result[0] ?? null
+  return CategorySchema.array().max(1).parse(rowList)[0] ?? null
 }
