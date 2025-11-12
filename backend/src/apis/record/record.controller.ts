@@ -250,8 +250,8 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     }
 
     // get the user id from the category in the validated request body and verify it exists
-    const record: Record[] | null = await selectRecordsByCategoryId(categoryId)
-    if (!record) {
+    const records: Record[] | null = await selectRecordsByCategoryId(categoryId)
+    if (!records) {
       response.json({
         status: 404,
         data: null,
@@ -261,7 +261,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     }
 
     // get the folderId from the first record in the validated request body and verify it exists
-    const folderId = record[0]?.folderId
+    const folderId = records[0]?.folderId
     if (!folderId) {
       response.json({
         status: 404,
@@ -275,9 +275,6 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     const folder: Folder | null = await selectFolderByFolderId(folderId)
     const userId = folder?.userId
     if (!(await validateSessionUser(request, response, userId))) return
-
-    // select the records by category id
-    const records = await selectRecordsByCategoryId(categoryId)
 
     // return a success response
     response.json({

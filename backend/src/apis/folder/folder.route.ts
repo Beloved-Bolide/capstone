@@ -22,10 +22,10 @@ router.route('/id/:id')
 router.route('/name/:name')
   .get(isLoggedInController, getFolderByFolderNameController)
 
-router.route('/user/id/:id')
+router.route('/userId/:id')
   .get(isLoggedInController, getFoldersByUserIdController)
 
-router.route('/parent/:parentFolderId')
+router.route('/parentFolderId/:parentFolderId')
   .get(isLoggedInController, getFoldersByParentFolderIdController)
 
 export const folderRoute = { basePath, router }

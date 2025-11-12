@@ -10,6 +10,7 @@ import {
 } from './folder.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import {type PrivateUser, selectPrivateUserByUserId} from "../user/user.model.ts";
+import { validateSessionUser } from "../../utils/auth.utils.ts";
 
 
 /** Express controller for creating a new folder
@@ -320,45 +321,44 @@ export async function getFolderByFolderNameController (request: Request, respons
 export async function getFoldersByParentFolderIdController (request: Request, response: Response): Promise<void> {
   try {
     
-    // get the parent folder ID from params (special case: 'root' means null parent)
-    const parentFolderIdFromParams = request.params.parentFolderId
+    // parse the parent folder id from the request parameters and validate it
+    const validatedRequestParams = FolderSchema.pick({ parentFolderId: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
 
-    // handle special case for root folders
-    let parentFolderId: string | null = null
-
-    // get user id from session
-    const userFromSession = request.session?.user
-    const userIdFromSession = userFromSession?.id
-
-    if (!userIdFromSession) {
+    // if the parent folder id does not exist, return a 404 response
+    const { parentFolderId } = validatedRequestParams.data
+    if (!parentFolderId) {
       response.json({
-        status: 401,
+        status: 404,
         data: null,
-        message: 'Unauthorized: Please login first.'
+        message: 'Parent folder not found.'
       })
       return
     }
 
-    // Get all folders with the specified parent folder ID
-    const folders: Folder[] = await selectFoldersByParentFolderId(parentFolderId)
-
-    // Check if any folders were found
-    if (folders.length === 0) {
+    // get all folders with the specified parent folder id and check if any folders were found
+    const folders: Folder[] | null = await selectFoldersByParentFolderId(parentFolderId)
+    if (!folders) {
       response.json({
-        status: 200,
-        data: [],
-        message: parentFolderId === null
-        ? 'No root folders found.'
-        : 'No subfolders found in this folder.'
+        status: 404,
+        data: null,
+        message: 'No folders found with this parent folder id.'
       })
       return
     }
+
+    // get the user id from the first folder in folders
+    const userId = folders[0]?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
 
     // Return all folders
     response.json({
       status: 200,
       data: folders,
-      message: `Found ${folders.length} folder(s) successfully!`
+      message: folders.length + ' folders successfully found!'
     })
 
   } catch (error: any) {
