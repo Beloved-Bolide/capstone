@@ -92,9 +92,28 @@ export async function selectFolderByFolderId (id: string): Promise<Folder | null
       id = ${id}`
 
   // enforce that the result is an array of one folder, or null
-  const result = FolderSchema.array().max(1).parse(rowList)
+  return FolderSchema.array().max(1).parse(rowList)[0] ?? null
+}
 
-  return result[0] ?? null
+/** selects the parent folder from the folder table by id
+ * @param parentFolderId the parent folder's id to search for in the folder table
+ * @returns folder or null if no folder was found **/
+export async function selectParentFolderByParentFolderId (parentFolderId: string): Promise<Folder | null> {
+
+  // query the database for the folder with the given id
+  const rowList = await sql`
+    SELECT 
+      id,
+      parent_folder_id,
+      user_id,
+      name
+    FROM
+      folder
+    WHERE
+      parent_folder_id = ${parentFolderId}`
+
+  // enforce that the result is an array of one folder, or null
+  return FolderSchema.array().max(1).parse(rowList)[0] ?? null
 }
 
 /** Selects all folders by parent folder if

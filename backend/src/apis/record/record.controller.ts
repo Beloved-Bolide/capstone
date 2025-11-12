@@ -66,11 +66,9 @@ export async function updateRecordController (request: Request, response: Respon
       return
     }
 
-    // get the record id from the validated request parameters and get the existing record
+    // get the record id from the validated request parameters, get the existing record, and check if it exists
     const { id } = validatedRequestParams.data
     const existingRecord: Record | null = await selectRecordByRecordId(id)
-
-    // if the record does not exist, return a 404 error
     if (!existingRecord) {
       response.json({
         status: 404,
