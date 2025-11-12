@@ -13,3 +13,18 @@ export const UserSchema = z.object({
 })
 
 export type User =  z.infer<typeof UserSchema>
+
+export const SignUpSchema = UserSchema.omit({id:true, notifications: true, name: true})
+.extend({
+  passwordConfirm:z.string('password confirmation is required')
+  .min(8,'password confirm cannot be less than 8 characters')
+  .max(32,'profile password'),
+  password: z.string('password is required')
+  .min(8, 'profile password cannot be less than 8 characters')
+  .max(32,'profile password cannot be over 32 characters')
+})
+.refine(data => data.password === data.passwordConfirm, {
+  message: 'passwords do not match'
+})
+
+export type SignUp = z.infer<typeof SignUpSchema>
