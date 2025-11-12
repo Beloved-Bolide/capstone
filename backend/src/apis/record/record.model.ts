@@ -159,6 +159,20 @@ export async function updateRecord (record: Record): Promise<string> {
   return 'Folder successfully updated!'
 }
 
+/** Delete a record by its id
+ * @param id the id of the record to delete
+ * @returns success message **/
+export async function deleteRecord(id: string): Promise<string> {
+
+  // delete the record from the database
+  await sql`
+		DELETE FROM record
+		WHERE id = ${id}`
+
+  // return a success message
+  return 'Record successfully deleted!'
+}
+
 /** Selects the record from the record table by id
  * @param id the record's id to search for in the record table
  * @returns Record or null if no record was found **/

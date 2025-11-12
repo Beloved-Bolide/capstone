@@ -9,7 +9,8 @@ import {
   getRecordsByCompanyNameController,
   getRecordsByLastAccessedAtController,
   getRecordByNameController,
-  searchRecordsController
+  searchRecordsController,
+  deleteRecordController
 } from './record.controller.ts'
 
 
@@ -22,6 +23,7 @@ router.route('/')
 router.route('/id/:id')
   .get(isLoggedInController, getRecordByRecordIdController)
   .put(isLoggedInController, updateRecordController)
+  .delete(isLoggedInController, deleteRecordController)
 
 router.route('/folderId/:folderId')
   .get(isLoggedInController, getRecordsByFolderIdController)
@@ -41,6 +43,6 @@ router.route('/name/:name')
 /** GET /apis/record/search?q=searchTerm&limit=50
  * search records (query parameter 'q' is required) **/
 router.route('/search')
-.get(isLoggedInController, searchRecordsController)
+  .get(isLoggedInController, searchRecordsController)
 
 export const recordRoute = { basePath, router }
