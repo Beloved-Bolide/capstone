@@ -317,58 +317,16 @@ export async function getFolderByFolderNameController (request: Request, respons
  * @param request an object containing the parent folder id in params (use 'root' for root folders)
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of child folders or error **/
-export async function getFolderByParentFolderIdController(
-request: Request,
-response: Response
-): Promise<void> {
+export async function getFoldersByParentFolderIdController (request: Request, response: Response): Promise<void> {
   try {
-    // Get the parent folder ID from params (special case: 'root' means null parent)
+    
+    // get the parent folder ID from params (special case: 'root' means null parent)
     const parentFolderIdFromParams = request.params.parentFolderId
 
-    // Handle special case for root folders
+    // handle special case for root folders
     let parentFolderId: string | null = null
 
-    if (parentFolderIdFromParams !== 'root') {
-      // Validate the parent folder ID if not 'root'
-      const validationResult = FolderSchema.pick({ id: true }).safeParse({
-        id: parentFolderIdFromParams
-      })
-
-      // If the validation is unsuccessful, return a preformatted response to the client
-      if (!validationResult.success) {
-        zodErrorResponse(response, validationResult.error)
-        return
-      }
-
-      parentFolderId = validationResult.data.id
-
-      // Verify parent folder exists
-      const parentFolder = await selectFolderByFolderId(parentFolderId)
-      if (parentFolder === null) {
-        response.json({
-          status: 404,
-          data: null,
-          message: 'Parent folder not found.'
-        })
-        return
-      }
-
-      // Get user ID from session
-      const userFromSession = request.session?.user
-      const userIdFromSession = userFromSession?.id
-
-      // Check if user owns the parent folder
-      if (userIdFromSession !== parentFolder.userId) {
-        response.json({
-          status: 403,
-          data: null,
-          message: 'Forbidden: You do not own the parent folder.'
-        })
-        return
-      }
-    }
-
-    // Get user ID from session
+    // get user id from session
     const userFromSession = request.session?.user
     const userIdFromSession = userFromSession?.id
 
@@ -382,10 +340,7 @@ response: Response
     }
 
     // Get all folders with the specified parent folder ID
-    const folders: Folder[] = await selectFoldersByParentFolderId(
-    parentFolderId,
-    userIdFromSession
-    )
+    const folders: Folder[] = await selectFoldersByParentFolderId(parentFolderId)
 
     // Check if any folders were found
     if (folders.length === 0) {

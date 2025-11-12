@@ -122,51 +122,34 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
  * @returns the folder or null if no folder was found **/
 export async function selectFolderByFolderName (name: string): Promise<Folder | null> {
 
-  // create a prepared statement that selects the folder by name
+  // query the database for the folder with the given name
   const rowList = await sql`
     SELECT 
       id,
       parent_folder_id,
       user_id,
       name
-    FROM
-      folder
-    WHERE
-      name = ${name}`
-  const result = FolderSchema.array().max(1).parse(rowList)
+    FROM folder
+    WHERE name = ${name}`
 
-  return result[0] ?? null
+  return FolderSchema.array().max(1).parse(rowList)[0] ?? null
 }
 
-/**
- * Selects all folders by parent folder ID
+/** Selects all folders by parent folder if
  * @param parentFolderId - the parent folder's ID (can be null for root folders)
- * @param userId - the user's ID for security check
- * @returns Array of folders
- */
-export async function selectFoldersByParentFolderId(
-parentFolderId: string | null,
-userId: string
-): Promise<Folder[]> {
-  let rowList
+ * @returns Array of folders **/
+export async function selectFoldersByParentFolderId(parentFolderId: string): Promise<Folder[] | null> {
 
-  if (parentFolderId === null) {
-    // Get root folders (folders with no parent)
-    rowList = await sql`
-      SELECT id, user_id, name, parent_folder_id 
-      FROM folder 
-      WHERE user_id = ${userId} AND parent_folder_id IS NULL
-      ORDER BY name ASC
-    `
-  } else {
-    // Get subfolders of a specific parent
-    rowList = await sql`
-      SELECT id, user_id, name, parent_folder_id 
-      FROM folder 
-      WHERE parent_folder_id = ${parentFolderId} AND user_id = ${userId}
-      ORDER BY name ASC
-    `
-  }
+  // get subfolders of a specific parent
+  const rowList = await sql`
+    SELECT 
+      id,
+      parent_folder_id,
+      user_id, 
+      name
+    FROM folder 
+    WHERE parent_folder_id = ${parentFolderId}`
 
-  return FolderSchema.array().parse(rowList)
+  // return the folders or null if no folders were found
+  return FolderSchema.array().parse(rowList) ?? null
 }
