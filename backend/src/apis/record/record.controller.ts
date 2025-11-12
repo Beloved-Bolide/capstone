@@ -197,7 +197,7 @@ export async function getRecordsByFolderIdController (request: Request, response
       response.json({
         status: 404,
         data: null,
-        message: 'The folder containing these records does not exist.'
+        message: 'Records with that folder id do not exist.'
       })
       return
     }
@@ -244,7 +244,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
       response.json({
         status: 404,
         data: null,
-        message: 'No records found for that category because that category does not exist.'
+        message: 'No records found for that category.'
       })
       return
     }
@@ -313,7 +313,7 @@ export async function getRecordsByCompanyNameController (request: Request, respo
       response.json({
         status: 404,
         data: null,
-        message: 'No records found with that company name because that company name does not exist.'
+        message: 'No records found with that company name.'
       })
       return
     }
@@ -390,13 +390,24 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
       response.json({
         status: 404,
         data: null,
-        message: 'No record found with that were accessed at that time.'
+        message: 'No records found with that were accessed at that time.'
+      })
+      return
+    }
+
+    // get the folderId from the first record in the validated request body and verify it exists
+    const folderId = records[0]?.folderId
+    if (!folderId) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No records found with that were accessed at that time.'
       })
       return
     }
 
     // select the folder, user id from the existing folder, and verify ownership
-    const existingFolder: Folder | null = await selectFolderByFolderId(records[0].folderId)
+    const existingFolder: Folder | null = await selectFolderByFolderId(folderId)
     const userId = existingFolder?.userId
     if (!(await validateSessionUser(request, response, userId))) return
 
