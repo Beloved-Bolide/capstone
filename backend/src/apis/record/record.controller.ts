@@ -3,6 +3,7 @@ import { serverErrorResponse, zodErrorResponse } from '../../utils/response.util
 import { type Folder, selectFolderByFolderId } from '../folder/folder.model.ts'
 import { validateSessionUser } from '../../utils/auth.utils.ts'
 import { type Category, selectCategoryByCategoryId } from '../category/category.model.ts'
+import { z } from 'zod/v4'
 import {
   type Record,
   RecordSchema,
@@ -13,7 +14,7 @@ import {
   selectRecordsByCategoryId,
   selectRecordsByCompanyName,
   selectRecordsByLastAccessedAt,
-  selectRecordByName
+  selectRecordByName, searchRecords
 } from './record.model.ts'
 
 
@@ -466,6 +467,57 @@ export async function getRecordByNameController (request: Request, response: Res
       status: 200,
       data: record,
       message: record.name + ' selected by name!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for searching for a record
+ * @endpoint GET /apis/record/search/
+ * @param request an object containing the search query in query params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns an array of records that match the search query **/
+export async function searchRecordsController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // validate the search query using zod
+    const validatedRequestParams = z.object({
+      q: z.string().min(1, 'Please enter a search term.')
+    }).safeParse({ q: request.query.q })
+
+    // if the validation fails, return an error response
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // get the search query from the validated request parameters
+    const { q: searchTerm } = validatedRequestParams.data
+
+    // limit query parameter to a maximum of 50 records
+    const limit = request.query.limit ? parseInt(request.query.limit as string) : 50
+
+    // search for records that match the search query
+    const records: Record[] | null = await searchRecords(searchTerm, limit)
+
+    // if no records are found, return a 404 response
+    if (!records) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No records found with that search term.'
+      })
+      return
+    }
+
+    // return a success response with the search results
+    response.json({
+      status: 200,
+      data: records,
+      message: records.length + ' record(s) found!'
     })
 
   } catch (error: any) {

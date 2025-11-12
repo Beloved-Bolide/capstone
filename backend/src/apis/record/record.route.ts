@@ -8,7 +8,8 @@ import {
   getRecordsByCategoryIdController,
   getRecordsByCompanyNameController,
   getRecordsByLastAccessedAtController,
-  getRecordByNameController
+  getRecordByNameController,
+  searchRecordsController
 } from './record.controller.ts'
 
 
@@ -36,5 +37,10 @@ router.route('/lastAccessedAt/:lastAccessedAt')
 
 router.route('/name/:name')
   .get(isLoggedInController, getRecordByNameController)
+
+/** GET /apis/record/search?q=searchTerm&limit=50
+ * search records (query parameter 'q' is required) **/
+router.route('/search')
+.get(isLoggedInController, searchRecordsController)
 
 export const recordRoute = { basePath, router }
