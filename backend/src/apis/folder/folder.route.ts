@@ -20,13 +20,13 @@ router.route('/id/:id')
   .get(isLoggedInController, getFolderByFolderIdController)
   .put(isLoggedInController, updateFolderController)
 
-router.route('/name/:name')
-  .get(isLoggedInController, getFolderByFolderNameController)
+router.route('/parentFolderId/:parentFolderId')
+.get(isLoggedInController, getFoldersByParentFolderIdController)
 
 router.route('/userId/:id')
   .get(isLoggedInController, getFoldersByUserIdController)
 
-router.route('/parentFolderId/:parentFolderId')
-  .get(isLoggedInController, getFoldersByParentFolderIdController)
+router.route('/name/:name')
+.get(isLoggedInController, getFolderByFolderNameController)
 
 export const folderRoute = { basePath, router }
