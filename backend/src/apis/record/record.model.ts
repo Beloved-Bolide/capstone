@@ -326,3 +326,48 @@ export async function selectRecordByName (name: string): Promise<Record | null> 
   // return the result as a single record or null if no record was found
   return RecordSchema.array().max(1).parse(rowList)[0] ?? null
 }
+
+/** Search records (case-insensitive partial match)
+ * @param searchTerm the search term to look for in records
+ * @param limit the maximum number of records to return (default 50)
+ * @returns array of records or null if no records were found **/
+export async function searchRecords (searchTerm: string, limit: number = 50): Promise<Record[] | null> {
+
+  // query the database to select the records by search term
+  const rowList = await sql`
+    SELECT
+      id,
+      folder_id,
+      category_id,
+      amount,
+      company_name,
+      coupon_code,
+      description,
+      exp_date,
+      last_accessed_at,
+      name,
+      notify_on,
+      product_id,
+      purchase_date
+    FROM record
+    WHERE
+      CAST(id AS TEXT)               ILIKE ${`%${searchTerm}%`} OR
+      CAST(folder_id AS TEXT)        ILIKE ${`%${searchTerm}%`} OR
+      CAST(category_id AS TEXT)      ILIKE ${`%${searchTerm}%`} OR
+      CAST(amount AS TEXT)           ILIKE ${`%${searchTerm}%`} OR
+      company_name                   ILIKE ${`%${searchTerm}%`} OR
+      coupon_code                    ILIKE ${`%${searchTerm}%`} OR
+      description                    ILIKE ${`%${searchTerm}%`} OR
+      CAST(exp_date AS TEXT)         ILIKE ${`%${searchTerm}%`} OR
+      CAST(last_accessed_at AS TEXT) ILIKE ${`%${searchTerm}%`} OR
+      name                           ILIKE ${`%${searchTerm}%`} OR
+      CAST(notify_on AS TEXT)        ILIKE ${`%${searchTerm}%`} OR
+      CAST(product_id AS TEXT)       ILIKE ${`%${searchTerm}%`} OR
+      CAST(purchase_date AS TEXT)    ILIKE ${`%${searchTerm}%`}
+    ORDER BY last_accessed_at
+    LIMIT ${limit}`
+
+  // return the result as an array of records, or null if no records were found
+  const records = RecordSchema.array().parse(rowList)
+  return records.length > 0 ? records : null
+}
