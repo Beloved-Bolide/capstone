@@ -1,13 +1,15 @@
 import { type Request, type Response } from 'express'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import { validateSessionUser } from '../../utils/auth.utils.ts'
-import { type PrivateUser, selectPrivateUserByUserId } from '../user/user.model.ts'
 import {
   type Folder,
   FolderSchema,
   insertFolder,
   updateFolder,
+  deleteFolder,
   isDescendant,
+  hasChildFolders,
+  hasRecords,
   selectFolderByFolderId,
   selectFoldersByParentFolderId,
   selectFoldersByUserId,
@@ -119,7 +121,7 @@ export async function updateFolderController (request: Request, response: Respon
         return
       }
 
-      // verify the parent folder exists and belongs to the same user
+      // verify the parent folder exists
       const parentFolder = await selectFolderByFolderId(parentFolderId)
       if (!parentFolder) {
         response.json({
@@ -130,6 +132,7 @@ export async function updateFolderController (request: Request, response: Respon
         return
       }
 
+      // verify the user owns the parent folder
       if (parentFolder.userId !== thisFolder.userId) {
         response.json({
           status: 403,
@@ -139,7 +142,7 @@ export async function updateFolderController (request: Request, response: Respon
         return
       }
 
-      // prevent circular references - check if the new parent is a descendant
+      // check if the new parent is a descendant
       if (await isDescendant(parentFolderId, id)) {
         response.json({
           status: 400,
@@ -160,6 +163,78 @@ export async function updateFolderController (request: Request, response: Respon
       status: 200,
       data: thisFolder,
       message: 'Folder successfully updated!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for deleting a folder
+ * @endpoint DELETE /apis/folder/id/:id
+ * @param request an object containing the folder id in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns success response or error **/
+export async function deleteFolderController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // pick and parse the folder id from the request parameters and validate it
+    const validatedRequestParams = FolderSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // get the folder id from the validated request parameters
+    const { id } = validatedRequestParams.data
+
+    // get the folder from the database and check if it exists
+    const folder = await selectFolderByFolderId(id)
+    if (!folder) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Folder not found.'
+      })
+      return
+    }
+
+    // check if the session user is the owner of the folder
+    const userId = folder.userId
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // check if the folder is a parent folder
+    const parentFolderId = folder.parentFolderId
+    if (!parentFolderId) {
+      response.json({
+        status: 400,
+        data: null,
+        message: 'Cannot delete a root folder.'
+      })
+      return
+    }
+
+    // check if the folder has any child folders or files
+    const hasChildren = await hasChildFolders(id)
+    const hasItems = await hasRecords(id)
+    if (hasChildren || hasItems) {
+      response.json({
+        status: 400,
+        data: null,
+        message: 'Cannot delete a folder that contains items.'
+      })
+      return
+    }
+
+    // delete the folder
+    const message = await deleteFolder(id)
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: null,
+      message: message
     })
 
   } catch (error: any) {
@@ -228,7 +303,7 @@ export async function getFoldersByParentFolderIdController (request: Request, re
       return
     }
 
-    // if the parent folder id does not exist, return a 404 response
+    // get the parent folder id from the parameters and check if it exists
     const { parentFolderId } = validatedRequestParams.data
     if (!parentFolderId) {
       response.json({
@@ -239,28 +314,36 @@ export async function getFoldersByParentFolderIdController (request: Request, re
       return
     }
 
-    // get all folders with the specified parent folder id and check if any folders were found
+    // First, verify the parent folder exists and belongs to the session user
+    const parentFolder = await selectFolderByFolderId(parentFolderId)
+    if (!parentFolder) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Parent folder not found.'
+      })
+      return
+    }
+
+    // verify the session user owns the parent folder
+    if (!(await validateSessionUser(request, response, parentFolder.userId))) return
+
+    // now safely query child folders
     const folders: Folder[] | null = await selectFoldersByParentFolderId(parentFolderId)
     if (!folders) {
       response.json({
         status: 404,
         data: null,
-        message: 'No folders found with this parent folder id.'
+        message: 'No folders found under this parent folder.'
       })
       return
     }
 
-    // get the user id from the first folder in folders
-    const userId = folders[0]?.userId
-
-    // check if the session user is the owner of the first folder
-    if (!(await validateSessionUser(request, response, userId))) return
-
-    // Return all folders
+    // return the child folders to the client
     response.json({
       status: 200,
       data: folders,
-      message: folders.length + ' folders successfully found!'
+      message: folders.length + ' folder(s) found under this parent folder.'
     })
 
   } catch (error: any) {
@@ -277,37 +360,22 @@ export async function getFoldersByParentFolderIdController (request: Request, re
 export async function getFoldersByUserIdController(request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the user id from params
+    // pick and parse the user id from the request parameters and validate it
     const validatedRequestParams = FolderSchema.pick({ userId: true }).safeParse({ userId: request.params.id })
-    // if the validation is unsuccessful, return a preformatted response to the client
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
-    // get the user from the validated request parameters
-    const user: PrivateUser | null = await selectPrivateUserByUserId(validatedRequestParams.data.userId)
-    // get the user id from the user
-    const userId: string | null | undefined = user?.id
+    // get the user id from the validated request parameters and check if the session user is the owner of the folder
+    const userId = validatedRequestParams.data.userId
+    if (!(await validateSessionUser(request, response, userId))) return
 
-    // grab the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
+    // fetch folders for the authorized user
+    const folders: Folder[] = await selectFoldersByUserId(userId)
 
-    // if the user id from the request parameters does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You cannot create a folder for another user.'
-      })
-      return
-    }
-
-    // create a folder array using the user id
-    const folders: Folder[] | null = await selectFoldersByUserId(validatedRequestParams.data.userId)
-
-    if (!folders[0] || folders === null) {
+    // if no folders are found for the user, return a 404 response
+    if (folders.length === 0) {
       response.json({
         status: 404,
         data: null,
@@ -316,7 +384,7 @@ export async function getFoldersByUserIdController(request: Request, response: R
       return
     }
 
-    // if more than 0 folders are found, return all folders
+    // return the folders to the client
     response.json({
       status: 200,
       data: folders,
@@ -337,10 +405,8 @@ export async function getFoldersByUserIdController(request: Request, response: R
 export async function getFolderByFolderNameController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the folder name from params
+    // pick and parse the folder name from the request parameters and validate it
     const validatedRequestParams = FolderSchema.pick({ name: true }).safeParse({ name: request.params.name })
-
-    // if the validation is unsuccessful, return a preformatted response to the client
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
@@ -348,36 +414,21 @@ export async function getFolderByFolderNameController (request: Request, respons
 
     // get the folder from the validated request parameters
     const folder: Folder | null = await selectFolderByFolderName(validatedRequestParams.data.name)
-    // get the user id from the folder
-    const userId: string | undefined | null = folder?.userId
 
-    // grab the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
-
-    // if the user id from the request parameters does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
+    // if the folder is not found, return a preformatted response to the client
+    if (!folder) {
       response.json({
-        status: 403,
+        status: 404,
         data: null,
-        message: 'Forbidden: You cannot create a folder for another user.'
+        message: "Folder not found!"
       })
       return
     }
 
-    // deconstruct the folder name from the parameters
-    const name: string = validatedRequestParams.data.name
+    // get the user id from the folder and check if the session user is the owner of the folder
+    if (!(await validateSessionUser(request, response, folder.userId))) return
 
-    // if the folder name is not found, return a preformatted response to the client
-    if (name === null) {
-      response.json({
-        status: 404,
-        data: null,
-        message: "Folder not found!"})
-      return
-    }
-
-    // if the folder is found, return the folder attributes and a preformatted response to the client
+    // if the folder is found and authorized, return the folder attributes and a preformatted response to the client
     response.json({
       status: 200,
       data: folder,
