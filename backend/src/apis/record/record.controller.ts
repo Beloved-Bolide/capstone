@@ -9,12 +9,14 @@ import {
   RecordSchema,
   insertRecord,
   updateRecord,
+  deleteRecord,
   selectRecordByRecordId,
   selectRecordsByFolderId,
   selectRecordsByCategoryId,
   selectRecordsByCompanyName,
   selectRecordsByLastAccessedAt,
-  selectRecordByName, searchRecords
+  selectRecordByName,
+  searchRecords
 } from './record.model.ts'
 
 
@@ -119,6 +121,69 @@ export async function updateRecordController (request: Request, response: Respon
       status: 200,
       data: null,
       message: 'Record successfully updated!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for deleting a record
+ * @endpoint DELETE /apis/record/:id
+ * @param request an object containing the record id in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns success response or error **/
+export async function deleteRecordController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the record id from the request parameters and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // get the record id from the validated request parameters
+    const { id } = validatedRequestParams.data
+
+    // get the user from the current session and check if they are signed in
+    const user = request.session?.user
+    if (!user) {
+      response.json({
+        status: 401,
+        data: null,
+        message: 'Unauthorized: Please log in to perform this action.'
+      })
+      return
+    }
+
+    // get the record by id and check if it exists
+    const record = await selectRecordByRecordId(id)
+    if (!record) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Record not found!'
+      })
+      return
+    }
+
+    // get the folder owner from the record and check if the user is the owner
+    const folder = await selectFolderByFolderId(record.folderId)
+    const userId = folder?.userId
+
+    // check if the user making the request is the owner of the folder
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // delete the record
+    const message = await deleteRecord(id)
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: null,
+      message: message
     })
 
   } catch (error: any) {
