@@ -7,7 +7,8 @@ import {useRemixForm} from "remix-hook-form";
 
 const resolver = zodResolver(SignUpSchema)
 
-function AuthPage() {
+
+export default function SignUpPage() {
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -106,5 +107,3 @@ function AuthPage() {
         </div>
     );
 }
-
-export default AuthPage;

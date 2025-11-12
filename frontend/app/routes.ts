@@ -10,8 +10,8 @@ export default [
     // Dashboard at "/dashboard"
     route("dashboard", "./routes/dashboard/dashboard.tsx"),
 
-    // Login at "/login"
-    route("login", "./routes/login/login.tsx"),
+    // Login at "/sign-up"
+    route("sign-up", "./routes/sign-up/sign-up.tsx"),
 
     // New File at "/new-file"
     route("new-file", "./routes/new-file/new-file.tsx"),
