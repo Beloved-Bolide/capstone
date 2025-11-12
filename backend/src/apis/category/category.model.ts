@@ -39,10 +39,15 @@ export async function insertCategory (category: Category): Promise<string> {
   CategorySchema.parse(category)
 
   // extract the category's properties
-  const { id, color, icon, name } = category
+  const {
+    id,
+    color,
+    icon,
+    name
+  } = category
 
-  //insert the category into the category table
-  const rowList = await sql `
+  // insert the category into the category table
+  await sql `
     INSERT INTO category (
       id,
       color,

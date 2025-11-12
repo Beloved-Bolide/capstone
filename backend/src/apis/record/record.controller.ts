@@ -10,7 +10,8 @@ import {
   updateRecord,
   selectRecordByRecordId,
   selectRecordsByFolderId,
-  selectRecordsByCategoryId
+  selectRecordsByCategoryId,
+  selectRecordByCompanyName
 } from './record.model.ts'
 
 
@@ -22,7 +23,7 @@ import {
 export async function postRecordController (request: Request, response: Response): Promise<void> {
   try {
 
-    // parse the request body and check if it's valid
+    // parse the data from the request body and check if it's valid
     const validatedRequestBody = RecordSchema.safeParse(request.body)
     if (!validatedRequestBody.success) {
       zodErrorResponse(response, validatedRequestBody.error)
@@ -56,7 +57,7 @@ export async function postRecordController (request: Request, response: Response
 export async function updateRecordController (request: Request, response: Response): Promise<void> {
   try {
 
-    // parse the request params to get the record id and check if it's valid
+    // parse the id from the request parameters and check if it's valid
     const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
@@ -84,7 +85,7 @@ export async function updateRecordController (request: Request, response: Respon
     // if the session user is not the folder's owner, return a 403 error
     if (!(await validateSessionUser(request, response, userId))) return
 
-    // parse the request body and check if it's valid
+    // parse the record data from the request body and check if it's valid
     const validatedRequestBody = RecordSchema.safeParse(request.body)
     if (!validatedRequestBody.success) {
       zodErrorResponse(response, validatedRequestBody.error)
@@ -133,7 +134,7 @@ export async function updateRecordController (request: Request, response: Respon
 export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // parse the request params to get the record id and check if it's valid
+    // parse the recordId from the request parameters and check if it's valid
     const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
@@ -178,7 +179,7 @@ export async function getRecordByRecordIdController (request: Request, response:
 export async function getRecordsByFolderIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // parse the request params to get the folder id and check if it's valid
+    // parse the folderId from the request parameters and check if it's valid
     const validatedRequestParams = RecordSchema.pick({ folderId: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
@@ -288,3 +289,88 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     serverErrorResponse(response, error.message)
   }
 }
+
+/** Express controller for getting record by companyName
+ * @endpoint GET /apis/record/companyName/:companyName
+ * @param request an object containing the companyName in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns success response or error **/
+export async function getRecordByCompanyNameController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the companyName from the request parameters and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ companyName: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // get the companyName from the validated request parameters and check if it exists
+    const { companyName } = validatedRequestParams.data
+    if (!companyName) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No record found with that company name because that company name does not exist.'
+      })
+      return
+    }
+
+    // get the record by company name and check if it exists
+    const record: Record | null = await selectRecordByCompanyName(companyName)
+    if (!record) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No record found with that company name.'
+      })
+      return
+    }
+
+    // select the folder, user id from the record, and verify ownership
+    const existingFolder: Folder | null = await selectFolderByFolderId(record.folderId)
+    const userId = existingFolder?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: record,
+      message: record.name + ' selected by company name!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
