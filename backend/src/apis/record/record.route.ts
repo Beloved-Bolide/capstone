@@ -3,9 +3,9 @@ import { isLoggedInController } from '../../utils/controllers/is-logged-in.contr
 import {
   getRecordsByCategoryIdController,
   getRecordsByFolderIdController,
-  getRecordByRecordIdController,
+  getRecordByIdController,
   postRecordController,
-  updateRecordController
+  putRecordController
 } from './record.controller.ts'
 
 
@@ -16,8 +16,8 @@ router.route('/')
   .post(isLoggedInController, postRecordController)
 
 router.route('/id/:id')
-  .get(isLoggedInController, getRecordByRecordIdController)
-  .put(isLoggedInController, updateRecordController)
+  .get(isLoggedInController, getRecordByIdController)
+  .put(isLoggedInController, putRecordController)
 
 router.route('/folderId/:folderId')
   .get(isLoggedInController, getRecordsByFolderIdController)

@@ -1,6 +1,7 @@
 import { type Request, type Response } from 'express'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import { type Folder, selectFolderByFolderId } from '../folder/folder.model.ts'
+import { validateSessionUser } from '../../utils/auth.utils.ts'
 import {
   type Record,
   RecordSchema,
@@ -10,7 +11,6 @@ import {
   selectRecordsByFolderId,
   selectRecordsByCategoryId
 } from './record.model.ts'
-import { validateSessionUser } from "../../utils/auth.utils.ts";
 
 
 /** Express controller for creating a new record
@@ -56,7 +56,7 @@ export async function postRecordController (request: Request, response: Response
  * @param request an object containing the body with the record data
  * @param response an object modeling the response that will be sent to the client
  * @returns response to the client indicating whether the folder update was successful **/
-export async function updateRecordController (request: Request, response: Response): Promise<void> {
+export async function putRecordController (request: Request, response: Response): Promise<void> {
   try {
 
     // parse the request params and check if it's valid
@@ -133,7 +133,7 @@ export async function updateRecordController (request: Request, response: Respon
  * @param request an object containing the record id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with the record data or null if not found **/
-export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
+export async function getRecordByIdController (request: Request, response: Response): Promise<void> {
   try {
 
     // validate the record id from parameters
