@@ -1,4 +1,11 @@
 import { useState } from "react";
+import {Form} from "react-router";
+import {type SignUp, SignUpSchema} from "~/utils/models/user.model";
+import {zodResolver} from '@hookform/resolvers/zod'
+import {useRemixForm} from "remix-hook-form";
+
+
+const resolver = zodResolver(SignUpSchema)
 
 function AuthPage() {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -6,14 +13,11 @@ function AuthPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (isSignUp) {
-            console.log('Signing up:', { email, password, confirmPassword });
-        } else {
-            console.log('Signing in:', { email, password });
-        }
-    };
+  const {
+  handleSubmit,
+  formState: {errors},
+  register
+  }= useRemixForm<SignUp>({mode:'onSubmit', resolver})
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -32,12 +36,13 @@ function AuthPage() {
                         {isSignUp ? 'Create Account' : 'Welcome Back'}
                     </h2>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <Form onSubmit={handleSubmit} className="space-y-4" noValidate={true} method='POST'>
                         <div>
                             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">
                                 Email
                             </label>
                             <input
+                               {...register('email')}
                                 id="email"
                                 type="email"
                                 placeholder="name@example.com"
@@ -95,7 +100,7 @@ function AuthPage() {
                                 {isSignUp ? 'Sign In' : 'Sign Up'}
                             </button>
                         </p>
-                    </form>
+                    </Form>
                 </div>
             </div>
         </div>
