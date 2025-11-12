@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import { PrivateUserSchema, selectPrivateUserByUserActivationToken, updateUser } from '../user/user.model'
+import { PrivateUserSchema, selectPrivateUserByUserActivationToken, updatePrivateUser } from '../user/user.model'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils'
 import { z } from 'zod/v4'
 
@@ -37,7 +37,7 @@ export async function activationController (request: Request, response: Response
 
     // if the user is not null, update the activationToken to null and send a success response
     user.activationToken = null
-    await updateUser(user)
+    await updatePrivateUser(user)
 
     response.json({
       status: 200,
