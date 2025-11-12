@@ -92,9 +92,26 @@ export async function selectFolderByFolderId (id: string): Promise<Folder | null
       id = ${id}`
 
   // enforce that the result is an array of one folder, or null
-  const result = FolderSchema.array().max(1).parse(rowList)
+  return FolderSchema.array().max(1).parse(rowList)[0] ?? null
+}
 
-  return result[0] ?? null
+/** Selects all folders by parent folder if
+ * @param parentFolderId - the parent folder's ID (can be null for root folders)
+ * @returns Array of folders **/
+export async function selectFoldersByParentFolderId(parentFolderId: string): Promise<Folder[] | null> {
+
+  // get subfolders of a specific parent
+  const rowList = await sql`
+    SELECT 
+      id,
+      parent_folder_id,
+      user_id, 
+      name
+    FROM folder 
+    WHERE parent_folder_id = ${parentFolderId}`
+
+  // return the folders or null if no folders were found
+  return FolderSchema.array().parse(rowList) ?? null
 }
 
 /** select all folders from a user's id
@@ -122,18 +139,15 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[]> {
  * @returns the folder or null if no folder was found **/
 export async function selectFolderByFolderName (name: string): Promise<Folder | null> {
 
-  // create a prepared statement that selects the folder by name
+  // query the database for the folder with the given name
   const rowList = await sql`
     SELECT 
       id,
       parent_folder_id,
       user_id,
       name
-    FROM
-      folder
-    WHERE
-      name = ${name}`
-  const result = FolderSchema.array().max(1).parse(rowList)
+    FROM folder
+    WHERE name = ${name}`
 
-  return result[0] ?? null
+  return FolderSchema.array().max(1).parse(rowList)[0] ?? null
 }
