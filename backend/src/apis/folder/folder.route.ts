@@ -1,12 +1,13 @@
 import { Router } from 'express'
-import {
-  getFolderByFolderIdController,
-  getFolderByFolderNameController, getFoldersByParentFolderIdController,
-  getFoldersByUserIdController,
-  postFolderController,
-  updateFolderController
-} from './folder.controller.ts'
 import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
+import {
+  postFolderController,
+  updateFolderController,
+  getFolderByFolderIdController,
+  getFolderByFolderNameController,
+  getFoldersByParentFolderIdController,
+  getFoldersByUserIdController
+} from './folder.controller.ts'
 
 
 const basePath = '/apis/folder' as const

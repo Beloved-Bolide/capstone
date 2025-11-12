@@ -1,16 +1,17 @@
 import { type Request, type Response } from 'express'
+import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
+import { validateSessionUser } from '../../utils/auth.utils.ts'
+import { type PrivateUser, selectPrivateUserByUserId } from '../user/user.model.ts'
 import {
   type Folder,
   FolderSchema,
   insertFolder,
   updateFolder,
   selectFolderByFolderId,
-  selectFolderByFolderName,
-  selectFoldersByUserId, selectFoldersByParentFolderId
+  selectFoldersByParentFolderId,
+  selectFoldersByUserId,
+  selectFolderByFolderName
 } from './folder.model.ts'
-import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
-import {type PrivateUser, selectPrivateUserByUserId} from "../user/user.model.ts";
-import { validateSessionUser } from "../../utils/auth.utils.ts";
 
 
 /** Express controller for creating a new folder
@@ -192,6 +193,60 @@ export async function getFolderByFolderIdController (request: Request, response:
   }
 }
 
+/** Express controller for getting folders by parent folder id
+ * @endpoint GET /apis/folder/parent/:parentFolderIdGoesHere
+ * @param request an object containing the parent folder id in params (use 'root' for root folders)
+ * @param response an object modeling the response that will be sent to the client
+ * @returns response with an array of child folders or error **/
+export async function getFoldersByParentFolderIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the parent folder id from the request parameters and validate it
+    const validatedRequestParams = FolderSchema.pick({ parentFolderId: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // if the parent folder id does not exist, return a 404 response
+    const { parentFolderId } = validatedRequestParams.data
+    if (!parentFolderId) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Parent folder not found.'
+      })
+      return
+    }
+
+    // get all folders with the specified parent folder id and check if any folders were found
+    const folders: Folder[] | null = await selectFoldersByParentFolderId(parentFolderId)
+    if (!folders) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No folders found with this parent folder id.'
+      })
+      return
+    }
+
+    // get the user id from the first folder in folders
+    const userId = folders[0]?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // Return all folders
+    response.json({
+      status: 200,
+      data: folders,
+      message: folders.length + ' folders successfully found!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
 /** Express controller for getting folders by user id
  * @endpoint GET /apis/folder/user/:id
  * @param request an object containing the user id in params
@@ -312,58 +367,3 @@ export async function getFolderByFolderNameController (request: Request, respons
     serverErrorResponse(response, error.message)
   }
 }
-
-/** Express controller for getting folders by parent folder id
- * @endpoint GET /apis/folder/parent/:parentFolderIdGoesHere
- * @param request an object containing the parent folder id in params (use 'root' for root folders)
- * @param response an object modeling the response that will be sent to the client
- * @returns response with an array of child folders or error **/
-export async function getFoldersByParentFolderIdController (request: Request, response: Response): Promise<void> {
-  try {
-    
-    // parse the parent folder id from the request parameters and validate it
-    const validatedRequestParams = FolderSchema.pick({ parentFolderId: true }).safeParse(request.params)
-    if (!validatedRequestParams.success) {
-      zodErrorResponse(response, validatedRequestParams.error)
-      return
-    }
-
-    // if the parent folder id does not exist, return a 404 response
-    const { parentFolderId } = validatedRequestParams.data
-    if (!parentFolderId) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'Parent folder not found.'
-      })
-      return
-    }
-
-    // get all folders with the specified parent folder id and check if any folders were found
-    const folders: Folder[] | null = await selectFoldersByParentFolderId(parentFolderId)
-    if (!folders) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'No folders found with this parent folder id.'
-      })
-      return
-    }
-
-    // get the user id from the first folder in folders
-    const userId = folders[0]?.userId
-    if (!(await validateSessionUser(request, response, userId))) return
-
-    // Return all folders
-    response.json({
-      status: 200,
-      data: folders,
-      message: folders.length + ' folders successfully found!'
-    })
-
-  } catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, error.message)
-  }
-}
-
