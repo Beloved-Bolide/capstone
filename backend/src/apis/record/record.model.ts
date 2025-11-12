@@ -82,7 +82,7 @@ export async function insertRecord (record: Record): Promise<string> {
   } = record
 
   // insert the record into the record table
-  await sql `
+  await sql`
     INSERT INTO record (
       id,
       folder_id,
@@ -112,7 +112,7 @@ export async function insertRecord (record: Record): Promise<string> {
       ${notifyOn},
       ${productId},
       ${purchaseDate}
-    ) `
+    )`
   return 'Record successfully created!'
 }
 
@@ -183,7 +183,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
     FROM record
     WHERE id = ${id}`
 
-  // enforce that the result is an array of one record, or null
+  // return the result as a single record or null if no record was found
   return RecordSchema.array().max(1).parse(rowList)[0] ?? null
 }
 
@@ -192,7 +192,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
  * @returns Record array or null if no records were found **/
 export async function selectRecordsByFolderId (folderId: string): Promise<Record[] | null> {
 
-  // create a prepared statement that selects the folder by folderId
+  // query the database to select the records by folderId
   const rowList = await sql`
     SELECT 
       id,
@@ -211,7 +211,7 @@ export async function selectRecordsByFolderId (folderId: string): Promise<Record
     FROM record
     WHERE folder_id = ${folderId}`
 
-  // enforce that the result is an array of records, or null
+  // return the result as an array of records, or null if no records were found
   return RecordSchema.array().parse(rowList) ?? null
 }
 
@@ -220,9 +220,9 @@ export async function selectRecordsByFolderId (folderId: string): Promise<Record
  * @returns Record array or null if no records were found **/
 export async function selectRecordsByCategoryId (categoryId: string): Promise<Record[] | null> {
 
-  // create a prepared statement that selects the folder by categoryId
+  // query the database to select the records by categoryId
   const rowList = await sql`
-    SELECT 
+    SELECT
       id,
       folder_id,
       category_id,
@@ -237,12 +237,11 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
       product_id,
       purchase_date
     FROM record
-    WHERE category_id = ${categoryId}`
+    WHERE
+      category_id = ${categoryId}`
 
-  // enforce that the result is an array of one record, or null
-  const records: Record[] = RecordSchema.array().parse(rowList)
-  // return the records or null if no records were found
-  return records ?? null
+  // return the result as an array of records, or null if no records were found
+  return RecordSchema.array().parse(rowList) ?? null
 }
 
 // export async function selectRecordsByCompanyName (companyName: string): Promise<Record[] | null> {

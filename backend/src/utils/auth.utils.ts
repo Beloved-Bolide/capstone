@@ -1,6 +1,6 @@
 import * as argon2 from 'argon2'
 import * as crypto from 'crypto'
-import { type Request, response } from 'express'
+import { type Request, type Response } from 'express'
 import pkg from 'jsonwebtoken'
 const { sign } = pkg
 
@@ -43,10 +43,17 @@ export async function validatePassword (hash: string, password: string): Promise
 }
 
 // validate the session user
-export async function validateSessionUser (request: Request, userId: string | undefined): Promise<boolean> {
+export async function validateSessionUser (request: Request, response: Response, userId: string | undefined): Promise<boolean> {
 
-  // if the user id is undefined or null, return false
-  if (userId === undefined || userId === null) return false
+  // if the user id is undefined or null, send a 403 and return false
+  if (!userId) {
+    response.json({
+      status: 403,
+      data: null,
+      message: 'Forbidden: You do not have access to this resource. Please login with the correct credentials.'
+    })
+    return false
+  }
 
   // get the user id from the session
   const sessionUser = request.session?.user
