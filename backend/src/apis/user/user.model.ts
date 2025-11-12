@@ -68,7 +68,7 @@ export async function insertUser (user: PrivateUser): Promise<string> {
 /** updates a user in the user table
  * @param user the user to update
  * @returns { Promise<string> } 'User successfully updated!' **/
-export async function updateUser (user: PrivateUser): Promise<string> {
+export async function updatePrivateUser (user: PrivateUser): Promise<string> {
 
   // validate the user object against the PrivateUserSchema
   const {id, activationToken, email, hash, name, notifications} = user
@@ -109,8 +109,9 @@ export async function selectPrivateUserByUserActivationToken (activationToken: s
 
 /** Selects the private user from the user table by email
  * @param email the user's email to search for in the user table
- * @returns user or null if no user was found **/
+ * @returns PrivateUser or null if no user was found **/
 export async function selectPrivateUserByUserEmail (email: string): Promise<PrivateUser | null> {
+
   // select the user from the user table by email
   const rowList = await sql`
       SELECT id,
@@ -132,7 +133,7 @@ export async function selectPrivateUserByUserEmail (email: string): Promise<Priv
  *  @returns PrivateUser or null if no user was found **/
 export async function selectPrivateUserByUserId (id: string): Promise<PrivateUser | null> {
 
-  // select the user from the user table by id
+  // query the user table by id
   const rowList = await sql`
     SELECT 
       id,
@@ -148,5 +149,3 @@ export async function selectPrivateUserByUserId (id: string): Promise<PrivateUse
   // return the profile or null if no profile was found
   return result[0] ?? null
 }
-
-
