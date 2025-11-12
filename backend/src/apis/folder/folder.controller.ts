@@ -8,7 +8,6 @@ import {
   insertFolder,
   updateFolder,
   selectFolderByFolderId,
-  selectParentFolderByParentFolderId,
   selectFoldersByParentFolderId,
   selectFoldersByUserId,
   selectFolderByFolderName
@@ -95,7 +94,7 @@ export async function updateFolderController (request: Request, response: Respon
     const { parentFolderId, name } = validatedRequestBody.data
 
     // if changing parent folder, validate it
-    if (parentFolderId !== thisFolder.parentFolderId) {
+    if (parentFolderId !== thisFolder.parentFolderId || !parentFolderId) {
       
       // prevent circular references
       if (parentFolderId === id) {
@@ -103,37 +102,6 @@ export async function updateFolderController (request: Request, response: Respon
           status: 400,
           data: null,
           message: 'A folder cannot be its own parent.'
-        })
-        return
-      }
-
-      // verify parent folder id exists
-      if (!parentFolderId) {
-        response.json({
-          status: 404,
-          data: null,
-          message: 'Parent folder id not found.'
-        })
-        return
-      }
-
-      // verify parent folder exists and belongs to same user
-      const parentFolder = await selectParentFolderByParentFolderId(parentFolderId)
-
-      if (!parentFolder) {
-        response.json({
-          status: 404,
-          data: null,
-          message: 'Parent folder not found.'
-        })
-        return
-      }
-
-      if (parentFolder.userId !== thisFolder.userId) {
-        response.json({
-          status: 403,
-          data: null,
-          message: 'Cannot move folder to another user\'s folder.'
         })
         return
       }
@@ -222,7 +190,7 @@ export async function getFoldersByParentFolderIdController (request: Request, re
   try {
 
     // parse the parent folder id from the request parameters and validate it
-    const validatedRequestParams = FolderSchema.pick({ parentFolderId: true }).safeParse(request.params)
+    const validatedRequestParams = FolderSchema.safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
@@ -252,6 +220,8 @@ export async function getFoldersByParentFolderIdController (request: Request, re
 
     // get the user id from the first folder in folders
     const userId = folders[0]?.userId
+
+    // check if the session user is the owner of the first folder
     if (!(await validateSessionUser(request, response, userId))) return
 
     // Return all folders
