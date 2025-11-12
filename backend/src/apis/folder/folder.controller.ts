@@ -107,6 +107,16 @@ export async function updateFolderController (request: Request, response: Respon
         return
       }
 
+      // verify parent folder id exists
+      if (!parentFolderId) {
+        response.json({
+          status: 404,
+          data: null,
+          message: 'Parent folder id not found.'
+        })
+        return
+      }
+
       // verify parent folder exists and belongs to same user
       const parentFolder = await selectParentFolderByParentFolderId(parentFolderId)
 
