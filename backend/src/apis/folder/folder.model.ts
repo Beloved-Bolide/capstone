@@ -74,6 +74,23 @@ export async function updateFolder (folder: Folder): Promise<string> {
   return 'Folder successfully updated!'
 }
 
+export async function isDescendant(potentialDescendantId: string, ancestorId: string): Promise<boolean> {
+
+  // base case: if the potential descendant is the ancestor, return true
+  let currentId = potentialDescendantId
+
+  // recursive case: check if the current folder is the ancestor
+  while (currentId) {
+    const folder = await selectFolderByFolderId(currentId)
+    if (!folder || !folder.parentFolderId) return false
+    if (folder.parentFolderId === ancestorId) return true
+    currentId = folder.parentFolderId
+  }
+
+  // if we reach the root folder without finding the ancestor, return false
+  return false
+}
+
 /** Selects the Folder from the folder table by id
  * @param id the folder's id to search for in the folder table
  * @returns Folder or null if no folder was found **/

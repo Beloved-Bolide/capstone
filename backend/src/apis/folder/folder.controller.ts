@@ -7,6 +7,7 @@ import {
   FolderSchema,
   insertFolder,
   updateFolder,
+  isDescendant,
   selectFolderByFolderId,
   selectFoldersByParentFolderId,
   selectFoldersByUserId,
@@ -33,13 +34,24 @@ export async function postFolderController (request: Request, response: Response
     const { userId } = validatedRequestBody.data
     if (!(await validateSessionUser(request, response, userId))) return
 
+    // check if a folder with the same name already exists
+    const existingFolder = await selectFolderByFolderName(validatedRequestBody.data.name)
+    if (existingFolder) {
+      response.json({
+        status: 409,
+        data: null,
+        message: 'A folder with this name already exists.'
+      })
+      return
+    }
+
     // insert the new folder data into the database
-    await insertFolder(validatedRequestBody.data)
+    const newFolder = await insertFolder(validatedRequestBody.data)
 
     // return the success response to the client
     response.json({
-      status: 200,
-      data: null,
+      status: 201,
+      data: newFolder,
       message: 'New folder successfully created!'
     })
 
@@ -91,10 +103,11 @@ export async function updateFolderController (request: Request, response: Respon
       return
     }
 
+    // deconstruct the update data from the request body
     const { parentFolderId, name } = validatedRequestBody.data
 
     // if changing parent folder, validate it
-    if (parentFolderId !== thisFolder.parentFolderId || !parentFolderId) {
+    if (parentFolderId !== thisFolder.parentFolderId && parentFolderId !== null) {
       
       // prevent circular references
       if (parentFolderId === id) {
@@ -105,6 +118,36 @@ export async function updateFolderController (request: Request, response: Respon
         })
         return
       }
+
+      // verify the parent folder exists and belongs to the same user
+      const parentFolder = await selectFolderByFolderId(parentFolderId)
+      if (!parentFolder) {
+        response.json({
+          status: 404,
+          data: null,
+          message: 'Parent folder not found.'
+        })
+        return
+      }
+
+      if (parentFolder.userId !== thisFolder.userId) {
+        response.json({
+          status: 403,
+          data: null,
+          message: 'Cannot move folder to another user\'s folder.'
+        })
+        return
+      }
+
+      // prevent circular references - check if the new parent is a descendant
+      if (await isDescendant(parentFolderId, id)) {
+        response.json({
+          status: 400,
+          data: null,
+          message: 'Cannot move a folder into its own subfolder.'
+        })
+        return
+      }
     }
 
     // update folder
@@ -112,6 +155,7 @@ export async function updateFolderController (request: Request, response: Respon
     thisFolder.name = name
     await updateFolder(thisFolder)
 
+    // return a success response to the client
     response.json({
       status: 200,
       data: thisFolder,
@@ -132,9 +176,8 @@ export async function updateFolderController (request: Request, response: Respon
 export async function getFolderByFolderIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the folder id from parameters
+    // pick and parse the folder id from the request parameters and validate it
     const validatedRequestParams = FolderSchema.pick({ id: true }).safeParse({ id: request.params.id })
-    // if the validation is unsuccessful, return a preformatted response to the client
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
@@ -142,21 +185,6 @@ export async function getFolderByFolderIdController (request: Request, response:
 
     // get the folder from the validated request body
     const folder: Folder | null = await selectFolderByFolderId(validatedRequestParams.data.id)
-    // get the user id from the folder
-    const userId: string | undefined | null = folder?.userId
-    // grab the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
-
-    // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You cannot create a folder for another user.'
-      })
-      return
-    }
 
     // if the folder is not found, return a preformatted response to the client
     if (folder === null) {
@@ -167,6 +195,10 @@ export async function getFolderByFolderIdController (request: Request, response:
       })
       return
     }
+
+    // get the user id from the folder and check if the session user is the owner of the folder
+    const userId: string | undefined | null = folder.userId
+    if (!(await validateSessionUser(request, response, userId))) return
 
     // if the folder is found, return the folder attributes and a preformatted response to the client
     response.json({
