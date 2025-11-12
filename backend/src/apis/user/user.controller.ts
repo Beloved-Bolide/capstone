@@ -1,9 +1,10 @@
 import { type Request, type Response } from 'express'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
-import { generateJwt } from '../../utils/auth.utils.ts'
+import { generateJwt, validateSessionUser } from '../../utils/auth.utils.ts'
 import pkg from 'jsonwebtoken'
 const { verify } = pkg
-import { type PrivateUser, 
+import {
+  type PrivateUser,
   PrivateUserSchema,
   updatePrivateUser,
   selectPrivateUserByUserId
@@ -11,11 +12,12 @@ import { type PrivateUser,
 
 
 /** Express controller for updating a user
- * @endpoint PUT /apis/user/:id
+ * @endpoint PUT /apis/user/id/:id
  * @param request from the client to the server with the user id and updated user data
  * @param response from the server to the user with a status code and a message
- * @returns a success response to the client if the user is updated successfully, a forbidden response if the user is not authorized to update the user, and a not found response if the user is not found **/
-export async function updatePrivateUserController (request: Request, response: Response) {
+ * @returns a success response to the client if the user is updated successfully, a forbidden response if the user is
+ *          not authorized to update the user, and a not found response if the user is not found **/
+export async function updateUserController (request: Request, response: Response) {
   try {
 
     // parse the user id from the request parameters and validate it
@@ -25,18 +27,6 @@ export async function updatePrivateUserController (request: Request, response: R
       return
     }
 
-    // get the user id from the validated request parameters, check if they exist, and validate the user
-    const paramId = validatedRequestParams.data
-    if (!paramId) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'User not found.'
-      })
-      return
-    }
-    if (!(await validateSessionUser(request, response, paramId)))
-
     // parse the user data from the request body and validate it
     const validatedRequestBody = PrivateUserSchema.safeParse(request.body)
     if (!validatedRequestBody.success) {
@@ -44,37 +34,37 @@ export async function updatePrivateUserController (request: Request, response: R
       return
     }
 
-    const bodyId = validatedRequestBody.data
-    if (!bodyId) {
+    // get the user id from the validated request parameters and check if they exist
+    const { id } = validatedRequestParams.data
+    const paramId = id
+    if (!id) {
       response.json({
         status: 404,
         data: null,
         message: 'User not found.'
       })
+      return
     }
 
-    // get the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
-
-    // if the id from the request parameters does not match the id from the session, return a preformatted response to the client
-    if (id !== idFromSession) {
+    // check if the user id from the request body exists and matches the user id from the request parameters
+    const bodyId = validatedRequestBody.data.id
+    if (bodyId !== paramId) {
       response.json({
         status: 403,
         data: null,
-        message: 'Forbidden: You cannot update another user.'
+        message: 'Forbidden: You cannot update another user\'s data.'
       })
-      return
     }
+
+    // check that the session user is the same as the user from the request parameters
+    if (!(await validateSessionUser(request, response, id))) return
 
     // get the user data from the validated request body
     const { email, hash, name, notifications } = validatedRequestBody.data
 
-    // get the user by id
+    // get the user by id and check if they exist
     const user: PrivateUser | null = await selectPrivateUserByUserId(id)
-
-    // if the user does not exist, return a preformatted response to the client
-    if (user === null) {
+    if (!user) {
       response.json({
         status: 404,
         data: null,
@@ -107,6 +97,7 @@ export async function updatePrivateUserController (request: Request, response: R
       })
       return
     }
+
     // update the parsed jwt token with the updated user data
     parsedJwt.auth = {
       id: user.id,
@@ -129,9 +120,8 @@ export async function updatePrivateUserController (request: Request, response: R
       notifications: user.notifications
     }
 
-    // update the session with the new jwt token
+    // update the session with the new jwt token and authorization header
     request.session.jwt = newJwt
-    // update the authorization header with the new jwt token
     response.header({
       authorization: newJwt
     })
@@ -149,45 +139,31 @@ export async function updatePrivateUserController (request: Request, response: R
   }
 }
 
-
 /** Express controller for getting user by user id
- * @endpoint GET /apis/user/id/:idGoesHere
+ * @endpoint GET /apis/user/id/:id
  * @param request an object containing the user id in params
  * @param response an object modeling the response that will be sent to the client
- * @returns response with the user data or error
- **/
+ * @returns response with the user data or error **/
 export async function getUserByUserIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the user id from params
-    const validationResult = PrivateUserSchema.pick({ id: true }).safeParse({ id: request.params.id })
-    // if the validation is unsuccessful, return a preformatted response to the client
+    // parse the user id from the request parameters and validate it
+    const validationResult = PrivateUserSchema.pick({ id: true }).safeParse(request.params)
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    // Get the user id from the validated parameters
+    // get the user id from the validated parameters
     const { id } = validationResult.data
 
-    // Get the logged-in user from session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
+    // check if the session user is the same as the user from the request parameters
+    if (!(await validateSessionUser(request, response, id))) return
 
-    // Security check: Only allow users to view their own data
-    if (id !== idFromSession) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You can only view your own user data.'
-      })
-      return
-    }
-
-    // Get the user by id
+    // get the user by id
     const user: PrivateUser | null = await selectPrivateUserByUserId(id)
 
-    // If the user is not found, return 404
+    // if the user is not found, return 404
     if (user === null) {
       response.json({
         status: 404,
@@ -197,8 +173,8 @@ export async function getUserByUserIdController (request: Request, response: Res
       return
     }
 
-    // Return the user data (without sensitive fields for public endpoints)
-    // For now returning full private user since it's authenticated
+    // return the user data (without sensitive fields for public endpoints)
+    // for now returning full private user since it's authenticated
     response.json({
       status: 200,
       data: user,
@@ -210,31 +186,3 @@ export async function getUserByUserIdController (request: Request, response: Res
     serverErrorResponse(response, error.message)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
