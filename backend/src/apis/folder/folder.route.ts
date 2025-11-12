@@ -6,7 +6,7 @@ import {
   getFolderByFolderIdController,
   getFolderByFolderNameController,
   getFoldersByParentFolderIdController,
-  getFoldersByUserIdController
+  getFoldersByUserIdController, deleteFolderController
 } from './folder.controller.ts'
 
 
@@ -19,6 +19,7 @@ router.route('/')
 router.route('/id/:id')
   .get(isLoggedInController, getFolderByFolderIdController)
   .put(isLoggedInController, updateFolderController)
+  .delete(isLoggedInController, deleteFolderController)
 
 router.route('/parentFolderId/:parentFolderId')
 .get(isLoggedInController, getFoldersByParentFolderIdController)

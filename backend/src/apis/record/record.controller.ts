@@ -130,7 +130,7 @@ export async function updateRecordController (request: Request, response: Respon
 }
 
 /** Express controller for deleting a record
- * @endpoint DELETE /apis/record/:id
+ * @endpoint DELETE /apis/record/id/:id
  * @param request an object containing the record id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns success response or error **/
@@ -146,17 +146,6 @@ export async function deleteRecordController (request: Request, response: Respon
 
     // get the record id from the validated request parameters
     const { id } = validatedRequestParams.data
-
-    // get the user from the current session and check if they are signed in
-    const user = request.session?.user
-    if (!user) {
-      response.json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized: Please log in to perform this action.'
-      })
-      return
-    }
 
     // get the record by id and check if it exists
     const record = await selectRecordByRecordId(id)
