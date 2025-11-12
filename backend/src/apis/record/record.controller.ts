@@ -132,20 +132,23 @@ export async function putRecordController (request: Request, response: Response)
  * @endpoint GET /apis/record/id/:id
  * @param request an object containing the record id in params
  * @param response an object modeling the response that will be sent to the client
- * @returns response with the record data or null if not found **/
+ * @returns success response, null if not found, or forbidden error **/
 export async function getRecordByIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the record id from parameters
-    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse({ id: request.params.id })
-    // if the validation is unsuccessful, return a preformatted response to the client
+    // parse the request params and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
-    //if the record is not found, return a preformatted response to the client
-    if (validatedRequestParams.data === null) {
+    // get the existing record first to verify ownership
+    const { id } = validatedRequestParams.data
+    const record: Record | null = await selectRecordByRecordId(id)
+
+    // if the record is not found, return a 404 error
+    if (record === null) {
       response.json({
         status: 404,
         data: null,
@@ -154,17 +157,21 @@ export async function getRecordByIdController (request: Request, response: Respo
       return
     }
 
-    // grab the record id from the parameters
-    const { id } = validatedRequestParams.data
+    // verify ownership using the existing record's folderId
+    const existingFolder: Folder | null = await selectFolderByFolderId(record.folderId)
+    const userId = existingFolder?.userId
 
-    // get the record
-    const record: Record | null = await selectRecordByRecordId(id)
+    // if the session user is not the folder's owner, return a 403 error
+    if (!(await validateSessionUser(request, userId))) return
 
-    //if the record is found, return the record attributes and a preformatted response to the client
+    // select the record
+    await selectRecordByRecordId(id)
+
+    // if the record is found, return the record attributes and a preformatted response to the client
     response.json({
       status: 200,
-      data: record,
-      message: 'Record selected by record id successfully selected!'
+      data: null,
+      message: record.name + ' selected by record id!'
     })
 
   } catch (error: any) {
