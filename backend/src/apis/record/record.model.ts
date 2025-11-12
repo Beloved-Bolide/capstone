@@ -243,10 +243,10 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
   return RecordSchema.array().parse(rowList) ?? null
 }
 
-/** Selects the record from the record table by id
+/** Selects the record from the record table by companyName
  * @param companyName the record's company name to search for in the record table
  * @returns Record or null if no record was found **/
-export async function selectRecordByCompanyName (companyName: string): Promise<Record | null> {
+export async function selectRecordsByCompanyName (companyName: string): Promise<Record[] | null> {
 
   // query the database to select the record by companyName
   const rowList = await sql`
@@ -268,7 +268,7 @@ export async function selectRecordByCompanyName (companyName: string): Promise<R
     WHERE company_name = ${companyName}`
 
   // return the result as a single record or null if no record was found
-  return RecordSchema.array().max(1).parse(rowList)[0] ?? null
+  return RecordSchema.array().parse(rowList) ?? null
 }
 
 /** Selects the record from the record table by when it was last accessed
@@ -297,4 +297,32 @@ export async function selectRecordsByLastAccessedAt (lastAccessedAt: Date): Prom
 
   // return the result as an array of records, or null if no records were found
   return RecordSchema.array().parse(rowList) ?? null
+}
+
+/** Selects the record from the record table by name
+ * @param name the record's name to search for in the record table
+ * @returns Record or null if no record was found **/
+export async function selectRecordByName (name: string): Promise<Record | null> {
+
+  // query the database to select the record by name
+  const rowList = await sql`
+    SELECT 
+      id,
+      folder_id,
+      category_id,
+      amount,
+      company_name,
+      coupon_code,
+      description,
+      exp_date,
+      last_accessed_at,
+      name,
+      notify_on,
+      product_id,
+      purchase_date
+    FROM record
+    WHERE name = ${name}`
+
+  // return the result as a single record or null if no record was found
+  return RecordSchema.array().max(1).parse(rowList)[0] ?? null
 }

@@ -11,8 +11,9 @@ import {
   selectRecordByRecordId,
   selectRecordsByFolderId,
   selectRecordsByCategoryId,
-  selectRecordByCompanyName,
-  selectRecordsByLastAccessedAt
+  selectRecordsByCompanyName,
+  selectRecordsByLastAccessedAt,
+  selectRecordByName
 } from './record.model.ts'
 
 
@@ -296,7 +297,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
  * @param request an object containing the companyName in params
  * @param response an object modeling the response that will be sent to the client
  * @returns success response or error **/
-export async function getRecordByCompanyNameController (request: Request, response: Response): Promise<void> {
+export async function getRecordsByCompanyNameController (request: Request, response: Response): Promise<void> {
   try {
 
     // parse the companyName from the request parameters and check if it's valid
@@ -312,32 +313,43 @@ export async function getRecordByCompanyNameController (request: Request, respon
       response.json({
         status: 404,
         data: null,
-        message: 'No record found with that company name because that company name does not exist.'
+        message: 'No records found with that company name because that company name does not exist.'
       })
       return
     }
 
-    // get the record by company name and check if it exists
-    const record: Record | null = await selectRecordByCompanyName(companyName)
-    if (!record) {
+    // get the records by company name and check if it exists
+    const records: Record[] | null = await selectRecordsByCompanyName(companyName)
+    if (!records) {
       response.json({
         status: 404,
         data: null,
-        message: 'No record found with that company name.'
+        message: 'No records found with that company name.'
       })
       return
     }
 
-    // select the folder, user id from the existing folder, and verify ownership
-    const existingFolder: Folder | null = await selectFolderByFolderId(record.folderId)
+    // get the folderId from the first record in the validated request body and verify it exists
+    const folderId = records[0]?.folderId
+    if (!folderId) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No records found for that company name.'
+      })
+      return
+    }
+
+    // select the first folder, user id from the existing folder, and verify ownership
+    const existingFolder: Folder | null = await selectFolderByFolderId(folderId)
     const userId = existingFolder?.userId
     if (!(await validateSessionUser(request, response, userId))) return
 
     // return a success response
     response.json({
       status: 200,
-      data: record,
-      message: record.name + ' selected by company name!'
+      data: records,
+      message: 'Records selected by company name!'
     })
 
   } catch (error: any) {
@@ -401,32 +413,57 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
   }
 }
 
+/** Express controller for getting record by name
+ * @endpoint GET /apis/record/name/:name
+ * @param request an object containing the record name in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns success response or error **/
+export async function getRecordByNameController (request: Request, response: Response): Promise<void> {
+  try {
 
+    // parse the name from the request parameters and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ name: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
 
+    // get the name from the validated request parameters and check if it exists
+    const { name } = validatedRequestParams.data
+    if (!name) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No record with that name because that record does not exist.'
+      })
+      return
+    }
 
+    // get the record by name and check if it exists
+    const record: Record | null = await selectRecordByName(name)
+    if (!record) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No record found with that name found.'
+      })
+      return
+    }
 
+    // select the folder, user id from the existing folder, and verify ownership
+    const existingFolder: Folder | null = await selectFolderByFolderId(record.folderId)
+    const userId = existingFolder?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
 
+    // return a success response
+    response.json({
+      status: 200,
+      data: record,
+      message: record.name + ' selected by name!'
+    })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}

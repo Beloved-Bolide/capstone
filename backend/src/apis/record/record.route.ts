@@ -6,8 +6,9 @@ import {
   getRecordsByFolderIdController,
   getRecordByRecordIdController,
   getRecordsByCategoryIdController,
-  getRecordByCompanyNameController,
-  getRecordsByLastAccessedAtController
+  getRecordsByCompanyNameController,
+  getRecordsByLastAccessedAtController,
+  getRecordByNameController
 } from './record.controller.ts'
 
 
@@ -28,9 +29,12 @@ router.route('/categoryId/:categoryId')
   .get(isLoggedInController, getRecordsByCategoryIdController)
 
 router.route('/companyName/:companyName')
-  .get(isLoggedInController, getRecordByCompanyNameController)
+  .get(isLoggedInController, getRecordsByCompanyNameController)
 
 router.route('/lastAccessedAt/:lastAccessedAt')
   .get(isLoggedInController, getRecordsByLastAccessedAtController)
+
+router.route('/name/:name')
+  .get(isLoggedInController, getRecordByNameController)
 
 export const recordRoute = { basePath, router }
