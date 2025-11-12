@@ -1,12 +1,16 @@
 import { type Request, type Response } from 'express'
+import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
+import { type Folder, selectFolderByFolderId } from '../folder/folder.model.ts'
 import {
   type Record,
   RecordSchema,
   insertRecord,
-  selectRecordByRecordId, updateRecord, selectRecordsByFolderId, selectRecordsByCategoryId
+  updateRecord,
+  selectRecordByRecordId,
+  selectRecordsByFolderId,
+  selectRecordsByCategoryId
 } from './record.model.ts'
-import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
-import { type Folder, selectFolderByFolderId } from '../folder/folder.model.ts'
+import { validateSessionUser } from "../../utils/auth.utils.ts";
 
 
 /** Express controller for creating a new record
@@ -17,40 +21,28 @@ import { type Folder, selectFolderByFolderId } from '../folder/folder.model.ts'
 export async function postRecordController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the full record object from the request body
-    const validateRequestBody = RecordSchema.safeParse(request.body)
-    // if the validation is unsuccessful, return a preformatted response to the client
-    if (!validateRequestBody.success) {
-      zodErrorResponse(response, validateRequestBody.error)
+    // parse the request body and check if it's valid
+    const validatedRequestBody = RecordSchema.safeParse(request.body)
+    if (!validatedRequestBody.success) {
+      zodErrorResponse(response, validatedRequestBody.error)
       return
     }
 
-    // get the folder from the validated request body and get the user id from the folder
-    const folder: Folder | null = await selectFolderByFolderId(validateRequestBody.data.folderId)
-    const userId: string | undefined | null = folder?.userId
+    // get the folder from the validated request body and get the user id from that folder
+    const folder: Folder | null = await selectFolderByFolderId(validatedRequestBody.data.folderId)
+    const userId = folder?.userId
 
-    // get the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
-
-    // check if the user id from the request body matches the user id from the session
-    if (userId !== idFromSession) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You cannot create a record for another user.'
-      })
-      return
-    }
+    // if the session user is not the folder's owner, return a 403 error
+    if (!(await validateSessionUser(request, userId))) return
 
     // insert the new record data into the database
-    const insertedRecord = await insertRecord(validateRequestBody.data)
+    await insertRecord(validatedRequestBody.data)
 
     // return the success response to the client
     response.json({
       status: 200,
-      data: insertedRecord,
-      message: 'Record successfully inserted!'
+      data: null,
+      message: validatedRequestBody.data.name + ' successfully added!'
     })
 
   } catch (error: any) {
@@ -67,46 +59,19 @@ export async function postRecordController (request: Request, response: Response
 export async function updateRecordController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the record id coming from the request parameters
-    const validateRequestParams = RecordSchema.safeParse(request.params)
-    // if the validation of the params is unsuccessful, return a preformatted response to the client
-    if (!validateRequestParams.success) {
-      zodErrorResponse(response, validateRequestParams.error)
+    // parse the request params and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
-    // validate the record update request data coming from the request body
-    const validateRequestBody = RecordSchema.safeParse(request.body)
-    // if the validation of the body is unsuccessful, return a preformatted response to the client
-    if (!validateRequestBody.success) {
-      zodErrorResponse(response, validateRequestBody.error)
-      return
-    }
+    // get the record id from the validated request parameters and get the existing record
+    const { id } = validatedRequestParams.data
+    const existingRecord: Record | null = await selectRecordByRecordId(id)
 
-    // get the folder from the validated request body and get the user id from the folder
-    const folder: Folder | null = await selectFolderByFolderId(validateRequestBody.data.folderId)
-    const userId: string | undefined | null = folder?.userId
-
-    // get the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
-
-    // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
-      response.json({
-        status: 403,
-        data: null,
-        message: 'Forbidden: You cannot create a record for another user.'
-      })
-      return
-    }
-
-    // grab the record id from the validated request parameters
-    const { id } = validateRequestParams.data
-    // grab the record by id
-    const record: Record | null = await selectRecordByRecordId(id)
-    // if the record does not exist, return a preformatted response to the client
-    if (record === null) {
+    // if the record does not exist, return a 404 error
+    if (existingRecord === null) {
       response.json({
         status: 404,
         data: null,
@@ -115,40 +80,42 @@ export async function updateRecordController (request: Request, response: Respon
       return
     }
 
-    // grab the record data from the validated request body
-    const {
-      folderId,
-      categoryId,
-      amount,
-      companyName,
-      couponCode,
-      description,
-      expDate,
-      lastAccessedAt,
-      name,
-      notifyOn,
-      productId,
-      purchaseDate
-    } = validateRequestBody.data
+    // get the folder from the validated request body and get the user id from that folder
+    const folder: Folder | null = await selectFolderByFolderId(existingRecord.folderId)
+    const userId = folder?.userId
 
-    // update the record with the new data
-    record.folderId = folderId
-    record.categoryId = categoryId
-    record.amount = amount
-    record.companyName = companyName
-    record.couponCode = couponCode
-    record.description = description
-    record.expDate = expDate
-    record.lastAccessedAt = lastAccessedAt
-    record.name = name
-    record.notifyOn = notifyOn
-    record.productId = productId
-    record.purchaseDate = purchaseDate
+    // if the session user is not the folder's owner, return a 403 error
+    if (!(await validateSessionUser(request, userId))) return
+
+    // parse the request body and check if it's valid
+    const validatedRequestBody = RecordSchema.safeParse(request.body)
+    if (!validatedRequestBody.success) {
+      zodErrorResponse(response, validatedRequestBody.error)
+      return
+    }
+
+    // if updating folderId, verify the new folder also belongs to this user
+    if (validatedRequestBody.data.folderId !== existingRecord.folderId) {
+
+      // get the new folder's user id from the validated request body
+      const newFolder: Folder | null = await selectFolderByFolderId(validatedRequestBody.data.folderId)
+      const newFolderUserId = newFolder?.userId
+
+      // if the new folder's user id does not match the session user's id, return a 403 error
+      if (!(await validateSessionUser(request, newFolderUserId))) {
+        response.json({
+          status: 403,
+          data: null,
+          message: 'Forbidden: You cannot move a record to another user\'s folder.'
+        })
+        return
+      }
+    }
 
     // update the record in the database
-    await updateRecord(record)
+    await updateRecord(validatedRequestBody.data)
 
-    // if the record update was successful, return a preformatted response to the client
+    // return a preformatted response to the client upon successful update
     response.json({
       status: 200,
       data: null,
@@ -170,15 +137,15 @@ export async function getRecordByRecordIdController (request: Request, response:
   try {
 
     // validate the record id from parameters
-    const validateRequestParams = RecordSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse({ id: request.params.id })
     // if the validation is unsuccessful, return a preformatted response to the client
-    if (!validateRequestParams.success) {
-      zodErrorResponse(response, validateRequestParams.error)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
     //if the record is not found, return a preformatted response to the client
-    if (validateRequestParams.data === null) {
+    if (validatedRequestParams.data === null) {
       response.json({
         status: 404,
         data: null,
@@ -188,7 +155,7 @@ export async function getRecordByRecordIdController (request: Request, response:
     }
 
     // grab the record id from the parameters
-    const { id } = validateRequestParams.data
+    const { id } = validatedRequestParams.data
 
     // get the record
     const record: Record | null = await selectRecordByRecordId(id)
@@ -215,23 +182,23 @@ export async function getRecordsByFolderIdController (request: Request, response
   try {
 
     //validate the folderId from params
-    const validateRequestParams = RecordSchema.pick({ folderId: true }).safeParse({ folderId: request.params.folderId })
+    const validatedRequestParams = RecordSchema.pick({ folderId: true }).safeParse({ folderId: request.params.folderId })
     // if the validation is unsuccessful, return a preformatted response to the client
-    if (!validateRequestParams.success) {
-      zodErrorResponse(response, validateRequestParams.error)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
     // get the user id from the folder in the validated request body
-    const folder: Folder | null = await selectFolderByFolderId(validateRequestParams.data.folderId)
+    const folder: Folder | null = await selectFolderByFolderId(validatedRequestParams.data.folderId)
     const userId: string | undefined | null = folder?.userId
 
     // get the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
+    const sessionUser = request.session?.user
+    const sessionUserId = sessionUser?.id
 
     // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
+    if (userId !== sessionUserId) {
       response.json({
         status: 403,
         data: null,
@@ -241,7 +208,7 @@ export async function getRecordsByFolderIdController (request: Request, response
     }
 
     // deconstruct the folderId from the parameters
-    const { folderId } = validateRequestParams.data
+    const { folderId } = validatedRequestParams.data
 
     // if the folderId is not found,return a preformatted response to the client
     if (folderId === null) {
@@ -278,15 +245,15 @@ export async function getRecordsByCategoryIdController (request: Request, respon
   try {
 
     // parse the categoryId from the request parameters and check if it's valid
-    const validateRequestParams = RecordSchema.safeParse(request.params)
-    if (!validateRequestParams.success) {
-      zodErrorResponse(response, validateRequestParams.error)
+    const validatedRequestParams = RecordSchema.safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
     // get the record from the validated request parameters
     // if no records with this category id are found, return a 404 error
-    const records: Record[] | null = await selectRecordsByCategoryId(validateRequestParams.data.categoryId)
+    const records: Record[] | null = await selectRecordsByCategoryId(validatedRequestParams.data.categoryId)
     if (!records) {
       response.json({
         status: 404,
@@ -315,11 +282,11 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     const userId: string | undefined | null = folder?.userId
 
     // get the user id from the session
-    const userFromSession = request.session?.user
-    const idFromSession = userFromSession?.id
+    const sessionUser = request.session?.user
+    const sessionUserId = sessionUser?.id
 
     // if the user id from the request parameters does not match the user id from the session, return a preformatted response to the client
-    if (userId !== idFromSession) {
+    if (userId !== sessionUserId) {
       response.json({
         status: 403,
         data: null,
@@ -329,7 +296,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     }
 
     // deconstruct the categoryId from the parameters
-    const { categoryId } = validateRequestParams.data
+    const { categoryId } = validatedRequestParams.data
 
     // if the categoryId is not found, return a preformatted response to the client
     if (categoryId === null) {
@@ -353,11 +320,3 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     serverErrorResponse(response, error.message)
   }
 }
-
-
-
-
-
-
-
-

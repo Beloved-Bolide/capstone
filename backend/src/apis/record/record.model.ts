@@ -1,5 +1,5 @@
-import {z} from 'zod/v4'
-import {sql} from '../../utils/database.utils.ts'
+import { z } from 'zod/v4'
+import { sql } from '../../utils/database.utils.ts'
 
 
 /** schema for validating record objects
@@ -17,38 +17,38 @@ import {sql} from '../../utils/database.utils.ts'
  * @shape productId: string for the id of the product
  * @shape purchaseDate: date for the day of purchase **/
 export const RecordSchema = z.object({
-  id: z.uuidv7('Please provide a valid uuid for id'),
-  folderId: z.uuidv7('Please provide a valid uuid for folderId'),
-  categoryId: z.uuidv7('Please provide a valid uuid for categoryId'),
-  amount: z.coerce.number('Please provide a valid amount')
+  id: z.uuidv7('Please provide a valid uuid for id.'),
+  folderId: z.uuidv7('Please provide a valid uuid for folderId.'),
+  categoryId: z.uuidv7('Please provide a valid uuid for categoryId.'),
+  amount: z.coerce.number('Please provide a valid amount.')
     .nullable(),
-  companyName: z.string('Please provide a valid company name')
+  companyName: z.string('Please provide a valid company name.')
     .trim()
-    .max(64, 'Please provide a valid name (max 64 characters)')
+    .max(64, 'Please provide a valid name (max 64 characters).')
     .nullable(),
-  couponCode: z.string('Please provide a valid coupon code')
-    .max(32, 'Please provide a valid coupon code (max 32 characters)')
+  couponCode: z.string('Please provide a valid coupon code.')
+    .max(32, 'Please provide a valid coupon code (max 32 characters).')
     .trim()
     .nullable(),
-  description: z.string('Please provide a valid description')
-    .max(512, 'Please provide a valid description (max 512 characters)')
+  description: z.string('Please provide a valid description.')
+    .max(512, 'Please provide a valid description (max 512 characters).')
     .nullable(),
-  expDate: z.coerce.date('Please provide a valid expiration date')
+  expDate: z.coerce.date('Please provide a valid expiration date.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
-  lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time')
+  lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
-  name: z.string('Please provide a valid name')
+  name: z.string('Please provide a valid name.')
     .trim()
-    .max(32, 'Please provide a valid name (max 32 characters)')
+    .max(32, 'Please provide a valid name (max 32 characters).')
     .nullable(),
-  notifyOn: z.boolean('Please provide either true or false')
+  notifyOn: z.boolean('Please provide either true or false.')
     .nullable(),
-  productId: z.string('Please provide a valid productId')
-    .max(32, 'Please provide a valid productId (max 32 characters)')
+  productId: z.string('Please provide a valid productId.')
+    .max(32, 'Please provide a valid productId (max 32 characters).')
     .nullable(),
-  purchaseDate: z.coerce.date('Please provide a valid purchase date')
+  purchaseDate: z.coerce.date('Please provide a valid purchase date.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable()
 })
@@ -118,9 +118,7 @@ export async function insertRecord (record: Record): Promise<string> {
 
 /** updates a Record in the Record table
  * @param record the record to update
- * @returns {Promise<string>}'Record successfully updated!'
- **/
-
+ * @returns 'Record successfully updated!' **/
 export async function updateRecord (record: Record): Promise<string> {
 
   // validate the record object against the record schema
