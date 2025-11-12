@@ -237,8 +237,7 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
       product_id,
       purchase_date
     FROM record
-    WHERE
-      category_id = ${categoryId}`
+    WHERE category_id = ${categoryId}`
 
   // return the result as an array of records, or null if no records were found
   return RecordSchema.array().parse(rowList) ?? null
@@ -270,4 +269,32 @@ export async function selectRecordByCompanyName (companyName: string): Promise<R
 
   // return the result as a single record or null if no record was found
   return RecordSchema.array().max(1).parse(rowList)[0] ?? null
+}
+
+/** Selects the record from the record table by when it was last accessed
+ * @param lastAccessedAt the record's last accessed date to search for in the record table
+ * @returns Record array or null if no records were found **/
+export async function selectRecordsByLastAccessedAt (lastAccessedAt: Date): Promise<Record[] | null> {
+
+  // query the database to select the records by categoryId
+  const rowList = await sql`
+    SELECT
+      id,
+      folder_id,
+      category_id,
+      amount,
+      company_name,
+      coupon_code,
+      description,
+      exp_date,
+      last_accessed_at,
+      name,
+      notify_on,
+      product_id,
+      purchase_date
+    FROM record
+    WHERE last_accessed_at = ${lastAccessedAt}`
+
+  // return the result as an array of records, or null if no records were found
+  return RecordSchema.array().parse(rowList) ?? null
 }

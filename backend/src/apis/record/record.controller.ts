@@ -11,7 +11,8 @@ import {
   selectRecordByRecordId,
   selectRecordsByFolderId,
   selectRecordsByCategoryId,
-  selectRecordByCompanyName
+  selectRecordByCompanyName,
+  selectRecordsByLastAccessedAt
 } from './record.model.ts'
 
 
@@ -327,7 +328,7 @@ export async function getRecordByCompanyNameController (request: Request, respon
       return
     }
 
-    // select the folder, user id from the record, and verify ownership
+    // select the folder, user id from the existing folder, and verify ownership
     const existingFolder: Folder | null = await selectFolderByFolderId(record.folderId)
     const userId = existingFolder?.userId
     if (!(await validateSessionUser(request, response, userId))) return
@@ -337,6 +338,61 @@ export async function getRecordByCompanyNameController (request: Request, respon
       status: 200,
       data: record,
       message: record.name + ' selected by company name!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting record by when it was last accessed at
+ * @endpoint GET /apis/record/lastAccessedAt/:lastAccessedAt
+ * @param request an object containing the lastAccessedAt in params
+ * @param response an object modeling the response that will be sent to the client
+ * @returns success response or error **/
+export async function getRecordsByLastAccessedAtController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the companyName from the request parameters and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ lastAccessedAt: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // get the companyName from the validated request parameters and check if it exists
+    const { lastAccessedAt } = validatedRequestParams.data
+    if (!lastAccessedAt) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No records found that were last accessed at that time.'
+      })
+      return
+    }
+
+    // get the record by when it was last accessed and check if it exists
+    const records: Record[] | null = await selectRecordsByLastAccessedAt(lastAccessedAt)
+    if (!records || records[0] === undefined) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No record found with that were accessed at that time.'
+      })
+      return
+    }
+
+    // select the folder, user id from the existing folder, and verify ownership
+    const existingFolder: Folder | null = await selectFolderByFolderId(records[0].folderId)
+    const userId = existingFolder?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: records,
+      message: 'Records selected by when they were last accessed!'
     })
 
   } catch (error: any) {
