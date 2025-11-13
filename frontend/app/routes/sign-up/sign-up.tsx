@@ -110,6 +110,31 @@ export default function SignUpPage() {
                 : 'border-gray-300 focus: ring-slate-500'
               }`}
               />
+              {/* Name Field */}
+              <div>
+                <label
+                htmlFor="name"
+                className="block mb-2 text-sm font-medium text-gray-700">
+                  Name
+                </label>
+                <div className="relative">
+                  <input
+                  {...register('name')}
+                    type="text"
+                    id="name"
+                    placeholder="Enter name"
+                    className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.name
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus: ring-slate-500'
+                    }`}
+                  />
+                </div>
+                {errors.name && (
+                <p className="mt-1 text-sm
+                   text-red-500">{errors.name.message}</p>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
