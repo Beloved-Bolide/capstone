@@ -25,4 +25,4 @@ export default [
 
   ])
 
-] satisfies RouteConfig;
+] satisfies RouteConfig
