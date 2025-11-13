@@ -1,6 +1,6 @@
-import { fileURLToPath } from 'url';
-import { access } from 'fs/promises';
-import path, { dirname } from 'path';
+import { fileURLToPath } from 'url'
+import { access } from 'fs/promises'
+import path, { dirname } from 'path'
 
 // Get the absolute path of this loader file and its directory
 const __filename = fileURLToPath(import.meta.url);

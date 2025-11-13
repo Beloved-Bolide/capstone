@@ -1,46 +1,47 @@
-import React, {useState} from "react";
-import {ChevronDown} from "lucide-react";
+import React, { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 
-export default function ExpensesPage() {
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [customDropdownOpen, setCustomDropdownOpen] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState('This Month');
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+export default function ExpensesPage () {
+
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [customDropdownOpen, setCustomDropdownOpen] = useState(false)
+  const [selectedPeriod, setSelectedPeriod] = useState('This Month')
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   const monthlyData = [
-    {month: 'Jun', amount: 45},
-    {month: 'Jul', amount: 78},
-    {month: 'Aug', amount: 62},
-    {month: 'Sep', amount: 58},
-    {month: 'Oct', amount: 85},
-  ];
+    { month: 'Jun', amount: 45 },
+    { month: 'Jul', amount: 78 },
+    { month: 'Aug', amount: 62 },
+    { month: 'Sep', amount: 58 },
+    { month: 'Oct', amount: 85 }
+  ]
 
   const spendingCategories = [
-    {category: 'Grocery', percent: 45, change: '+12%', amount: 385.50, color: '#9CA3AF'},
-    {category: 'Restaurant', percent: 25, change: '-5%', amount: 214.20, color: '#D1D5DB'},
-    {category: 'Electronics', percent: 20, change: '+8%', amount: 171.36, color: '#374151'},
-    {category: 'Online', percent: 10, change: '+3%', amount: 85.68, color: '#6B7280'},
-  ];
+    { category: 'Grocery', percent: 45, change: '+12%', amount: 385.50, color: '#9CA3AF' },
+    { category: 'Restaurant', percent: 25, change: '-5%', amount: 214.20, color: '#D1D5DB' },
+    { category: 'Electronics', percent: 20, change: '+8%', amount: 171.36, color: '#374151' },
+    { category: 'Online', percent: 10, change: '+3%', amount: 85.68, color: '#6B7280' }
+  ]
 
   const customPeriods = {
     'Weekly': ['This Week', 'Last Week', 'Week of Oct 14', 'Week of Oct 7', 'Week of Sep 30'],
     'Monthly': ['This Month', 'Last Month', 'September', 'August', 'July'],
     'Quarterly': ['Q4 2024', 'Q3 2024', 'Q2 2024', 'Q1 2024'],
     'Yearly': ['2024', '2023', '2022', '2021']
-  };
+  }
 
   const handlePeriodSelect = (period: string) => {
-    setSelectedPeriod(period);
-    setCustomDropdownOpen(false);
-    setExpandedCategory(null);
-  };
+    setSelectedPeriod(period)
+    setCustomDropdownOpen(false)
+    setExpandedCategory(null)
+  }
 
   const toggleCategory = (category: string) => {
-    setExpandedCategory(expandedCategory === category ? null : category);
-  };
+    setExpandedCategory(expandedCategory === category ? null : category)
+  }
 
-  const maxAmount = Math.max(...monthlyData.map(d => d.amount));
+  const maxAmount = Math.max(...monthlyData.map(d => d.amount))
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -68,7 +69,7 @@ export default function ExpensesPage() {
             <div className="flex border-b border-gray-200">
               <button
                 onClick={() => {
-                  setSelectedPeriod('This Month');
+                  setSelectedPeriod('This Month')
                   setCustomDropdownOpen(false);
                 }}
                 className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
@@ -102,7 +103,7 @@ export default function ExpensesPage() {
                   }`}
                 >
                   {!['This Month', 'Last Month'].includes(selectedPeriod) ? selectedPeriod : 'Custom'}
-                  <ChevronDown className={`w-4 h-4 transition-transform ${customDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 transition-transform ${customDropdownOpen ? 'rotate-180' : ''}`}/>
                 </button>
 
                 {customDropdownOpen && (
@@ -114,7 +115,8 @@ export default function ExpensesPage() {
                         setExpandedCategory(null);
                       }}
                     ></div>
-                    <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-96 overflow-y-auto">
+                    <div
+                      className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-96 overflow-y-auto">
                       {Object.entries(customPeriods).map(([category, periods]) => (
                         <div key={category} className="border-b border-gray-100 last:border-b-0">
                           <button
@@ -122,7 +124,8 @@ export default function ExpensesPage() {
                             className="w-full px-4 py-3 text-left text-sm font-medium text-gray-900 hover:bg-gray-50 flex items-center justify-between"
                           >
                             {category}
-                            <ChevronDown className={`w-4 h-4 transition-transform ${expandedCategory === category ? 'rotate-180' : ''}`} />
+                            <ChevronDown
+                              className={`w-4 h-4 transition-transform ${expandedCategory === category ? 'rotate-180' : ''}`}/>
                           </button>
                           {expandedCategory === category && (
                             <div className="bg-gray-50">
@@ -166,12 +169,12 @@ export default function ExpensesPage() {
                     const isLast = index === monthlyData.length - 1;
                     return (
                       <div key={data.month} className="flex-1 flex flex-col items-center">
-                        <div className="w-full flex items-end justify-center" style={{height: '100%'}}>
+                        <div className="w-full flex items-end justify-center" style={{ height: '100%' }}>
                           <div
                             className={`w-full rounded-t transition-all ${
                               isLast ? 'bg-gray-800' : 'bg-gray-400'
                             }`}
-                            style={{height: `${height}%`}}
+                            style={{ height: `${height}%` }}
                           ></div>
                         </div>
                         <div className="mt-2 text-xs text-gray-600">{data.month}</div>
@@ -200,7 +203,7 @@ export default function ExpensesPage() {
                 </div>
                 <div className="pb-4 border-b border-gray-200">
                   <div className="text-sm text-gray-600 mb-1">Average Difference</div>
-                    {/*will change to green + if positive, red - if negative*/}
+                  {/*will change to green + if positive, red - if negative*/}
                   <div className="text-2xl font-bold text-lime-700">+ $85.00</div>
                 </div>
                 <div>
@@ -274,7 +277,7 @@ export default function ExpensesPage() {
                           <div className="flex items-center gap-2">
                             <div
                               className="w-3 h-3 rounded-full"
-                              style={{backgroundColor: category.color}}
+                              style={{ backgroundColor: category.color }}
                             ></div>
                             <span className="font-medium text-gray-900">{category.category}</span>
                           </div>
