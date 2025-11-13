@@ -50,7 +50,7 @@ export async function validateSessionUser (request: Request, response: Response,
     response.json({
       status: 403,
       data: null,
-      message: 'Forbidden: You do not have access to this resource. Please login with the correct credentials.'
+      message: 'Forbidden: You do not have access to this resource. Please sign-up with the correct credentials.'
     })
     return false
   }
@@ -64,7 +64,7 @@ export async function validateSessionUser (request: Request, response: Response,
     response.json({
       status: 403,
       data: null,
-      message: 'Forbidden: You do not have access to this resource. Please login with the correct credentials.'
+      message: 'Forbidden: You do not have access to this resource. Please sign-up with the correct credentials.'
     })
     return false
   }

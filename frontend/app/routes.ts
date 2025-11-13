@@ -7,18 +7,18 @@ export default [
     // Home at "/"
     index("./routes/home/home.tsx"),
 
-    // Dashboard at "/dashboard"
-    route("dashboard", "./routes/dashboard/dashboard.tsx"),
+/*    // Dashboard at "/dashboard"
+    route("dashboard", "./routes/dashboard/dashboard.tsx"),*/
 
-    // Login at "/login"
-    route("login", "./routes/login/login.tsx"),
+    // Login at "/sign-up"
+    route("sign-up", "./routes/sign-up/sign-up.tsx"),
 
-    // New File at "/new-file"
-    route("new-file", "./routes/new-file/new-file.tsx"),
+    /*// New File at "/new-file"
+    route("new-file", "./routes/new-file/new-file.tsx"),*/
 
-    // Expenses at "/expenses"
+  /*  // Expenses at "/expenses"
     route("expenses", "./routes/expenses/expenses.tsx"),
-
+*/
   ])
 
 ] satisfies RouteConfig;

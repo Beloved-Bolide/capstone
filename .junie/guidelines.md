@@ -405,7 +405,7 @@ When using Flowbite components, align props/variants with these tokens:
 ### General Rules
 
 1. **Indentation** - Use 2 spaces for indentation
-2. **File naming** - Use kebab-case for files (e.g., `root-layout.tsx`, `login.tsx`)
+2. **File naming** - Use kebab-case for files (e.g., `root-layout.tsx`, `sign-up.tsx`)
 3. **Component naming** - Use PascalCase for component names
 4. **Imports** - Group imports logically (React first, then third-party, then local)
 
@@ -437,7 +437,7 @@ Routes are configured in `app/routes.ts` using React Router v7's declarative API
 layout("./layouts/root-layout", [
   index("./routes/home/home"),           // "/"
   route("dashboard", "./routes/dashboard/dashboard"),  // "/dashboard"
-  route("login", "./routes/login/login"),              // "/login"
+  route("login", "./routes/sign-up/sign-up"),              // "/sign-up"
 ])
 ```
 
