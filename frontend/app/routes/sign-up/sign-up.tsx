@@ -1,19 +1,19 @@
-import { useState } from "react"
-import { Form, Link, useActionData } from "react-router"
-import { postSignUp, type SignUp, SignUpSchema } from "~/utils/models/sign-up.model"
+import { useState } from 'react'
+import { Form, Link, useActionData } from 'react-router'
+import { postSignUp, type SignUp, SignUpSchema } from '~/utils/models/sign-up.model'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { getValidatedFormData, useRemixForm } from "remix-hook-form"
-import { FieldError } from "~/components/FieldError"
-import { Eye, EyeOff } from "lucide-react"
-import { StatusMessage } from "~/components/StatusMessage"
-import type { FormActionResponse } from "~/utils/interfaces/FormActionResponse"
-import type { Route } from "./+types/sign-up"
+import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
+import { FieldError } from '~/components/FieldError'
+import { Eye, EyeOff } from 'lucide-react'
+import { StatusMessage } from '~/components/StatusMessage'
+import type { FormActionResponse } from '~/utils/interfaces/FormActionResponse'
+import type { Route } from './+types/sign-up'
 
 
 export function meta ({}: Route.MetaArgs) {
   return [
-    { title: "Sign Up - FileWise" },
-    // to be continued...
+    { title: 'Sign Up - FileWise' },
+    { name: 'description', content: 'Create your FileWise account' }
   ]
 }
 
@@ -21,7 +21,7 @@ const resolver = zodResolver(SignUpSchema)
 
 export async function action ({ request }: Route.ActionArgs): Promise<FormActionResponse> {
 
-  console.log("arrive Action")
+  console.log('arrive Action')
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<SignUp>(request, resolver)
 
   if (errors) {
@@ -36,13 +36,9 @@ export async function action ({ request }: Route.ActionArgs): Promise<FormAction
   return { success: true, status: response }
 }
 
-
 export default function SignUpPage () {
 
   const actionData = useActionData<typeof action>()
-
-  console.log(actionData)
-
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword] = useState(false)
@@ -52,7 +48,6 @@ export default function SignUpPage () {
     formState: { errors },
     register
   } = useRemixForm<SignUp>({ mode: 'onSubmit', resolver })
-  console.log(errors)
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -72,7 +67,7 @@ export default function SignUpPage () {
             Create Account
           </h2>
 
-          <Form onSubmit={handleSubmit} className="space-y-4" noValidate={true} method='POST'>
+          <Form onSubmit={handleSubmit} className="space-y-4" noValidate={true} method="POST">
 
             {/* Email Field */}
             <div>
@@ -164,7 +159,7 @@ export default function SignUpPage () {
                 <input
                   {...register('passwordConfirm')}
                   id="passwordConfirm"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm Password"
                   className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent${
                     errors.passwordConfirm
@@ -205,5 +200,5 @@ export default function SignUpPage () {
         </div>
       </div>
     </div>
-  );
+  )
 }

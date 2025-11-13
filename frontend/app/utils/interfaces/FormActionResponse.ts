@@ -1,4 +1,5 @@
-import type {Status} from "~/utils/interfaces/Status";
+import type { Status } from '~/utils/interfaces/Status'
+
 
 /**
  * FormActionResponse
@@ -8,5 +9,5 @@ import type {Status} from "~/utils/interfaces/Status";
  * - Success/failure response with status information
  */
 export type FormActionResponse =
-| { errors: Record<string, any>; defaultValues: unknown}
-| { success: boolean; status: Status };
+  | { errors: Record<string, any>; defaultValues: unknown }
+  | { success: boolean; status: Status };

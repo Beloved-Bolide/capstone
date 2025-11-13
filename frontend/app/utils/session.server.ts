@@ -1,6 +1,6 @@
-import { createCookieSessionStorage } from "react-router"
-import type { User } from "~/utils/models/user.model"
-import * as process from "node:process"
+import { createCookieSessionStorage } from 'react-router'
+import type { User } from '~/utils/models/user.model'
+import * as process from 'node:process'
 
 
 type SessionData = {
@@ -17,7 +17,7 @@ const { getSession, commitSession, destroySession } =
     {
       // a cookie from createCookie or the CookieOptions to create one
       cookie: {
-        name: "earl-grey",
+        name: 'earl-grey',
 
         // Expires can also be set (although maxAge overrides it when used in combination).
         // Note that this method is NOT recommended as `new Date` creates only one date on each server deployment, not a dynamic date in the future!
@@ -25,8 +25,8 @@ const { getSession, commitSession, destroySession } =
         // expires: new Date(Date.now() + 60_000),
         httpOnly: true,
         maxAge: 10800,
-        path: "/",
-        sameSite: "strict",
+        path: '/',
+        sameSite: 'strict',
         secrets: [process.env.SESSION_SECRET_1 as string],
         secure: true
       }
