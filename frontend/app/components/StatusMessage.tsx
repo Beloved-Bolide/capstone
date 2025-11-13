@@ -13,7 +13,7 @@ export function StatusMessage (props: StatusMessageProps) {
     return <></>
   }
 
-  // extract message from actionData or use default error message
+  // extract message from actionData or use a default error message
   const message = actionData.status?.message ?? 'an unexplained error occurred';
 
   // determine styling based on success status
