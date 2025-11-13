@@ -91,10 +91,12 @@ export default function FileWiseLanding () {
               >
                 About
               </button>
-              <button
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
-                Sign In
-              </button>
+              <a href="./sign-in">
+                <button
+                  className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
+                  Sign In
+                </button>
+              </a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -177,11 +179,13 @@ export default function FileWiseLanding () {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center gap-2">
-                  Start Free Trial
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
-                </button>
+                <a href="/sign-up">
+                  <button
+                    className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center gap-2">
+                    Start Free Trial
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
+                  </button>
+                </a>
                 <button
                   className="px-8 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all border-2 border-gray-200 hover:border-blue-300 shadow-lg">
                   Watch Demo
