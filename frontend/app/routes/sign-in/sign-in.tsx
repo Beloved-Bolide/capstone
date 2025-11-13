@@ -1,58 +1,98 @@
 import { useState } from "react"
-import { Form, Link, useActionData } from "react-router"
-import { postSignUp, type SignUp, SignUpSchema } from "~/utils/models/sign-up.model"
+import { Form, Link, redirect, useActionData } from "react-router"
+import { postSignIn, type SignIn, SignInSchema } from "~/utils/models/sign-in.model"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getValidatedFormData, useRemixForm } from "remix-hook-form"
 import { FieldError } from "~/components/FieldError"
 import { Eye, EyeOff } from "lucide-react"
 import { StatusMessage } from "~/components/StatusMessage"
 import type { FormActionResponse } from "~/utils/interfaces/FormActionResponse"
-import type { Route } from "./+types/sign-up"
+import type { Route } from "./+types/sign-in"
+import { commitSession, getSession } from "~/utils/session.server"
+import { jwtDecode } from "jwt-decode"
+import { UserSchema } from "~/utils/models/user.model"
+import { type Status } from "~/utils/interfaces/Status"
 
 
 export function meta ({}: Route.MetaArgs) {
   return [
-    { title: "Sign Up - FileWise" },
-    // to be continued...
+    { title: "Sign In - FileWise" },
+    { name: "description", content: "Sign in to your FileWise account" }
   ]
 }
 
-const resolver = zodResolver(SignUpSchema)
+// export async function loader({request}: Route.LoaderArgs) {
+//   // Get existing session from cookie
+//   const session = await getSession(
+//     request.headers.get('Cookie')
+//   )
+//
+//   // Check if the user is already authenticated
+//   if (session.has('profile')) {
+//     return redirect('/')
+//   }
+// }
 
-export async function action ({ request }: Route.ActionArgs): Promise<FormActionResponse> {
+const resolver = zodResolver(SignInSchema)
 
-  console.log("arrive Action")
-  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<SignUp>(request, resolver)
+export async function action ({ request }: Route.ActionArgs) {
+
+  // get existing session from cookie
+  const session = await getSession(
+    request.headers.get('Cookie')
+  )
+
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<SignIn>(request, resolver)
 
   if (errors) {
     return { errors, defaultValues }
   }
-  const response = await postSignUp(data)
-  console.log(response)
 
-  if (response.status !== 200) {
-    return { success: false, status: response }
+  const { result, headers } = await postSignIn(data)
+
+  const authorization = headers.get('authorization')
+
+  const expressionSessionCookie = headers.get('Set-Cookie')
+
+  if (result.status !== 200 || !authorization) {
+    return { success: false, status: result }
   }
-  return { success: true, status: response }
+
+  const parsedJwtToken = jwtDecode(authorization) as any
+
+  const validationResult = UserSchema.safeParse(parsedJwtToken.auth)
+
+  if (!validationResult.success) {
+    session.flash('error', 'user is malformed')
+    return { success: false, status: { status: 400, message: 'sign in attempt failed try again' } }
+  }
+
+  session.set('authorization', authorization)
+  session.set('user', validationResult.data)
+
+  const responseHeaders = new Headers()
+  responseHeaders.append('Set-Cookie', await commitSession(session))
+  if (expressionSessionCookie) {
+    responseHeaders.append('Set-Cookie', expressionSessionCookie)
+  }
+
+  return redirect('/feed', { headers: responseHeaders })
+
 }
 
 
-export default function SignUpPage () {
+export default function SignInPage () {
 
-  const actionData = useActionData<typeof action>()
-
-  console.log(actionData)
-
+  // const actionData = useActionData<typeof action>()
+  // console.log(actionData)
 
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword] = useState(false)
 
   const {
     handleSubmit,
     formState: { errors },
     register
-  } = useRemixForm<SignUp>({ mode: 'onSubmit', resolver })
-  console.log(errors)
+  } = useRemixForm<SignIn>({ mode: 'onSubmit', resolver })
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -69,7 +109,7 @@ export default function SignUpPage () {
         {/* Card */}
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-            Create Account
+            Sign In
           </h2>
 
           <Form onSubmit={handleSubmit} className="space-y-4" noValidate={true} method='POST'>
@@ -93,32 +133,6 @@ export default function SignUpPage () {
                 />
               </div>
               <FieldError errors={errors} field={'email'}/>
-            </div>
-
-            {/* Name Field */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block mb-2 text-sm font-medium text-gray-700">
-                Name
-              </label>
-              <div className="relative">
-                <input
-                  {...register('name')}
-                  type="text"
-                  id="name"
-                  placeholder="Enter Name"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.name
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus: ring-slate-500'
-                  }`}
-                />
-              </div>
-              {errors.name && (
-                <p className="mt-1 text-sm
-                   text-red-500">{errors.name.message}</p>
-              )}
             </div>
 
             {/* Password Field */}
@@ -155,50 +169,27 @@ export default function SignUpPage () {
               )}
             </div>
 
-            {/* Password Confirm Field */}
-            <div>
-              <label htmlFor="passwordConfirm" className="block mb-2 text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <div>
-                <input
-                  {...register('passwordConfirm')}
-                  id="passwordConfirm"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm Password"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent${
-                    errors.passwordConfirm
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus: ring-slate-500'
-                  }`}
-                />
-              </div>
-              {errors.passwordConfirm && (
-                <p className="mt-1 text-sm text-red-500">{errors.passwordConfirm.message} </p>
-              )}
-            </div>
-
             {/*Submit Button*/}
             <button
               type="submit"
 
               className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-lg transition-colors mt-6"
             >
-              Sign Up
+              Sign In
             </button>
 
-            {/* Success Message */}
-            <StatusMessage actionData={actionData}/>
+            {/*/!* Success Message *!/*/}
+            {/*<StatusMessage actionData={actionData}/>*/}
 
           </Form>
 
-          {/*Sign In Link*/}
+          {/*Sign Up Link*/}
           <div className="mt-6 text-center">
             <Link
-              to="/sign-in"
+              to="/sign-up"
               className="text-sm text-gray-600 hover:text-gray-900 underline"
             >
-              Already have an account? Sign In
+              Don't have an account? Sign Up
             </Link>
           </div>
 
