@@ -28,7 +28,7 @@ export async function loader ({ request }: Route.LoaderArgs) {
 
   // Check if the user is already authenticated
   if (session.has('user')) {
-    return redirect('/')
+    return redirect('/dashboard')
   }
 }
 
