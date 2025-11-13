@@ -1,9 +1,9 @@
-import {Search, Plus} from 'lucide-react';
-import {Link} from 'react-router';
+import {Search, Plus} from 'lucide-react'
+import {Link} from 'react-router'
 
 type NavbarProps = {
-  onMenuClick: () => void;
-};
+  onMenuClick: () => void
+}
 
 export function Navbar({onMenuClick}: NavbarProps) {
   return (
@@ -83,5 +83,5 @@ export function Navbar({onMenuClick}: NavbarProps) {
       </div>
     </div>
   </div>
-  );
+  )
 }

@@ -10,7 +10,7 @@ import { signInRoute } from './apis/sign-in/sign-in.route.ts'
 import { folderRoute } from './apis/folder/folder.route.ts'
 import { categoryRoute } from './apis/category/category.route.ts'
 import { recordRoute } from './apis/record/record.route.ts'
-import {userRoute} from "./apis/user/user.route.ts";
+import {userRoute} from "./apis/user/user.route.ts"
 
 // app class that extends the express application
 export class App {
