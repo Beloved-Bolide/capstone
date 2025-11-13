@@ -151,16 +151,16 @@ title: required pages
     - on
     - off
     - system default
-### [PROFILE SETTINGS]()
-- profile picture
-- profile name
-- profile bio
-- profile location
-- profile website
-- profile email
-- profile phone number
-- profile social media
-- profile tags
+### [USER SETTINGS]()
+- user picture
+- user name
+- user bio
+- user location
+- user website
+- user email
+- user phone number
+- user social media
+- user tags
 ### [ACCOUNT SETTINGS]()
 - name
 - email

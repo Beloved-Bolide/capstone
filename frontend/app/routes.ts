@@ -17,7 +17,7 @@ export default [
     // Sign in at "/sign-in"
     route('sign-in', './routes/sign-in/sign-in.tsx'),
 
-    // New File at "/new-file"
+    // New file at "/new-file"
     route('new-file', './routes/new-file/new-file.tsx'),
 
     // Expenses at "/expenses"

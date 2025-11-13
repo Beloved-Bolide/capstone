@@ -7,15 +7,15 @@ import { UserSchema } from '~/utils/models/user.model'
 
 export const SignUpSchema = UserSchema.omit({ id: true, notifications: true })
   .extend({
-    password: z.string('password is required')
-      .min(8, 'profile password cannot be less than 8 characters')
-      .max(32, 'profile password cannot be over 32 characters'),
-    passwordConfirm: z.string('password confirmation is required')
-      .min(8, 'password confirm cannot be less than 8 characters')
-      .max(32, 'profile password')
+    password: z.string('Password is required')
+      .min(8, 'User password cannot be less than 8 characters')
+      .max(32, 'User password cannot be over 32 characters'),
+    passwordConfirm: z.string('Password confirmation is required')
+      .min(8, 'Password confirm cannot be less than 8 characters')
+      .max(32, 'User password')
   })
   .refine(data => data.password === data.passwordConfirm, {
-    message: 'passwords do not match',
+    message: 'Passwords do not match',
     path: ['passwordConfirm']
   })
 

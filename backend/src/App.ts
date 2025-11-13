@@ -42,7 +42,7 @@ export class App {
 		}))
 	}
 
-	// private method for setting up routes in their basic sense (i.e., any route that performs an action on profiles starts with /profiles)
+	// private method for setting up routes in their basic sense (i.e., any route that performs an action on users starts with /users)
 	private routes (): void {
 		this.app.use(indexRoute.basePath, indexRoute.router)
     this.app.use(signUpRoute.basePath, signUpRoute.router)

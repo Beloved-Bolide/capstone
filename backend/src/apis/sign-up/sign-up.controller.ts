@@ -52,7 +52,7 @@ export async function signUpUserController (request: Request, response: Response
     // create a status message
     const status: Status = {
       status: 200,
-      message: 'Profile successfully created! Please check your email.',
+      message: 'User successfully created! Please check your email.',
       data: null
     }
 
