@@ -1,37 +1,36 @@
-import { useState } from "react"
-import { Form, Link, redirect, useActionData } from "react-router"
-import { postSignIn, type SignIn, SignInSchema } from "~/utils/models/sign-in.model"
+import { useState } from 'react'
+import { Form, Link, redirect, useActionData } from 'react-router'
+import { postSignIn, type SignIn, SignInSchema } from '~/utils/models/sign-in.model'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { getValidatedFormData, useRemixForm } from "remix-hook-form"
-import { FieldError } from "~/components/FieldError"
-import { Eye, EyeOff } from "lucide-react"
-import { StatusMessage } from "~/components/StatusMessage"
-import type { FormActionResponse } from "~/utils/interfaces/FormActionResponse"
-import type { Route } from "./+types/sign-in"
-import { commitSession, getSession } from "~/utils/session.server"
-import { jwtDecode } from "jwt-decode"
-import { UserSchema } from "~/utils/models/user.model"
-import { type Status } from "~/utils/interfaces/Status"
+import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
+import { FieldError } from '~/components/FieldError'
+import { Eye, EyeOff } from 'lucide-react'
+import type { Route } from './+types/sign-in'
+import { commitSession, getSession } from '~/utils/session.server'
+import { jwtDecode } from 'jwt-decode'
+import { UserSchema } from '~/utils/models/user.model'
+import { StatusMessage } from '~/components/StatusMessage'
 
 
 export function meta ({}: Route.MetaArgs) {
   return [
-    { title: "Sign In - FileWise" },
-    { name: "description", content: "Sign in to your FileWise account" }
+    { title: 'Sign In - FileWise' },
+    { name: 'description', content: 'Sign in to your FileWise account' }
   ]
 }
 
-// export async function loader({request}: Route.LoaderArgs) {
-//   // Get existing session from cookie
-//   const session = await getSession(
-//     request.headers.get('Cookie')
-//   )
-//
-//   // Check if the user is already authenticated
-//   if (session.has('profile')) {
-//     return redirect('/')
-//   }
-// }
+export async function loader ({ request }: Route.LoaderArgs) {
+
+  // Get existing session from cookie
+  const session = await getSession(
+    request.headers.get('Cookie')
+  )
+
+  // Check if the user is already authenticated
+  if (session.has('user')) {
+    return redirect('/')
+  }
+}
 
 const resolver = zodResolver(SignInSchema)
 
@@ -64,7 +63,7 @@ export async function action ({ request }: Route.ActionArgs) {
 
   if (!validationResult.success) {
     session.flash('error', 'user is malformed')
-    return { success: false, status: { status: 400, message: 'sign in attempt failed try again' } }
+    return { success: false, status: { status: 400, data: null, message: 'Sign in attempt failed! Try again' } }
   }
 
   session.set('authorization', authorization)
@@ -72,19 +71,17 @@ export async function action ({ request }: Route.ActionArgs) {
 
   const responseHeaders = new Headers()
   responseHeaders.append('Set-Cookie', await commitSession(session))
+
   if (expressionSessionCookie) {
     responseHeaders.append('Set-Cookie', expressionSessionCookie)
   }
 
-  return redirect('/feed', { headers: responseHeaders })
-
+  return redirect('/dashboard', { headers: responseHeaders })
 }
-
 
 export default function SignInPage () {
 
-  // const actionData = useActionData<typeof action>()
-  // console.log(actionData)
+  const actionData = useActionData<typeof action>()
 
   const [showPassword, setShowPassword] = useState(false)
 
@@ -112,7 +109,7 @@ export default function SignInPage () {
             Sign In
           </h2>
 
-          <Form onSubmit={handleSubmit} className="space-y-4" noValidate={true} method='POST'>
+          <Form onSubmit={handleSubmit} className="space-y-4" noValidate={true} method="POST">
 
             {/* Email Field */}
             <div>
@@ -178,9 +175,8 @@ export default function SignInPage () {
               Sign In
             </button>
 
-            {/*/!* Success Message *!/*/}
-            {/*<StatusMessage actionData={actionData}/>*/}
-
+            {/* Success Message */}
+            <StatusMessage actionData={actionData}/>
           </Form>
 
           {/*Sign Up Link*/}
@@ -192,9 +188,8 @@ export default function SignInPage () {
               Don't have an account? Sign Up
             </Link>
           </div>
-
         </div>
       </div>
     </div>
-  );
+  )
 }
