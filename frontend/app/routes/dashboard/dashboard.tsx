@@ -11,6 +11,7 @@ import {
   Settings,
   ChevronDown
 } from 'lucide-react'
+import type { Route } from './+types/dashboard'
 
 
 type Receipt = {
@@ -20,6 +21,15 @@ type Receipt = {
   category: string
   folder: string
 }
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Dashboard - FileWise" },
+    { name: "Your FileWise Dashboard"}
+  ]
+}
+
+
 
 export default function Dashboard () {
   const [selectedFolder, setSelectedFolder] = useState('All Folders')
@@ -69,7 +79,7 @@ export default function Dashboard () {
     time: '14:35:22',
     items: [
       { name: 'Face and hair Serum calms', qty: 1, price: 109.00, amount: 109.00 },
-      { name: 'Soap and scrotal salve', qty: 1, price: 52.50, amount: 52.50 },
+      { name: 'Soap and face wash', qty: 1, price: 52.50, amount: 52.50 },
       { name: 'Leather Desk', qty: 1, price: 6.00, amount: 6.00 }
     ],
     subtotal: 167.50,
