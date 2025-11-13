@@ -2,6 +2,7 @@
 .idea
 node_modules
 project.env
+.env.development
 .flowbite-react
 .react-router
 
