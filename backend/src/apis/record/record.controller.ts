@@ -153,7 +153,7 @@ export async function deleteRecordController (request: Request, response: Respon
       response.json({
         status: 401,
         data: null,
-        message: 'Unauthorized: Please log in to perform this action.'
+        message: 'Unauthorized: Please sign in to perform this action.'
       })
       return
     }

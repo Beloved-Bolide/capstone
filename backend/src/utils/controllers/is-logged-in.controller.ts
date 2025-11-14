@@ -10,10 +10,12 @@ export function isLoggedInController (request: Request, response: Response, next
   const status: Status = {
     status: 401,
     data: null,
-    message: 'Please sign-in.'
+    message: 'Please sign in.'
   }
 
   try {
+
+    console.log(request.session?.jwt)
 
     // grab the user from the session
     const user: PrivateUser | undefined = request.session?.user

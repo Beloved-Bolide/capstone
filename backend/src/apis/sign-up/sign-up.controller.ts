@@ -36,7 +36,7 @@ export async function signUpUserController (request: Request, response: Response
     // prepare and send activation email to a new user
     const mailGun: Mailgun = new Mailgun(formData)
     const mailgunClient = mailGun.client({ username: 'api', key: process.env.MAILGUN_API_KEY as string })
-    const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}activation/${activationToken}`
+    const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}/activation/${activationToken}`
     const message = `
       <h2>Welcome to FileWise!</h2>
       <p>To start storing your documents, you must confirm your account.</p>

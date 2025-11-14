@@ -26,9 +26,9 @@ export async function loader ({ request }: Route.LoaderArgs) {
     request.headers.get('Cookie')
   )
 
-  // check if user is already authenticated
+  // check if the user is already authenticated
   if (session.has('user')) {
-    return redirect('/')
+    return redirect('/dashboard')
   }
 }
 

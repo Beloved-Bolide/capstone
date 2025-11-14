@@ -21,7 +21,6 @@ const resolver = zodResolver(SignUpSchema)
 
 export async function action ({ request }: Route.ActionArgs): Promise<FormActionResponse> {
 
-  console.log('arrive action')
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<SignUp>(request, resolver)
 
   if (errors) {
@@ -29,7 +28,6 @@ export async function action ({ request }: Route.ActionArgs): Promise<FormAction
   }
 
   const response = await postSignUp(data)
-  console.log(response)
 
   if (response.status !== 200) {
     return { success: false, status: response }

@@ -3,24 +3,31 @@ import { Form, redirect, useActionData } from 'react-router'
 import { FileText } from 'lucide-react'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
 import { type Folder, FolderSchema, postFolder } from '~/utils/models/folder.model'
-import { commitSession, getSession } from '~/utils/session.server'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { jwtDecode } from 'jwt-decode'
 import { UserSchema } from '~/utils/models/user.model'
 import { StatusMessage } from '~/components/StatusMessage'
 import { useRef } from 'react'
+import { getSession } from '~/utils/session.server'
+import { z } from 'zod/v4'
+import { v7 as uuid } from 'uuid'
 
 
-const resolver = zodResolver(FolderSchema)
+const newFolderSchema = FolderSchema.pick({ name: true })
+type NewFolder = z.infer<typeof newFolderSchema>
+
+const resolver = zodResolver(newFolderSchema)
 
 export async function action ({ request }: Route.ActionArgs) {
 
+  const cookie =  request.headers.get('Cookie')
+
   // get existing session from cookie
   const session = await getSession(
-    request.headers.get('Cookie')
+    cookie
   )
 
-  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<Folder>(request, resolver)
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewFolder>(request, resolver)
 
   if (errors) {
     return { errors, defaultValues }
@@ -29,45 +36,27 @@ export async function action ({ request }: Route.ActionArgs) {
   // get user from the session
   const user = session.get('user')
   if (!user?.id) {
-    return { success: false, status: { status: 401, message: 'Unauthorized' }}
+    return { success: false, status: { status: 401, message: 'Unauthorized', data: null }}
   }
 
   // check authorization
   const authorization = session.get('authorization')
   if (!authorization) {
-    return { success: false, status: { status: 401, message: 'Missing authorization header' }}
+    return { success: false, status: { status: 401, message: 'Missing authorization header', data: null }}
   }
 
-  const { result, headers } = await postFolder(data, authorization)
+  const folder = {
+    id: uuid(),
+    parentFolderId: null, // needs work
+    userId: user.id,
+    name: data.name
+  }
 
-  const expressionSessionCookie = headers.get('Set-Cookie')
+  const { result, headers } = await postFolder(folder, authorization, cookie)
 
   if (result.status !== 200) {
     return { success: false, status: result }
   }
-
-  const parsedJwtToken = jwtDecode(authorization) as any
-  const validationResult = UserSchema.safeParse(parsedJwtToken.auth)
-
-  if (!validationResult.success) {
-    session.flash('error', 'User is malformed')
-    return { success: false, status: {
-        status: 400,
-        data: null,
-        message: 'Folder creation attempt failed! Please try again'
-      }}
-  }
-
-  session.set('user', validationResult.data)
-
-  const responseHeaders = new Headers()
-  responseHeaders.append('Set-Cookie', await commitSession(session))
-
-  if (expressionSessionCookie) {
-    responseHeaders.append('Set-Cookie', expressionSessionCookie)
-  }
-
-  return redirect('/dashboard', { headers: responseHeaders })
 }
 
 export default function NewFolder () {
@@ -79,10 +68,9 @@ export default function NewFolder () {
     handleSubmit,
     formState: { errors },
     register
-  } = useRemixForm<Folder>({
+  } = useRemixForm<NewFolder>({
     mode: 'onSubmit',
-    resolver,
-
+    resolver
   })
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -115,6 +103,7 @@ export default function NewFolder () {
         {errors.name && (
           <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
         )}
+
         {/* Success Message */}
         <StatusMessage actionData={actionData}/>
       </Form>

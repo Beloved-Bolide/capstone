@@ -36,7 +36,6 @@ export default function Dashboard () {
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [showNewFolderModal, setShowNewFolderModal] = useState(false)
 
   const folders = [
     {
