@@ -9,7 +9,7 @@ export default function RootLayout() {
 
   return (
   <>
-    <Navbar onMenuClick={handleMenuClick}/>
+    {/*<Navbar onMenuClick={handleMenuClick}/>*/}
     <Outlet/>
   </>
   )
