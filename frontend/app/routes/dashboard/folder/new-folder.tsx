@@ -45,7 +45,7 @@ export async function action ({ request }: Route.ActionArgs) {
   // create a new folder object with the required attributes
   const folder = {
     id: uuid(),
-    parentFolderId: '019a8369-f556-7148-a01f-349f08742619', // needs work
+    parentFolderId: null, // needs work
     userId: user.id,
     name: data.name
   }
