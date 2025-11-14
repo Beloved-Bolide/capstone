@@ -21,18 +21,20 @@ const resolver = zodResolver(SignUpSchema)
 
 export async function action ({ request }: Route.ActionArgs): Promise<FormActionResponse> {
 
-  console.log('arrive Action')
+  console.log('arrive action')
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<SignUp>(request, resolver)
 
   if (errors) {
     return { errors, defaultValues }
   }
+
   const response = await postSignUp(data)
   console.log(response)
 
   if (response.status !== 200) {
     return { success: false, status: response }
   }
+
   return { success: true, status: response }
 }
 
@@ -76,15 +78,15 @@ export default function SignUpPage () {
               </label>
               <div>
                 <input
-                  {...register('email')}
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.email
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus:ring-slate-500'
-                  }`}
+                {...register('email')}
+                id="email"
+                type="email"
+                placeholder="name@example.com"
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.email
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-slate-500'
+                }`}
                 />
               </div>
               <FieldError errors={errors} field={'email'}/>
@@ -93,25 +95,25 @@ export default function SignUpPage () {
             {/* Name Field */}
             <div>
               <label
-                htmlFor="name"
-                className="block mb-2 text-sm font-medium text-gray-700">
+              htmlFor="name"
+              className="block mb-2 text-sm font-medium text-gray-700">
                 Name
               </label>
               <div className="relative">
                 <input
-                  {...register('name')}
-                  type="text"
-                  id="name"
-                  placeholder="Enter Name"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.name
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus: ring-slate-500'
-                  }`}
+                {...register('name')}
+                type="text"
+                id="name"
+                placeholder="Enter Name"
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.name
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus: ring-slate-500'
+                }`}
                 />
               </div>
               {errors.name && (
-                <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+              <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
               )}
             </div>
 
@@ -122,30 +124,30 @@ export default function SignUpPage () {
               </label>
               <div>
                 <input
-                  {...register('password')}
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter Password"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.password
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus: ring-slate-500'
-                  }`}
+                {...register('password')}
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter Password"
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.password
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus: ring-slate-500'
+                }`}
                 />
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400"/>
+                  <EyeOff className="h-5 w-5 text-gray-400"/>
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400"/>
+                  <Eye className="h-5 w-5 text-gray-400"/>
                   )}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-500">{errors.password.message} </p>
+              <p className="mt-1 text-sm text-red-500">{errors.password.message} </p>
               )}
             </div>
 
@@ -156,41 +158,40 @@ export default function SignUpPage () {
               </label>
               <div>
                 <input
-                  {...register('passwordConfirm')}
-                  id="passwordConfirm"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm Password"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent${
-                    errors.passwordConfirm
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus: ring-slate-500'
-                  }`}
+                {...register('passwordConfirm')}
+                id="passwordConfirm"
+                type={showConfirmPassword ? 'text' : 'password'}
+                placeholder="Confirm Password"
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent${
+                errors.passwordConfirm
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus: ring-slate-500'
+                }`}
                 />
               </div>
               {errors.passwordConfirm && (
-                <p className="mt-1 text-sm text-red-500">{errors.passwordConfirm.message} </p>
+              <p className="mt-1 text-sm text-red-500">{errors.passwordConfirm.message} </p>
               )}
             </div>
 
             {/*Submit Button*/}
             <button
-              type="submit"
+            type="submit"
 
-              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-lg transition-colors mt-6"
+            className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-lg transition-colors mt-6"
             >
               Sign Up
             </button>
 
             {/* Success Message */}
             <StatusMessage actionData={actionData}/>
-
           </Form>
 
-          {/*Sign In Link*/}
+          {/* Sign In Link */}
           <div className="mt-6 text-center">
             <Link
-              to="/sign-in"
-              className="text-sm text-gray-600 hover:text-gray-900 underline"
+            to="/sign-in"
+            className="text-sm text-gray-600 hover:text-gray-900 underline"
             >
               Already have an account? Sign In
             </Link>

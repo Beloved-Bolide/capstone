@@ -20,7 +20,7 @@ export async function signUpUserController (request: Request, response: Response
     }
 
     // if validation succeeds, create a new user
-    const {id, email, name, password} = validationResult.data
+    const { id, email, name, password } = validationResult.data
     const hash = await setHash(password)
     const activationToken = setActivationToken()
     const user: PrivateUser = {
@@ -35,7 +35,7 @@ export async function signUpUserController (request: Request, response: Response
 
     // prepare and send activation email to a new user
     const mailGun: Mailgun = new Mailgun(formData)
-    const mailgunClient = mailGun.client({username: 'api', key: process.env.MAILGUN_API_KEY as string})
+    const mailgunClient = mailGun.client({ username: 'api', key: process.env.MAILGUN_API_KEY as string })
     const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}activation/${activationToken}`
     const message = `
       <h2>Welcome to FileWise!</h2>

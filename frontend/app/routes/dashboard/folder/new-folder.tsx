@@ -9,7 +9,6 @@ import { jwtDecode } from 'jwt-decode'
 import { UserSchema } from '~/utils/models/user.model'
 import { StatusMessage } from '~/components/StatusMessage'
 import { useRef } from 'react'
-import { uuid } from 'zod'
 
 
 const resolver = zodResolver(FolderSchema)
@@ -27,7 +26,7 @@ export async function action ({ request }: Route.ActionArgs) {
     return { errors, defaultValues }
   }
 
-  // get user from session
+  // get user from the session
   const user = session.get('user')
   if (!user?.id) {
     return { success: false, status: { status: 401, message: 'Unauthorized' }}
@@ -71,7 +70,7 @@ export async function action ({ request }: Route.ActionArgs) {
   return redirect('/dashboard', { headers: responseHeaders })
 }
 
-export default function NewFolder ({ loaderData }: Route.ComponentProps) {
+export default function NewFolder () {
 
   const actionData = useActionData<typeof action>()
   const formRef = useRef<HTMLFormElement>(null)
