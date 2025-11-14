@@ -25,7 +25,6 @@ export async function postFolder (data: Folder, authorization: string, cookie: s
       'Authorization': authorization,
       'Cookie': cookie ?? ''
     },
-    credentials: 'include',
     body: JSON.stringify(data)
   })
 
@@ -38,13 +37,14 @@ export async function postFolder (data: Folder, authorization: string, cookie: s
   return { headers, result }
 }
 
-export async function getFolder (data: Folder): Promise<{ result: Status, headers: Headers }> {
+export async function getFolder (data: Folder, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {
 
   const response = await fetch(`${process.env.REST_API_URL}/folder/${data}`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
-
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
     },
     body: null
   })

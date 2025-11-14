@@ -2,10 +2,8 @@ import type { Route } from './+types/new-folder'
 import { Form, redirect, useActionData } from 'react-router'
 import { FileText } from 'lucide-react'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
-import { type Folder, FolderSchema, postFolder } from '~/utils/models/folder.model'
+import { FolderSchema, postFolder } from '~/utils/models/folder.model'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { jwtDecode } from 'jwt-decode'
-import { UserSchema } from '~/utils/models/user.model'
 import { StatusMessage } from '~/components/StatusMessage'
 import { useRef } from 'react'
 import { getSession } from '~/utils/session.server'
@@ -20,31 +18,28 @@ const resolver = zodResolver(newFolderSchema)
 
 export async function action ({ request }: Route.ActionArgs) {
 
-  const cookie =  request.headers.get('Cookie')
-
-  // get existing session from cookie
-  const session = await getSession(
-    cookie
-  )
-
+  // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewFolder>(request, resolver)
 
+  // if there are errors, return them
   if (errors) {
     return { errors, defaultValues }
   }
 
-  // get user from the session
+  // get the cookie from the request headers and get the session from the cookie
+  const cookie =  request.headers.get('Cookie')
+  const session = await getSession(cookie)
+
+  // get the user and authorization from the session
   const user = session.get('user')
-  if (!user?.id) {
-    return { success: false, status: { status: 401, message: 'Unauthorized', data: null }}
-  }
-
-  // check authorization
   const authorization = session.get('authorization')
-  if (!authorization) {
-    return { success: false, status: { status: 401, message: 'Missing authorization header', data: null }}
+
+  // if the user or authorization is not found, return an error
+  if (!user?.id || !authorization) {
+    return { success: false, status: { status: 401, data: null, message: 'Unauthorized' }}
   }
 
+  // create a new folder object with the required attributes
   const folder = {
     id: uuid(),
     parentFolderId: null, // needs work
@@ -52,11 +47,16 @@ export async function action ({ request }: Route.ActionArgs) {
     name: data.name
   }
 
-  const { result, headers } = await postFolder(folder, authorization, cookie)
+  // post the folder to the server
+  const { result } = await postFolder(folder, authorization, cookie)
 
+  // if the post-request fails, return an error
   if (result.status !== 200) {
     return { success: false, status: result }
   }
+
+  // redirect to the dashboard
+  return redirect(`/dashboard`)
 }
 
 export default function NewFolder () {
