@@ -39,10 +39,13 @@ export async function action ({ request }: Route.ActionArgs) {
     return { success: false, status: { status: 401, data: null, message: 'Unauthorized' }}
   }
 
+  // get the parent folder id from the request query parameters
+  // code here
+
   // create a new folder object with the required attributes
   const folder = {
     id: uuid(),
-    parentFolderId: null, // needs work
+    parentFolderId: '019a8369-f556-7148-a01f-349f08742619', // needs work
     userId: user.id,
     name: data.name
   }
@@ -83,7 +86,7 @@ export default function NewFolder () {
   return (
     <div>
       <Form ref={formRef} onSubmit={handleSubmit} noValidate={true} method="POST">
-        <div className="flex flex-row">
+        <div className="flex flex-row w-full items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
           <label htmlFor="folder" className="block mb-2 text-sm font-medium text-gray-700">
             <FileText className="w-4 h-4"/>
           </label>
@@ -93,7 +96,7 @@ export default function NewFolder () {
             type="text"
             placeholder="New Folder"
             onKeyDown={handleKeyDown}
-            className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-900 bg-gray-50 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
               errors.name
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:ring-slate-500'
