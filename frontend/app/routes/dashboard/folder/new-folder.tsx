@@ -26,17 +26,21 @@ export async function action ({ request }: Route.ActionArgs) {
     return { errors, defaultValues }
   }
 
-  // get the cookie from the request headers and get the session from the cookie
-  const cookie =  request.headers.get('Cookie')
-  const session = await getSession(cookie)
+  // get the cookie from the request headers
+  const session = await getSession(request.headers.get('cookie'))
 
-  // get the user and authorization from the session
+  // get the cookie, user, and authorization from the session
+  const cookie =  request.headers.get('cookie')
   const user = session.get('user')
   const authorization = session.get('authorization')
 
   // if the user or authorization is not found, return an error
-  if (!user?.id || !authorization) {
-    return { success: false, status: { status: 401, data: null, message: 'Unauthorized' }}
+  if (!cookie || !user?.id || !authorization) {
+    return { success: false, status: {
+      status: 401,
+        data: null,
+        message: 'Unauthorized'
+    }}
   }
 
   // get the parent folder id from the request query parameters
@@ -85,6 +89,8 @@ export default function NewFolder () {
 
   return (
     <div>
+
+      {/* New Folder Form */}
       <Form ref={formRef} onSubmit={handleSubmit} noValidate={true} method="POST">
         <div className="flex flex-row w-full items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
           <label htmlFor="folder" className="block mb-2 text-sm font-medium text-gray-700">
@@ -104,7 +110,7 @@ export default function NewFolder () {
           />
         </div>
         {errors.name && (
-          <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+          <p className="text-sm text-red-500">{errors.name.message}</p>
         )}
 
         {/* Success Message */}

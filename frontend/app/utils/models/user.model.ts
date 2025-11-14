@@ -13,3 +13,25 @@ export const UserSchema = z.object({
 })
 
 export type User = z.infer<typeof UserSchema>
+
+
+export async function getUserById (id: string, authorization: string, cookie: string | null): Promise<User | null> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/user/id/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get user')
+  }
+
+  const user: User = await response.json()
+
+  return user ?? null
+}
