@@ -37,9 +37,9 @@ export async function postFolder (data: Folder, authorization: string, cookie: s
   return { headers, result }
 }
 
-export async function getFolder (data: Folder, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {
+export async function getFolderById (id: string, authorization: string, cookie: string | null): Promise<Folder | null> {
 
-  const response = await fetch(`${process.env.REST_API_URL}/folder/${data}`, {
+  const response = await fetch(`${process.env.REST_API_URL}/folder/id/${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export async function getFolder (data: Folder, authorization: string, cookie: st
     throw new Error('Failed to get folder')
   }
 
-  const headers = response.headers
-  const result = await response.json()
-  return { headers, result }
+  const folder: Folder = await response.json()
+
+  return folder ?? null
 }
