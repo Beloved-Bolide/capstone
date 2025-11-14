@@ -33,20 +33,17 @@ export async function action ({ request }: Route.ActionArgs) {
     return { success: false, status: { status: 401, message: 'Unauthorized' }}
   }
 
-  // create full folder object
-  const folderData: Folder = {
-    id: uuid(),
-    parentFolderId: null,
-    userId: user.id,
-    name: data.name
+  // check authorization
+  const authorization = session.get('authorization')
+  if (!authorization) {
+    return { success: false, status: { status: 401, message: 'Missing authorization header' }}
   }
 
-  const { result, headers } = await postFolder(folderData)
+  const { result, headers } = await postFolder(data, authorization)
 
-  const authorization = headers.get('authorization')
   const expressionSessionCookie = headers.get('Set-Cookie')
 
-  if (result.status !== 200 || !authorization) {
+  if (result.status !== 200) {
     return { success: false, status: result }
   }
 
@@ -56,13 +53,12 @@ export async function action ({ request }: Route.ActionArgs) {
   if (!validationResult.success) {
     session.flash('error', 'User is malformed')
     return { success: false, status: {
-      status: 400,
-      data: null,
-      message: 'Folder creation attempt failed! Please try again'
-    }}
+        status: 400,
+        data: null,
+        message: 'Folder creation attempt failed! Please try again'
+      }}
   }
 
-  session.set('authorization', authorization)
   session.set('user', validationResult.data)
 
   const responseHeaders = new Headers()
