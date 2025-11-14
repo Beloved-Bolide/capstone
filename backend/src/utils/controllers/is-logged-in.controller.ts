@@ -10,7 +10,7 @@ export function isLoggedInController (request: Request, response: Response, next
   const status: Status = {
     status: 401,
     data: null,
-    message: 'Please sign-up.'
+    message: 'Please sign-in.'
   }
 
   try {

@@ -21,14 +21,14 @@ export function meta ({}: Route.MetaArgs) {
 
 export async function loader ({ request }: Route.LoaderArgs) {
 
-  // Get existing session from cookie
+  // get existing session from cookie
   const session = await getSession(
     request.headers.get('Cookie')
   )
 
-  // Check if the user is already authenticated
+  // check if user is already authenticated
   if (session.has('user')) {
-    return redirect('/dashboard')
+    return redirect('/')
   }
 }
 
@@ -63,7 +63,10 @@ export async function action ({ request }: Route.ActionArgs) {
 
   if (!validationResult.success) {
     session.flash('error', 'user is malformed')
-    return { success: false, status: { status: 400, data: null, message: 'Sign in attempt failed! Try again' } }
+    return { success: false, status: {
+      status: 400,
+      data: null,
+      message: 'Sign in attempt failed! Try again' } }
   }
 
   session.set('authorization', authorization)

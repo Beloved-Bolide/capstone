@@ -66,5 +66,5 @@ export function ErrorBoundary ({ error }: Route.ErrorBoundaryProps) {
         </pre>
       )}
     </main>
-  );
+  )
 }

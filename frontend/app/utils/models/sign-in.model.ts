@@ -8,6 +8,7 @@ export const SignInSchema = SignUpSchema.pick({ email: true, password: true })
 
 export type SignIn = z.infer<typeof SignInSchema>
 
+
 export async function postSignIn (data: SignIn): Promise<{ result: Status, headers: Headers }> {
 
   const response = await fetch(`${process.env.REST_API_URL}/sign-in`, {
