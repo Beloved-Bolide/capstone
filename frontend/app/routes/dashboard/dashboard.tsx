@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react'
+import { Link, Outlet } from 'react-router'
+import type { Route } from './+types/dashboard'
 import {
   Search,
   Plus,
@@ -11,7 +13,6 @@ import {
   Settings,
   ChevronDown
 } from 'lucide-react'
-import type { Route } from './+types/dashboard'
 
 
 type Receipt = {
@@ -29,13 +30,13 @@ export function meta({}: Route.MetaArgs) {
   ]
 }
 
-
-
 export default function Dashboard () {
+
   const [selectedFolder, setSelectedFolder] = useState('All Folders')
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [showNewFolderModal, setShowNewFolderModal] = useState(false)
 
   const folders = [
     {
@@ -124,11 +125,13 @@ export default function Dashboard () {
 
         {/* Create Folder Button */}
         <div className="px-3 lg:px-4 pt-4">
-          <button
-            className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700">
+          <Link
+            to="/dashboard/new-folder"
+            className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700"
+          >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
-          </button>
+          </Link>
         </div>
 
         {/* Folders */}
@@ -175,6 +178,7 @@ export default function Dashboard () {
                           )}
                         </button>
                       ))}
+                      <Outlet/>
                     </div>
                   )}
                 </div>

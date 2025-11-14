@@ -21,6 +21,7 @@ export const SignUpSchema = UserSchema.omit({ id: true, notifications: true })
 
 export type SignUp = z.infer<typeof SignUpSchema>
 
+
 export async function postSignUp (data: SignUp): Promise<Status> {
 
   const modifiedSignUp = { id: uuid(), ...data, notifications: true }
