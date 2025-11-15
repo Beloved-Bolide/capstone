@@ -117,14 +117,14 @@ export default function SignInPage () {
 
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 rounded-md flex items-center justify-center">
             <img src="/logo-croppy.png" alt="FileWise logo"/>
           </div>
           <span className="text-2xl font-bold text-gray-800">FileWise</span>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
             Sign In
           </h2>
@@ -142,7 +142,7 @@ export default function SignInPage () {
                   id="email"
                   type="email"
                   placeholder="name@example.com"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     errors.email
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:ring-slate-500'
@@ -163,7 +163,7 @@ export default function SignInPage () {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter Password"
-                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     errors.password
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus: ring-slate-500'
@@ -189,7 +189,7 @@ export default function SignInPage () {
             {/*Submit Button*/}
             <button
               type="submit"
-              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-lg transition-colors mt-6"
+              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6"
             >
               Sign In
             </button>

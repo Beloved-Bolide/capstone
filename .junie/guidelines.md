@@ -105,7 +105,7 @@ Mostly use `px-3`/`px-4` and `py-2` for compact density
 
 #### Radius
 
-- `rounded-lg` - Clickable surfaces and cards
+- `rounded-md` - Clickable surfaces and cards
 - `rounded` - Small glyph elements
 - `rounded-full` - Avatars/pills
 
@@ -208,7 +208,7 @@ Use lucide-react icons sized to text density
 ### Button (Neutral)
 
 ```jsx
-<button className="inline-flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+<button className="inline-flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
   Label
 </button>
 ```
@@ -216,7 +216,7 @@ Use lucide-react icons sized to text density
 ### Icon Button
 
 ```jsx
-<button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+<button className="p-2 rounded-md hover:bg-gray-100 transition-colors">
   <Icon className="w-5 h-5 text-gray-600" />
 </button>
 ```
@@ -224,7 +224,7 @@ Use lucide-react icons sized to text density
 ### Primary Selected Button/State
 
 ```jsx
-<button className="px-3 py-2 text-sm font-medium rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+<button className="px-3 py-2 text-sm font-medium rounded-md bg-blue-50 text-blue-700 border border-blue-200">
   Selected
 </button>
 ```
@@ -237,7 +237,7 @@ Use lucide-react icons sized to text density
   <input
     type="text"
     placeholder="Find name or place..."
-    className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
   />
 </div>
 ```
@@ -245,7 +245,7 @@ Use lucide-react icons sized to text density
 ### Card Container
 
 ```jsx
-<div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 lg:p-6">
+<div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 lg:p-6">
   {/* content */}
 </div>
 ```
@@ -270,7 +270,7 @@ Use lucide-react icons sized to text density
 ### Mobile List Card
 
 ```jsx
-<div className="p-4 border rounded-lg bg-white border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+<div className="p-4 border rounded-md bg-white border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
   {/* content */}
 </div>
 ```
@@ -283,7 +283,7 @@ Use lucide-react icons sized to text density
     {/* sticky header */}
     <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
       <h2 className="text-lg font-semibold text-gray-900">Title</h2>
-      <button className="p-2 rounded-lg hover:bg-gray-100">
+      <button className="p-2 rounded-md hover:bg-gray-100">
         {/* close icon */}
       </button>
     </div>
@@ -335,7 +335,7 @@ Keep responsive variants adjacent to their base class (e.g., `p-3 lg:p-6`)
 
 ```jsx
 <button
-  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+  className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
     selected ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-gray-700 hover:bg-gray-50 border border-transparent'
   }`}
 >

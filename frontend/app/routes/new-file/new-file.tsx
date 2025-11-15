@@ -20,7 +20,7 @@ const NewFile: React.FC = () => {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-xl">
+        <div className="bg-white rounded-md shadow-xl">
           {/* Card Header */}
           <div className="bg-blue-50 px-6 py-4 rounded-t-lg border-b border-blue-100">
             <h2 className="text-lg font-medium text-blue-900">Upload Document</h2>
@@ -32,7 +32,7 @@ const NewFile: React.FC = () => {
             <div className="mb-8">
               <label
                 htmlFor="dropzone-file"
-                className="flex flex-col items-center justify-center w-full h-48 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors"
+                className="flex flex-col items-center justify-center w-full h-48 border-2 border-blue-300 border-dashed rounded-md cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors"
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <svg
@@ -81,7 +81,7 @@ const NewFile: React.FC = () => {
                     <input
                       type="text"
                       id="file-name"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                       placeholder="Enter file name"
                     />
                   </div>
@@ -98,7 +98,7 @@ const NewFile: React.FC = () => {
                       id="file-type"
                       value={fileType}
                       onChange={(e) => setFileType(e.target.value)}
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
                       <option value="">Select type...</option>
                       <option value="Receipt/Invoice">Receipt/Invoice</option>
@@ -119,7 +119,7 @@ const NewFile: React.FC = () => {
                     <input
                       type="date"
                       id="date"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
                   </div>
 
@@ -133,7 +133,7 @@ const NewFile: React.FC = () => {
                     </label>
                     <select
                       id="folder"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
                       <option value="">Select folder...</option>
                       <option value="documents">Documents</option>
@@ -154,7 +154,7 @@ const NewFile: React.FC = () => {
                     <input
                       type="text"
                       id="organization"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                       placeholder="Enter organization name"
                     />
                   </div>
@@ -170,7 +170,7 @@ const NewFile: React.FC = () => {
                     <input
                       type="text"
                       id="tags"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                       placeholder="Enter tags (comma separated)"
                     />
                   </div>
@@ -201,7 +201,7 @@ const NewFile: React.FC = () => {
                           type="number"
                           id="amount"
                           step="0.01"
-                          className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-8 p-2.5 placeholder-gray-400"
+                          className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full pl-8 p-2.5 placeholder-gray-400"
                           placeholder="0.00"
                         />
                       </div>
@@ -217,7 +217,7 @@ const NewFile: React.FC = () => {
                       </label>
                       <select
                         id="category"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       >
                         <option value="">Select category...</option>
                         <option value="food">Food & Dining</option>
@@ -241,7 +241,7 @@ const NewFile: React.FC = () => {
                       </label>
                       <select
                         id="payment-method"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       >
                         <option value="">Select method...</option>
                         <option value="cash">Cash</option>
@@ -263,7 +263,7 @@ const NewFile: React.FC = () => {
                       <input
                         type="date"
                         id="due-date"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       />
                     </div>
 
@@ -278,7 +278,7 @@ const NewFile: React.FC = () => {
                       <textarea
                         id="notes"
                         rows={2}
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                         placeholder="Any additional notes..."
                       />
                     </div>
@@ -288,7 +288,7 @@ const NewFile: React.FC = () => {
 
               {/* Status Messages */}
               {fileType && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
                   <p className="text-sm text-gray-700">
                     <span className="font-medium text-gray-900">Selected Type:</span> {fileType}
                     {showAmountField ? (
@@ -305,13 +305,13 @@ const NewFile: React.FC = () => {
             <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
               <button
                 type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-100 transition-colors cursor-pointer"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-100 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-colors cursor-pointer"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-colors cursor-pointer"
               >
                 Upload File
               </button>

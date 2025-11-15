@@ -23,7 +23,7 @@ export function StatusMessage (props: StatusMessageProps) {
   const textColor = isSuccess ? 'text-green-700' : 'text-red-700'
 
   return (
-    <div className={`mt-4 p-4 ${bgColor} border ${borderColor} rounded-lg flex items-start gap-3`}>
+    <div className={`mt-4 p-4 ${bgColor} border ${borderColor} rounded-md flex items-start gap-3`}>
       <div className="flex-1">
         {message && (
           <p className={`mt-1 text-sm ${textColor}`}>

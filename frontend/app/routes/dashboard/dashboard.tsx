@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { Link, Outlet } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
@@ -66,7 +66,7 @@ export default function Dashboard () {
     { id: 8, name: 'Walmart', date: 'Oct 2nd', category: 'Grocery', folder: 'Receipts' },
     { id: 9, name: 'Walmart', date: 'Oct 1st', category: 'Online', folder: 'Receipts' },
     { id: 10, name: 'Macbook', date: 'Oct 3rd', category: 'BestBuy', folder: 'Warranties' },
-    { id: 12, name: 'Macbook', date: 'Oct 3rd', category: 'Bestbuy', folder: 'Manuals' },
+    { id: 12, name: 'Macbook', date: 'Oct 3rd', category: 'BestBuy', folder: 'Manuals' },
     { id: 13, name: 'Vacuum Cleaner', date: 'Dyson.com', category: '', folder: 'Coupons' },
     { id: 14, name: 'Subway', date: '-', category: 'Restaurant', folder: 'Coupons' },
     { id: 15, name: 'Great Clips', date: '-', category: 'Grooming', folder: 'Coupons' }
@@ -105,14 +105,14 @@ export default function Dashboard () {
         <div className="px-4 lg:px-5 pb-5 pt-5 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 rounded-md flex items-center justify-center">
                 <img src="/logo-croppy.png" alt="logo"/>
               </div>
               <span className="text-xl font-bold text-gray-800">FileWise</span>
             </div>
             <button
               aria-label="Close sidebar"
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="lg:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               onClick={() => setSidebarOpen(false)}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@ export default function Dashboard () {
         <div className="px-3 lg:px-4 pt-4">
           <Link
             to="/dashboard/new-folder"
-            className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700"
+            className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium text-gray-700"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -145,7 +145,7 @@ export default function Dashboard () {
                   <div className="w-full flex items-center gap-2">
                     <button
                       onClick={() => setSelectedFolder(all.name)}
-                      className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         selectedFolder === all.name
                           ? 'bg-blue-50 text-blue-700 border border-blue-200'
                           : 'text-gray-700 hover:bg-gray-50 border border-transparent'
@@ -164,7 +164,7 @@ export default function Dashboard () {
                         <button
                           key={child.name}
                           onClick={() => setSelectedFolder(child.name)}
-                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             selectedFolder === child.name
                               ? 'bg-blue-50 text-blue-700 border border-blue-200'
                               : 'text-gray-700 hover:bg-gray-50 border border-transparent'
@@ -189,7 +189,7 @@ export default function Dashboard () {
               <button
                 key={folder.name}
                 onClick={() => setSelectedFolder(folder.name)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   selectedFolder === folder.name
                     ? 'bg-blue-50 text-blue-700 border border-blue-200'
                     : 'text-gray-700 hover:bg-gray-50 border border-transparent'
@@ -208,7 +208,7 @@ export default function Dashboard () {
         {/* Settings */}
         <div className="p-4 border-t border-gray-200">
           <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
             <Settings className="w-4 h-4"/>
             <span className="flex-1 text-left">Settings</span>
           </button>
@@ -226,7 +226,7 @@ export default function Dashboard () {
 
               {/* Mobile Menu Button */}
               <button aria-label="Open sidebar"
-                      className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="lg:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       onClick={() => setSidebarOpen(true)}>
                 <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
@@ -237,12 +237,12 @@ export default function Dashboard () {
               <div className="flex-1 max-w-2xl relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
                 <input type="text" placeholder="Find file..."
-                       className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                       className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
               </div>
 
               {/* New File Button */}
               <button aria-label="Add new"
-                      className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      className="p-2 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <Plus className="w-5 h-5 text-gray-600"/>
               </button>
             </div>
@@ -279,7 +279,7 @@ export default function Dashboard () {
                       <button
                         key={sf.name}
                         onClick={() => setSelectedFolder(sf.name)}
-                        className="w-full p-4 border rounded-lg bg-white border-gray-200 hover:bg-gray-50 transition-colors text-left"
+                        className="w-full p-4 border rounded-md bg-white border-gray-200 hover:bg-gray-50 transition-colors text-left"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
@@ -303,7 +303,7 @@ export default function Dashboard () {
                     {visibleFiles.map((file) => (
                       <div
                         key={file.id}
-                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                        className={`p-4 border rounded-md cursor-pointer transition-colors ${
                           selectedReceipt?.id === file.id
                             ? 'bg-blue-50 border-blue-200'
                             : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -330,13 +330,13 @@ export default function Dashboard () {
               {/* Desktop */}
               {isAllFolders ? (
 
-                // Show subfolders grid when "All Folders" is selected
+                // Show the subfolder grid when "All Folders" is selected
                 <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3">
                   {subfolders.map((sf) => (
                     <button
                       key={sf.name}
                       onClick={() => setSelectedFolder(sf.name)}
-                      className="p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 text-left transition-colors"
+                      className="p-4 bg-white rounded-md border border-gray-200 hover:bg-gray-50 text-left transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <sf.icon className="w-5 h-5 text-gray-600"/>
@@ -352,7 +352,7 @@ export default function Dashboard () {
                 </div>
               ) : (
 
-                // Show table of files for the selected subfolder
+                // Show a table of files for the selected subfolder
                 <table className="hidden lg:table w-full text-sm">
                   <thead>
                   <tr className="border-b border-gray-200">
@@ -382,7 +382,7 @@ export default function Dashboard () {
                       <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>
                       <td className="py-3 px-4">
                         <button aria-label="Row actions"
-                                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                           <ChevronDown className="w-4 h-4"/>
                         </button>
                       </td>
@@ -396,7 +396,7 @@ export default function Dashboard () {
 
           {/* Receipt Preview - Desktop */}
           <div className="hidden xl:block w-120 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6 border border-gray-200">
+            <div className="bg-white rounded-md shadow-sm p-4 lg:p-6 border border-gray-200">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-900">receipt</h3>
                 <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
@@ -521,7 +521,7 @@ export default function Dashboard () {
               <button
                 aria-label="Close preview"
                 onClick={() => setPreviewOpen(false)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="p-2 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -530,7 +530,7 @@ export default function Dashboard () {
               </button>
             </div>
             <div className="p-4 lg:p-6">
-              <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6 border border-gray-200">
+              <div className="bg-white rounded-md shadow-sm p-4 lg:p-6 border border-gray-200">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold text-gray-900">receipt</h3>
                   <div
