@@ -45,7 +45,7 @@ export class App {
 		}))
 	}
 
-	// private method for setting up routes in their basic sense (i.e., any route that performs an action on users starts with /users)
+	// private method for setting up routes in their basic sense
 	private routes (): void {
     this.app.use(healthRoute.basePath, healthRoute.router)
 		this.app.use(indexRoute.basePath, indexRoute.router)
