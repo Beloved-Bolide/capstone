@@ -140,6 +140,7 @@ export default function Dashboard () {
             {/* All Folders and Subfolders */}
             {(() => {
               const all = folders[0]
+
               return (
                 <div key={all.name} className="space-y-1">
                   <div className="w-full flex items-center gap-2">
