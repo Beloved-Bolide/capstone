@@ -21,28 +21,36 @@ const resolver = zodResolver(SignUpSchema)
 
 export async function action ({ request }: Route.ActionArgs): Promise<FormActionResponse> {
 
+  // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<SignUp>(request, resolver)
 
+  // if there are errors, return them
   if (errors) {
     return { errors, defaultValues }
   }
 
+  // post the form data to the server
   const response = await postSignUp(data)
 
+  // if the response is not successful, return false and an error message
   if (response.status !== 200) {
     return { success: false, status: response }
   }
 
+  // if the response is successful, return true and a success message
   return { success: true, status: response }
 }
 
 export default function SignUpPage () {
 
+  // get the action data from the server
   const actionData = useActionData<typeof action>()
 
+  // state to toggle the password visibility
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword] = useState(false)
 
+  // use the useRemixForm hook to handle form submission and validation
   const {
     handleSubmit,
     formState: { errors },
