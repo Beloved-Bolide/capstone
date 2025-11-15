@@ -20,7 +20,7 @@ export type NewFolder = z.infer<typeof newFolderSchema>
 
 export async function postFolder (data: Folder, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {
 
-  const response = await fetch(`${process.env.REST_API_URL}/folder/`, {
+  const response = await fetch(`${process.env.REST_API_URL}/folder`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -79,4 +79,25 @@ export async function getFolderByName (name: string, authorization: string, cook
   const folder: Folder = await response.json()
 
   return folder ?? null
+}
+
+export async function getFoldersByUserId (userId: string | null, authorization: string, cookie: string | null): Promise<Folder[] | null> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/folder/userId/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get folder')
+  }
+
+  const folders: Folder[] = await response.json()
+
+  return folders ?? null
 }

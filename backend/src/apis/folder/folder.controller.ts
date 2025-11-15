@@ -238,7 +238,7 @@ export async function getFoldersByParentFolderIdController (request: Request, re
 }
 
 /** Express controller for getting folders by user id
- * @endpoint GET /apis/folder/user/:id
+ * @endpoint GET /apis/folder/user/:userId
  * @param request an object containing the user id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
