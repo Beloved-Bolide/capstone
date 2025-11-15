@@ -1,5 +1,6 @@
 import { z } from 'zod/v4'
 import { sql } from '../../utils/database.utils.ts'
+import { selectRecordsByFolderId } from '../record/record.model.ts'
 
 
 /** schema for validating folder objects
@@ -72,6 +73,65 @@ export async function updateFolder (folder: Folder): Promise<string> {
       id = ${id}`
 
   return 'Folder successfully updated!'
+}
+
+/** Checks if a folder is a descendant of another folder
+ * @param potentialDescendantId the potential descendant's id
+ * @param ancestorId the ancestor's id
+ * @returns { Promise<boolean> } true if the potential descendant is a descendant of the ancestor, false otherwise **/
+export async function isDescendant(potentialDescendantId: string, ancestorId: string): Promise<boolean> {
+
+  // base case: if the potential descendant is the ancestor, return true
+  let currentId = potentialDescendantId
+
+  // recursive case: check if the current folder is the ancestor
+  while (currentId) {
+    const folder = await selectFolderByFolderId(currentId)
+    if (!folder || !folder.parentFolderId) return false
+    if (folder.parentFolderId === ancestorId) return true
+    currentId = folder.parentFolderId
+  }
+
+  // if we reach the root folder without finding the ancestor, return false
+  return false
+}
+
+/** Checks if a folder has any child folders
+ * @param id the folder's id to check for child folders
+ * @returns { Promise<boolean> } true if the folder has child folders, false otherwise **/
+export async function hasChildFolders (id: string): Promise<boolean> {
+
+  // get the child folders of the given folder
+  const childFolders = await selectFoldersByParentFolderId(id)
+
+  // return true if there are child folders, false otherwise
+  return childFolders ? childFolders.length > 0 : false
+}
+
+/** Checks if a folder has any records
+ * @param id the folder's id to check for records
+ * @returns { Promise<boolean> } true if the folder has records, false otherwise **/
+export async function hasRecords (id: string): Promise<boolean> {
+
+  // get the parent folders of the given folder
+  const records = await selectRecordsByFolderId(id)
+
+  // return true if there are records, false otherwise
+  return records? records.length > 0 : false
+}
+
+/** Deletes a folder from the folder table
+ * @param id the folder's id to delete
+ * @returns { Promise<string> } 'Folder successfully deleted!' **/
+export async function deleteFolder (id: string): Promise<string> {
+
+  // delete the folder from the database
+  await sql`
+    DELETE FROM folder 
+    WHERE id = ${id}`
+
+  // return a success message
+  return 'Folder successfully deleted!'
 }
 
 /** Selects the Folder from the folder table by id
