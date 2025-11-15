@@ -15,6 +15,7 @@ import { healthRoute } from './apis/health/health.route.ts'
 
 // app class that extends the express application
 export class App {
+
   // properties for the app, settings, middlewares, and routes
 	app: Application
 	redisStore: RedisStore
@@ -23,6 +24,7 @@ export class App {
 	constructor (redisClient: RedisClientType) {
 		this.redisStore = new RedisStore({ client: redisClient })
 		this.app = express()
+    this.app.locals.redisClient = redisClient
 		this.settings()
 		this.middlewares()
 		this.routes()
@@ -57,7 +59,7 @@ export class App {
 
 	// starts the server and tells the terminal to post a message that the server is running and on what port
 	public listen (): void  {
-		 this.app.listen(4200)
-		 console.log('Express application built successfully')
+    this.app.listen(4200)
+    console.log('Express application built successfully')
 	}
 }
