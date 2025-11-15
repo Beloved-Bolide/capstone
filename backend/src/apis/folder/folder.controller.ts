@@ -289,7 +289,7 @@ export async function getFolderByFolderIdController (request: Request, response:
 }
 
 /** Express controller for getting folders by parent folder id
- * @endpoint GET /apis/folder/parent/:parentFolderIdGoesHere
+ * @endpoint GET /apis/folder/parentFolderId/:parentFolderId
  * @param request an object containing the parent folder id in params (use 'root' for root folders)
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of child folders or error **/
@@ -353,7 +353,7 @@ export async function getFoldersByParentFolderIdController (request: Request, re
 }
 
 /** Express controller for getting folders by user id
- * @endpoint GET /apis/folder/user/:userId
+ * @endpoint GET /apis/folder/userId/:userId
  * @param request an object containing the user id in params
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
@@ -398,7 +398,7 @@ export async function getFoldersByUserIdController(request: Request, response: R
 }
 
 /** Express controller for getting folders by name
- * @endpoint GET /apis/folder/:name
+ * @endpoint GET /apis/folder/name/:name
  * @param request an object containing the folder name in the parameters
  * @param response an object modeling the response that will be sent to the client
  * @returns response with an array of folders or error **/
