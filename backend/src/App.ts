@@ -11,6 +11,7 @@ import { folderRoute } from './apis/folder/folder.route.ts'
 import { categoryRoute } from './apis/category/category.route.ts'
 import { recordRoute } from './apis/record/record.route.ts'
 import {userRoute} from "./apis/user/user.route.ts"
+import { healthRoute } from './apis/health/health.route.ts'
 
 // app class that extends the express application
 export class App {
@@ -44,6 +45,7 @@ export class App {
 
 	// private method for setting up routes in their basic sense (i.e., any route that performs an action on users starts with /users)
 	private routes (): void {
+    this.app.use(healthRoute.basePath, healthRoute.router)
 		this.app.use(indexRoute.basePath, indexRoute.router)
     this.app.use(signUpRoute.basePath, signUpRoute.router)
     this.app.use(signInRoute.basePath, signInRoute.router)
