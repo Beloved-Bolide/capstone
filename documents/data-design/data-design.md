@@ -59,4 +59,4 @@ Ref: folder.parent_folder_id > folder.id [delete: cascade]
 Ref: record.folder_id > folder.id [delete: cascade]
 ```
 
-![Capstone Project.png](Capstone%20Project.png)
+![Data Design](data-design.png)
