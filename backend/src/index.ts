@@ -1,7 +1,7 @@
 import { App } from './App'
 import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
-import type { PrivateUser } from './apis/user/user.model.ts'
+import type { PrivateUser } from './apis/user/user.model'
 
 
 declare module 'express-session' {
