@@ -2,17 +2,13 @@ import type { Route } from './+types/new-folder'
 import { Form, redirect, useActionData } from 'react-router'
 import { FileText } from 'lucide-react'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
-import { FolderSchema, postFolder } from '~/utils/models/folder.model'
+import { type NewFolder, newFolderSchema, postFolder } from '~/utils/models/folder.model'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { StatusMessage } from '~/components/StatusMessage'
 import { useRef } from 'react'
 import { getSession } from '~/utils/session.server'
-import { z } from 'zod/v4'
 import { v7 as uuid } from 'uuid'
 
-
-const newFolderSchema = FolderSchema.pick({ name: true })
-type NewFolder = z.infer<typeof newFolderSchema>
 
 const resolver = zodResolver(newFolderSchema)
 

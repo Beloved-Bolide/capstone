@@ -1,14 +1,12 @@
 import type { Route } from './+types/folder'
-import { Link, Outlet, useLoaderData } from 'react-router'
-import { getFolderById } from '~/utils/models/folder.model'
+import { Link } from 'react-router'
+import { getFolderByName } from '~/utils/models/folder.model'
 import React, { useState } from 'react'
 import { FileText } from 'lucide-react'
 import { getSession } from '~/utils/session.server'
-import { useParams } from 'react-router'
-import { getUserById } from '~/utils/models/user.model'
 
 
-export async function loader ({ request }: Route.LoaderArgs) {
+export async function loader ({ request, params }: Route.LoaderArgs) {
 
   // get the cookie from the request headers
   const session = await getSession(request.headers.get('cookie'))
@@ -20,29 +18,14 @@ export async function loader ({ request }: Route.LoaderArgs) {
 
   // if the user or authorization is not found, return an error
   if (!cookie || !user?.id || !authorization) {
-    return { success: false, status: {
-        status: 401,
-        data: null,
-        message: 'Unauthorized'
-      }}
+    return { folder: null }
   }
 
-  return { cookie, user, authorization }
-//
-//   const folder = await getFolderById(request, authorization, cookie)
-//
-//   if (!Folder) {
-//     throw new Response('Folder not found', { status: 404 })
-//   }
-//
-//   return folder
-// }
+  const folderName: string = 'All Folders'
 
-// export async function action ({ params, request }: Route.ActionArgs) {
-//   const formData = await request.formData()
-//   return putFolder(params.contactId, {
-//     name: formData.get('name') === 'true'
-//   })
+  const folder = await getFolderByName(folderName, authorization, cookie)
+
+  return { folder }
 }
 
 export default function Folder ({ loaderData }: Route.ComponentProps) {
@@ -65,24 +48,11 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
   //       message: 'Unauthorized'
   //     }}
   // }
-  const { cookie, user, authorization } = loaderData
 
-  const params = useParams()
-  const folderId = params.id
+  const { folder } = loaderData
+  if (!folder) return <>Folder not found</>
 
-  if (!folderId) {
-    return <div>Folder not found</div>
-  }
-
-  const folder = getFolderById(folderId, authorization, cookie)
-  const folderUser = getUserById(user.id, authorization, cookie)
-
-  // const folderData = {
-  //   id: folder.id,
-  //   parentFolderId: folder.parentFolderId,
-  //   userId: folder.userId,
-  //   name: folder.name
-  // }
+  const folderName = folder?.name
 
   const [selectedFolder, setSelectedFolder] = useState('All Folders')
 
@@ -90,10 +60,10 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
     <div id="folder" className="space-y-1 pl-8">
       <Link
         to="/folder"
-        key={folder.name}
-        onClick={() => setSelectedFolder(folder.name)}
+        key={folderName}
+        onClick={() => setSelectedFolder(folderName)}
         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-        selectedFolder === folder.name
+        selectedFolder === folderName
         ? 'bg-blue-50 text-blue-700 border border-blue-200'
         : 'text-gray-700 hover:bg-gray-50 border border-transparent'
         }`}
@@ -101,7 +71,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
           <label htmlFor="folder" className="block mb-2 text-sm font-medium text-gray-700">
             <FileText className="w-4 h-4"/>
           </label>
-          <span className="flex-1 text-left">{ folder.name }</span>
+          <span className="flex-1 text-left">{ folderName }</span>
       </Link>
     </div>
   )

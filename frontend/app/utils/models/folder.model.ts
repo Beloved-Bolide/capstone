@@ -12,8 +12,10 @@ export const FolderSchema = z.object({
     .min(1, 'Please provide a valid name. (min 1 characters)')
     .max(64, 'Please provide a valid name. (max 64 characters)')
 })
-
 export type Folder = z.infer<typeof FolderSchema>
+
+export const newFolderSchema = FolderSchema.pick({ name: true })
+export type NewFolder = z.infer<typeof newFolderSchema>
 
 
 export async function postFolder (data: Folder, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {
@@ -37,9 +39,30 @@ export async function postFolder (data: Folder, authorization: string, cookie: s
   return { headers, result }
 }
 
-export async function getFolderById (id: string, authorization: string, cookie: string | null): Promise<Folder | null> {
+export async function getFolderById (id: string | null, authorization: string, cookie: string | null): Promise<Folder | null> {
 
   const response = await fetch(`${process.env.REST_API_URL}/folder/id/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get folder')
+  }
+
+  const folder: Folder = await response.json()
+
+  return folder ?? null
+}
+
+export async function getFolderByName (name: string, authorization: string, cookie: string | null): Promise<Folder | null> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/folder/name/${name}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
