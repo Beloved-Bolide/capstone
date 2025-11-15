@@ -12,9 +12,10 @@ declare module 'express-session' {
   }
 }
 
-// instantiate a new app and pass it a port as an argument to start with (4200)
+// initialize the redis client
 let redisClient: RedisClientType | undefined
 
+// start the server
 async function main (): Promise<void> {
   if (redisClient === undefined) {
     redisClient = createClient({ socket: { host: process.env.REDIS_HOST } })
@@ -24,7 +25,7 @@ async function main (): Promise<void> {
     const app = new App(redisClient)
     app.listen()
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 
