@@ -21,39 +21,26 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
     return { folder: null }
   }
 
-  const folderName: string = 'All Folders'
+  // get the folder name from the request query parameters
+  const folderName: string = params.toString()
 
+  // get the folder by name from the server
   const folder = await getFolderByName(folderName, authorization, cookie)
 
+  // return the folder data
   return { folder }
 }
 
 export default function Folder ({ loaderData }: Route.ComponentProps) {
 
-  // const request = useLoaderData<typeof Request>()
-  //
-  // // get the cookie from the request headers
-  // const session = await getSession(request.headers.get('cookie'))
-  //
-  // // get the cookie, user, and authorization from the session
-  // const cookie =  request.headers.get('cookie')
-  // const user = session.get('user')
-  // const authorization = session.get('authorization')
-  //
-  // // if the user or authorization is not found, return an error
-  // if (!cookie || !user?.id || !authorization) {
-  //   return { success: false, status: {
-  //       status: 401,
-  //       data: null,
-  //       message: 'Unauthorized'
-  //     }}
-  // }
-
+  // destructure the folder data from the loaderData object
   const { folder } = loaderData
   if (!folder) return <>Folder not found</>
 
+  // get the folder name from the folder object
   const folderName = folder?.name
 
+  // state to store the selected folder
   const [selectedFolder, setSelectedFolder] = useState('All Folders')
 
   return (

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Form, Link, redirect, useActionData } from 'react-router'
-import { postSignIn, type SignIn, SignInSchema } from '~/utils/models/sign-in.model'
+import { type SignIn, SignInSchema, postSignIn } from '~/utils/models/sign-in.model'
+import { UserSchema } from '~/utils/models/user.model'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
 import { FieldError } from '~/components/FieldError'
@@ -8,7 +9,6 @@ import { Eye, EyeOff } from 'lucide-react'
 import type { Route } from './+types/sign-in'
 import { commitSession, getSession } from '~/utils/session.server'
 import { jwtDecode } from 'jwt-decode'
-import { UserSchema } from '~/utils/models/user.model'
 import { StatusMessage } from '~/components/StatusMessage'
 
 
@@ -41,53 +41,70 @@ export async function action ({ request }: Route.ActionArgs) {
     request.headers.get('Cookie')
   )
 
+  // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<SignIn>(request, resolver)
 
+  // if there are errors, return them
   if (errors) {
     return { errors, defaultValues }
   }
 
+  // post the form data to the server
   const { result, headers } = await postSignIn(data)
 
+  // get the authorization header from the response
   const authorization = headers.get('authorization')
 
+  // get the cookie from the response headers
   const expressionSessionCookie = headers.get('Set-Cookie')
 
+  // if the response is not successful or the authorization header is not found, return false and an error message
   if (result.status !== 200 || !authorization) {
     return { success: false, status: result }
   }
 
+  // parse the authorization header to extract the user information
   const parsedJwtToken = jwtDecode(authorization) as any
 
+  // validate the user information
   const validationResult = UserSchema.safeParse(parsedJwtToken.auth)
 
+  // if the user information is invalid, return false and an error message
   if (!validationResult.success) {
     session.flash('error', 'user is malformed')
-    return { success: false, status: {
-      status: 400,
-      data: null,
-      message: 'Sign in attempt failed! Try again' } }
+    return { success: false,
+      status: {
+        status: 400,
+        data: null,
+        message: 'Sign in attempt failed! Try again'
+      }
+    }
   }
 
+  // set the user information in the session
   session.set('authorization', authorization)
   session.set('user', validationResult.data)
-
   const responseHeaders = new Headers()
   responseHeaders.append('Set-Cookie', await commitSession(session))
 
+  // if the cookie is found, set it in the response headers
   if (expressionSessionCookie) {
     responseHeaders.append('Set-Cookie', expressionSessionCookie)
   }
 
+  // redirect to the dashboard
   return redirect('/dashboard', { headers: responseHeaders })
 }
 
 export default function SignInPage () {
 
+  // get the action data from the server
   const actionData = useActionData<typeof action>()
 
+  // state to toggle the password visibility
   const [showPassword, setShowPassword] = useState(false)
 
+  // use the useRemixForm hook to handle form submission and validation
   const {
     handleSubmit,
     formState: { errors },
