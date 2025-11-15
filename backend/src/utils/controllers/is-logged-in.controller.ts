@@ -15,8 +15,6 @@ export function isLoggedInController (request: Request, response: Response, next
 
   try {
 
-    console.log(request.session?.jwt)
-
     // grab the user from the session
     const user: PrivateUser | undefined = request.session?.user
 
