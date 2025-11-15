@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link, Outlet } from 'react-router'
 import type { Route } from './+types/dashboard'
+import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
+import { getSession } from '~/utils/session.server'
 import {
   Search,
   Plus,
@@ -30,24 +32,43 @@ export function meta({}: Route.MetaArgs) {
   ]
 }
 
-export default function Dashboard () {
+export async function loader ({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get('cookie'))
+  const cookie = request.headers.get('cookie')
+  const user = session.get('user')
+  const authorization = session.get('authorization')
+
+  if (!cookie || !user?.id || !authorization) {
+    return { folders: null }
+  }
+
+  const folders: Folder[] | null = await getFoldersByUserId(user.id, authorization, cookie)
+  return { folders }
+}
+
+export default function Dashboard ({ loaderData }: Route.ComponentProps) {
 
   const [selectedFolder, setSelectedFolder] = useState('All Folders')
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
 
+  // Transform backend folders into a hierarchical structure
+  const backendFolders = Array.isArray(loaderData?.folders) ? loaderData.folders : []
+  const allFoldersParent = backendFolders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
+  const childFolders = allFoldersParent ? backendFolders.filter(f => f.parentFolderId === allFoldersParent.id) : []
+  
   const folders = [
     {
       name: 'All Folders',
       icon: FolderOpen,
-      count: 4,
-      children: [
-        { name: 'Receipts', icon: FileText, count: 8 },
-        { name: 'Warranties', icon: FileText, count: 2 },
-        { name: 'Manuals', icon: FileText, count: 1 },
-        { name: 'Coupons', icon: FileText, count: 3 }
-      ]
+      count: childFolders.length,
+      children: childFolders.map(folder => ({
+        name: folder.name,
+        icon: FileText,
+        count: 0,
+        id: folder.id
+      }))
     },
     { name: 'Starred', icon: Star, count: 0 },
     { name: 'Recent', icon: RotateCw, count: 0 },
@@ -221,7 +242,7 @@ export default function Dashboard () {
         className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
 
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-3 lg:px-6 py-3 lg:py-4">
+        <div className="bg-white border-b border-gray-200 px-3 lg:px-4 py-3 lg:py-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 lg:gap-4 flex-1 min-w-0">
 
@@ -268,7 +289,7 @@ export default function Dashboard () {
 
           {/* Receipt List */}
           <div className="flex-1 overflow-y-auto bg-white">
-            <div className="p-3 lg:p-6">
+            <div className="p-3 lg:p-4">
 
               {/* Mobile: Show as cards */}
               <div className="lg:hidden space-y-3">
@@ -396,7 +417,7 @@ export default function Dashboard () {
           </div>
 
           {/* Receipt Preview - Desktop */}
-          <div className="hidden xl:block w-120 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
+          <div className="hidden xl:block w-120 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto">
             <div className="bg-white rounded-md shadow-sm p-4 lg:p-6 border border-gray-200">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-900">receipt</h3>
