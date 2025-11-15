@@ -101,7 +101,7 @@ export default function FileWiseLanding () {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+              className="md:hidden p-2 rounded-md hover:bg-gray-100"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="w-6 h-6"/> : <Menu className="w-6 h-6"/>}
@@ -113,19 +113,19 @@ export default function FileWiseLanding () {
             <div className="md:hidden mt-4 pb-4 space-y-3 border-t border-gray-200 pt-4">
               <button
                 onClick={() => scrollToSection('home')}
-                className="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium"
+                className="block w-full text-left px-4 py-2 rounded-md hover:bg-gray-100 font-medium"
               >
                 Home
               </button>
               <button
                 onClick={() => scrollToSection('features')}
-                className="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium"
+                className="block w-full text-left px-4 py-2 rounded-md hover:bg-gray-100 font-medium"
               >
                 Features
               </button>
               <button
                 onClick={() => scrollToSection('about')}
-                className="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 font-medium"
+                className="block w-full text-left px-4 py-2 rounded-md hover:bg-gray-100 font-medium"
               >
                 About
               </button>
@@ -245,7 +245,7 @@ export default function FileWiseLanding () {
               {/* Floating cards */}
               <div className="absolute -top-6 -right-6 bg-white rounded-xl shadow-xl p-4 animate-float">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-green-100 rounded-md flex items-center justify-center">
                     <Check className="w-6 h-6 text-green-600"/>
                   </div>
                   <div>
@@ -257,7 +257,7 @@ export default function FileWiseLanding () {
 
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-xl p-4 animate-float-delayed">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
                     <Zap className="w-6 h-6 text-blue-600"/>
                   </div>
                   <div>
@@ -494,7 +494,7 @@ export default function FileWiseLanding () {
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
             <div
-              className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+              className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md flex items-center justify-center">
               <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="currentColor">
                 <path
                   d="M12 2C10 2 8 3 8 5v2H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-2V5c0-2-2-3-4-3zm0 2c1 0 2 .5 2 1v2h-4V5c0-.5 1-1 2-1z"/>

@@ -49,7 +49,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
         to="/folder"
         key={folderName}
         onClick={() => setSelectedFolder(folderName)}
-        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+        className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
         selectedFolder === folderName
         ? 'bg-blue-50 text-blue-700 border border-blue-200'
         : 'text-gray-700 hover:bg-gray-50 border border-transparent'

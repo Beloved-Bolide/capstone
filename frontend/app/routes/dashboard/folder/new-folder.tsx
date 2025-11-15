@@ -88,8 +88,8 @@ export default function NewFolder () {
 
       {/* New Folder Form */}
       <Form ref={formRef} onSubmit={handleSubmit} noValidate={true} method="POST">
-        <div className="flex flex-row w-full items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
-          <label htmlFor="folder" className="block mb-2 text-sm font-medium text-gray-700">
+        <div className="flex gap-3 pl-3 py-1 rounded-md text-sm font-medium transition-colors border border-transparent">
+          <label htmlFor="folder" className="self-center block text-sm font-medium text-gray-700">
             <FileText className="w-4 h-4"/>
           </label>
           <input
@@ -98,7 +98,7 @@ export default function NewFolder () {
             type="text"
             placeholder="New Folder"
             onKeyDown={handleKeyDown}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-900 bg-gray-50 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            className={`w-full flex-1 items-center gap-3 px-2 py-2 rounded-md text-xs font-medium transition-colors text-gray-900 bg-gray-50 border border-gray-300  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent ${
               errors.name
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:ring-slate-500'

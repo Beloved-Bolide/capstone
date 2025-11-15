@@ -65,7 +65,7 @@ export default function ExpensesPage () {
         <div className="flex-1 overflow-y-auto p-4 lg:p-6">
 
           {/* Period Selector */}
-          <div className="bg-white rounded-lg border border-gray-200 mb-6">
+          <div className="bg-white rounded-md border border-gray-200 mb-6">
             <div className="flex border-b border-gray-200">
               <button
                 onClick={() => {
@@ -116,7 +116,7 @@ export default function ExpensesPage () {
                       }}
                     ></div>
                     <div
-                      className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-96 overflow-y-auto">
+                      className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-96 overflow-y-auto">
                       {Object.entries(customPeriods).map(([category, periods]) => (
                         <div key={category} className="border-b border-gray-100 last:border-b-0">
                           <button
@@ -154,7 +154,7 @@ export default function ExpensesPage () {
           {/* Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Monthly Bar Chart */}
-            <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
+            <div className="lg:col-span-2 bg-white rounded-md border border-gray-200 p-6">
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-xs text-gray-500">TOTAL SPENDING</div>
@@ -194,7 +194,7 @@ export default function ExpensesPage () {
 
             {/* Summary Card */}
             {/* think about adding more content here */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-md border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Summary</h3>
               <div className="space-y-4">
                 <div className="pb-4 border-b border-gray-200">
@@ -214,7 +214,7 @@ export default function ExpensesPage () {
             </div>
 
             {/* Spending Breakdown */}
-            <div className="lg:col-span-3 bg-white rounded-lg border border-gray-200 p-6">
+            <div className="lg:col-span-3 bg-white rounded-md border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">Spending Breakdown</h3>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
