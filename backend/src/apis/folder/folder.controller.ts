@@ -22,8 +22,6 @@ import {
 export async function postFolderController (request: Request, response: Response): Promise<void> {
   try {
 
-    console.log(request.body)
-
     // parse the new folder data from the request body and validate it
     const validatedRequestBody = FolderSchema.safeParse(request.body)
     if (!validatedRequestBody.success) {
