@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
-import { Link, Outlet } from 'react-router'
+import { Link, Outlet, redirect, useActionData } from 'react-router'
 import type { Route } from './+types/dashboard'
-import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
+import {
+  type Folder,
+  getFoldersByUserId,
+  type NewFolder,
+  newFolderSchema,
+  postFolder
+} from '~/utils/models/folder.model'
 import { getSession } from '~/utils/session.server'
 import {
   Search,
@@ -15,6 +21,10 @@ import {
   Settings,
   ChevronDown
 } from 'lucide-react'
+import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
+import { getValidatedFormData } from 'remix-hook-form'
+import { v7 as uuid } from 'uuid'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 
 type Receipt = {
@@ -32,6 +42,8 @@ export function meta({}: Route.MetaArgs) {
   ]
 }
 
+const resolver = zodResolver(newFolderSchema)
+
 export async function loader ({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('cookie'))
   const cookie = request.headers.get('cookie')
@@ -42,8 +54,57 @@ export async function loader ({ request }: Route.LoaderArgs) {
     return { folders: null }
   }
 
-  const folders: Folder[] | null = await getFoldersByUserId(user.id, authorization, cookie)
+  const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
   return { folders }
+}
+
+export async function action ({ request }: Route.ActionArgs) {
+
+  // get the form data from the request body
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewFolder>(request, resolver)
+
+  // if there are errors, return them
+  if (errors) {
+    return { errors, defaultValues }
+  }
+
+  // get the cookie from the request headers
+  const session = await getSession(request.headers.get('cookie'))
+
+  // get the cookie, user, and authorization from the session
+  const cookie = request.headers.get('cookie')
+  const user = session.get('user')
+  const authorization = session.get('authorization')
+
+  // if the user or authorization is not found, return an error
+  if (!cookie || !user?.id || !authorization) {
+    return {
+      success: false, status: {
+        status: 401,
+        data: null,
+        message: 'Unauthorized'
+      }
+    }
+  }
+
+  // get the parent folder id from the request query parameters
+  // code here
+
+  // create a new folder object with the required attributes
+  const folder = {
+    id: uuid(),
+    parentFolderId: null, // needs work
+    userId: user.id,
+    name: data.name
+  }
+
+  // post the folder to the server
+  const { result } = await postFolder(folder, authorization, cookie)
+
+  // if the post-request fails, return an error
+  if (result.status !== 200) {
+    return { success: false, status: result }
+  }
 }
 
 export default function Dashboard ({ loaderData }: Route.ComponentProps) {
@@ -63,10 +124,13 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
     total: 154.06
   }
 
+  const actionData = useActionData<typeof action>()
+
   const [selectedFolder, setSelectedFolder] = useState('All Folders')
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
 
   // // transform backend folders into a hierarchical structure
   // const backendFolders = Array.isArray(loaderData?.folders) ? loaderData.folders : []
@@ -80,7 +144,10 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
   // const isAllFolders = selectedFolder === 'All Folders'
   // const subfolders = folders[0]?.children ?? []
 
-  // const { folders } = loaderData
+  let { folders } = loaderData
+  if (!folders) {
+    folders = []
+  }
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -112,20 +179,31 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
 
         {/* Create Folder Button */}
         <div className="px-3 lg:px-4 pt-4">
-          <Link
-            to="/dashboard/new-folder"
+          <button
+            onClick={() => {setDisplayNewFolderForm(!displayNewFolderForm)}}
             className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium text-gray-700"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
-          </Link>
+          </button>
         </div>
 
         {/* Folders */}
         <div className="flex-1 overflow-y-auto px-3 lg:px-4 py-4">
           <div className="space-y-1">
 
-            <Outlet/>
+            <div>
+              {folders.map((folder) => (
+                <div key={folder.id}>
+                  {folder.name}
+                </div>
+              ))}
+              <AddFolderForm
+                displayNewFolderForm={displayNewFolderForm}
+                actionData={actionData}
+                setDisplayNewFolderForm={setDisplayNewFolderForm}
+              />
+            </div>
 
             {/*All Folders and Subfolders */}
             {/*{(() => {*/}
