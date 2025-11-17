@@ -81,7 +81,7 @@ export async function getFolderByName (name: string, authorization: string, cook
   return folder ?? null
 }
 
-export async function getFoldersByUserId (userId: string | null, authorization: string, cookie: string | null): Promise<Folder[] | null> {
+export async function getFoldersByUserId (userId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
 
   const response = await fetch(`${process.env.REST_API_URL}/folder/userId/${userId}`, {
     method: 'GET',
@@ -97,7 +97,5 @@ export async function getFoldersByUserId (userId: string | null, authorization: 
     throw new Error('Failed to get folder')
   }
 
-  const folders: Folder[] = await response.json()
-
-  return folders ?? null
+  return await response.json()
 }
