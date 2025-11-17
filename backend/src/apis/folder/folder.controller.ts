@@ -52,7 +52,7 @@ export async function postFolderController (request: Request, response: Response
 
     // return the success response to the client
     response.json({
-      status: 201,
+      status: 200,
       data: newFolder,
       message: 'New folder successfully created!'
     })
