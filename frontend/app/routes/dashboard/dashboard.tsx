@@ -193,16 +193,16 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
           <div className="space-y-1">
 
             <div>
-              {folders.map((folder) => (
-                <div key={folder.id}>
-                  {folder.name}
-                </div>
-              ))}
               <AddFolderForm
                 displayNewFolderForm={displayNewFolderForm}
                 actionData={actionData}
                 setDisplayNewFolderForm={setDisplayNewFolderForm}
               />
+              {folders.map((folder) => (
+                <div key={folder.id}>
+                  {folder.name}
+                </div>
+              ))}
             </div>
 
             {/*All Folders and Subfolders */}

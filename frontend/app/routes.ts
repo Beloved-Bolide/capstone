@@ -16,7 +16,6 @@ export default [
 
     // Dashboard at "/dashboard"
     route('dashboard', 'routes/dashboard/dashboard.tsx', [
-      route('new-folder', 'routes/dashboard/folder/new-folder.tsx'),
       route('folder', 'routes/dashboard/folder/folder.tsx'),
       route('folders', 'routes/dashboard/folder/folders.tsx')
     ]),
