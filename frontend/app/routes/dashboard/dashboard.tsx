@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, Outlet, redirect, useActionData } from 'react-router'
+import { Link, Outlet, redirect, useActionData, useLoaderData } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
   type Folder,
@@ -100,14 +100,25 @@ export async function action ({ request }: Route.ActionArgs) {
 
   // post the folder to the server
   const { result } = await postFolder(folder, authorization, cookie)
+  console.log('Dashboard action: ', result.data)
 
   // if the post-request fails, return an error
   if (result.status !== 200) {
     return { success: false, status: result }
   }
+
+  // return a success message
+  return {
+    success: true,
+    status: {
+      status: result.status,
+      data: result.data,
+      message: 'Folder created successfully'
+    }
+  }
 }
 
-export default function Dashboard ({ loaderData }: Route.ComponentProps) {
+export default function Dashboard ({ loaderData, actionData }: Route.ComponentProps) {
 
   const receiptDetail = {
     store: 'ABC Store',
@@ -124,14 +135,6 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
     total: 154.06
   }
 
-  const actionData = useActionData<typeof action>()
-
-  const [selectedFolder, setSelectedFolder] = useState('All Folders')
-  const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [previewOpen, setPreviewOpen] = useState(false)
-  const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
-
   // // transform backend folders into a hierarchical structure
   // const backendFolders = Array.isArray(loaderData?.folders) ? loaderData.folders : []
   // const allFoldersParent = backendFolders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
@@ -144,10 +147,19 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
   // const isAllFolders = selectedFolder === 'All Folders'
   // const subfolders = folders[0]?.children ?? []
 
+  // if there are no folders, set the array to an empty array
   let { folders } = loaderData
   if (!folders) {
     folders = []
   }
+
+  useActionData<typeof action>()
+
+  const [selectedFolder, setSelectedFolder] = useState('All Folders')
+  const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -192,17 +204,32 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
         <div className="flex-1 overflow-y-auto px-3 lg:px-4 py-4">
           <div className="space-y-1">
 
-            <div>
-              <AddFolderForm
-                displayNewFolderForm={displayNewFolderForm}
-                actionData={actionData}
-                setDisplayNewFolderForm={setDisplayNewFolderForm}
-              />
-              {folders.map((folder) => (
-                <div key={folder.id}>
-                  {folder.name}
-                </div>
-              ))}
+            <div className="w-full flex items-center gap-2">
+              <div>
+                <AddFolderForm
+                  displayNewFolderForm={displayNewFolderForm}
+                  actionData={actionData}
+                  setDisplayNewFolderForm={setDisplayNewFolderForm}
+                />
+                {folders.map((folder) => (
+                  <div key={folder.id}>
+                    <button
+                    onClick={() => setSelectedFolder(folder.name)}
+                    className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedFolder === folder.name
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                    : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                    }`}
+                    >
+                      <FolderOpen className="w-4 h-4"/>
+                      <span className="flex-1 text-left">{folder.name}</span>
+                      {/*{folders.length > 0 && (*/}
+                      {/*  <span className="text-xs text-gray-500">{folders.length}</span>*/}
+                      {/*)}*/}
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/*All Folders and Subfolders */}
@@ -212,20 +239,7 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
                 {/*{Folders.map(route => (*/}
                 {/*  <div key={folders.name} className="space-y-1">*/}
                 {/*    <div className="w-full flex items-center gap-2">*/}
-                {/*      <button*/}
-                {/*        onClick={() => setSelectedFolder(folders.name)}*/}
-                {/*        className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
-                {/*          selectedFolder === folders.name*/}
-                {/*            ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
-                {/*            : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
-                {/*        }`}*/}
-                {/*      >*/}
-                {/*        <FolderOpen className="w-4 h-4"/>*/}
-                {/*        <span className="flex-1 text-left">{folders.name}</span>*/}
-                {/*        {folders.count > 0 && (*/}
-                {/*          <span className="text-xs text-gray-500">{folders.count}</span>*/}
-                {/*        )}*/}
-                {/*      </button>*/}
+
                 {/*    </div>*/}
 
                     {/*{all.children && (*/}
@@ -338,6 +352,24 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
 
           {/* Receipt List */}
           <div className="flex-1 overflow-y-auto bg-white">
+            {folders.map((folder) => (
+            <div key={folder.id}>
+              <button
+              onClick={() => setSelectedFolder(folder.name)}
+              className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              selectedFolder === folder.name
+              ? 'bg-blue-50 text-blue-700 border border-blue-200'
+              : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+              }`}
+              >
+                <FolderOpen className="w-4 h-4"/>
+                <span className="flex-1 text-left">{folder.name}</span>
+                {/*{folders.length > 0 && (*/}
+                {/*  <span className="text-xs text-gray-500">{folders.length}</span>*/}
+                {/*)}*/}
+              </button>
+            </div>
+            ))}
             {/*<div className="p-3 lg:p-4">*/}
 
             {/*  /!* Mobile: Show as cards *!/*/}
