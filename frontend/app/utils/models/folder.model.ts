@@ -97,5 +97,7 @@ export async function getFoldersByUserId (userId: string | null, authorization: 
     throw new Error('Failed to get folder')
   }
 
-  return await response.json()
+  const { data } = await response.json()
+
+  return data
 }

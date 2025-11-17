@@ -48,51 +48,6 @@ export async function loader ({ request }: Route.LoaderArgs) {
 
 export default function Dashboard ({ loaderData }: Route.ComponentProps) {
 
-  const [selectedFolder, setSelectedFolder] = useState('All Folders')
-  const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [previewOpen, setPreviewOpen] = useState(false)
-
-  // Transform backend folders into a hierarchical structure
-  const backendFolders = Array.isArray(loaderData?.folders) ? loaderData.folders : []
-  const allFoldersParent = backendFolders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
-  const childFolders = allFoldersParent ? backendFolders.filter(f => f.parentFolderId === allFoldersParent.id) : []
-  
-  const folders = [
-    {
-      name: 'All Folders',
-      icon: FolderOpen,
-      count: childFolders.length,
-      children: childFolders.map(folder => ({
-        name: folder.name,
-        icon: FileText,
-        count: 0,
-        id: folder.id
-      }))
-    },
-    { name: 'Starred', icon: Star, count: 0 },
-    { name: 'Recent', icon: RotateCw, count: 0 },
-    { name: 'Expiring', icon: ClockAlert, count: 0 },
-    { name: 'Trash', icon: Trash2, count: 0 }
-  ]
-
-  const files = [
-    { id: 1, name: 'Costco', date: 'Oct 7th', category: 'Grocery', folder: 'Receipts' },
-    { id: 2, name: 'Smiths', date: 'Oct 5th', category: 'Grocery', folder: 'Receipts' },
-    { id: 3, name: 'Cheddar\'s', date: 'Oct 4th', category: 'Restaurant', folder: 'Receipts' },
-    { id: 4, name: 'BestBuy', date: 'Oct 3rd', category: 'Electronics', folder: 'Warranties' },
-    { id: 5, name: 'Amazon', date: 'Oct 3rd', category: 'Online', folder: 'Receipts' },
-    { id: 6, name: 'ETSY', date: 'Oct 3rd', category: 'Online', folder: 'Receipts' },
-    { id: 7, name: 'Amazon', date: 'Oct 2nd', category: 'Online', folder: 'Receipts' },
-    { id: 8, name: 'Walmart', date: 'Oct 2nd', category: 'Grocery', folder: 'Receipts' },
-    { id: 9, name: 'Walmart', date: 'Oct 1st', category: 'Online', folder: 'Receipts' },
-    { id: 10, name: 'Macbook', date: 'Oct 3rd', category: 'BestBuy', folder: 'Warranties' },
-    { id: 12, name: 'Macbook', date: 'Oct 3rd', category: 'BestBuy', folder: 'Manuals' },
-    { id: 13, name: 'Vacuum Cleaner', date: 'Dyson.com', category: '', folder: 'Coupons' },
-    { id: 14, name: 'Subway', date: '-', category: 'Restaurant', folder: 'Coupons' },
-    { id: 15, name: 'Great Clips', date: '-', category: 'Grooming', folder: 'Coupons' }
-  ]
-
   const receiptDetail = {
     store: 'ABC Store',
     address: '123 Main St, Anytown USA',
@@ -108,12 +63,24 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
     total: 154.06
   }
 
-  const visibleFiles = selectedFolder === 'All Folders'
-    ? files
-    : files.filter(r => r.folder === selectedFolder)
+  const [selectedFolder, setSelectedFolder] = useState('All Folders')
+  const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
 
-  const isAllFolders = selectedFolder === 'All Folders'
-  const subfolders = folders[0]?.children ?? []
+  // // transform backend folders into a hierarchical structure
+  // const backendFolders = Array.isArray(loaderData?.folders) ? loaderData.folders : []
+  // const allFoldersParent = backendFolders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
+  // const childFolders = allFoldersParent ? backendFolders.filter(f => f.parentFolderId === allFoldersParent.id) : []
+
+  // const visibleFiles = selectedFolder === 'All Folders'
+  //   ? files
+  //   : files.filter(r => r.folder === selectedFolder)
+
+  // const isAllFolders = selectedFolder === 'All Folders'
+  // const subfolders = folders[0]?.children ?? []
+
+  // const { folders } = loaderData
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -158,72 +125,76 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
         <div className="flex-1 overflow-y-auto px-3 lg:px-4 py-4">
           <div className="space-y-1">
 
-            {/* All Folders and Subfolders */}
-            {(() => {
-              const all = folders[0]
+            <Outlet/>
 
-              return (
-                <div key={all.name} className="space-y-1">
-                  <div className="w-full flex items-center gap-2">
-                    <button
-                      onClick={() => setSelectedFolder(all.name)}
-                      className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        selectedFolder === all.name
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'text-gray-700 hover:bg-gray-50 border border-transparent'
-                      }`}
-                    >
-                      <all.icon className="w-4 h-4"/>
-                      <span className="flex-1 text-left">{all.name}</span>
-                      {all.count > 0 && (
-                        <span className="text-xs text-gray-500">{all.count}</span>
-                      )}
-                    </button>
-                  </div>
-                  {all.children && (
-                    <div className="space-y-1 pl-8">
-                      {all.children.map((child) => (
-                        <button
-                          key={child.name}
-                          onClick={() => setSelectedFolder(child.name)}
-                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                            selectedFolder === child.name
-                              ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                              : 'text-gray-700 hover:bg-gray-50 border border-transparent'
-                          }`}
-                        >
-                          <child.icon className="w-4 h-4"/>
-                          <span className="flex-1 text-left">{child.name}</span>
-                          {typeof child.count === 'number' && child.count > 0 && (
-                            <span className="text-xs text-gray-500">{child.count}</span>
-                          )}
-                        </button>
-                      ))}
-                      <Outlet/>
-                    </div>
-                  )}
-                </div>
-              )
-            })()}
+            {/*All Folders and Subfolders */}
+            {/*{(() => {*/}
+
+              {/*return (*/}
+                {/*{Folders.map(route => (*/}
+                {/*  <div key={folders.name} className="space-y-1">*/}
+                {/*    <div className="w-full flex items-center gap-2">*/}
+                {/*      <button*/}
+                {/*        onClick={() => setSelectedFolder(folders.name)}*/}
+                {/*        className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
+                {/*          selectedFolder === folders.name*/}
+                {/*            ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
+                {/*            : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
+                {/*        }`}*/}
+                {/*      >*/}
+                {/*        <FolderOpen className="w-4 h-4"/>*/}
+                {/*        <span className="flex-1 text-left">{folders.name}</span>*/}
+                {/*        {folders.count > 0 && (*/}
+                {/*          <span className="text-xs text-gray-500">{folders.count}</span>*/}
+                {/*        )}*/}
+                {/*      </button>*/}
+                {/*    </div>*/}
+
+                    {/*{all.children && (*/}
+                    {/*  <div className="space-y-1 pl-8">*/}
+                    {/*    {all.children.map((child) => (*/}
+                    {/*      <button*/}
+                    {/*        key={child.name}*/}
+                    {/*        onClick={() => setSelectedFolder(child.name)}*/}
+                    {/*        className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
+                    {/*          selectedFolder === child.name*/}
+                    {/*            ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
+                    {/*            : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
+                    {/*        }`}*/}
+                    {/*      >*/}
+                    {/*        <child.icon className="w-4 h-4"/>*/}
+                    {/*        <span className="flex-1 text-left">{child.name}</span>*/}
+                    {/*        {typeof child.count === 'number' && child.count > 0 && (*/}
+                    {/*          <span className="text-xs text-gray-500">{child.count}</span>*/}
+                    {/*        )}*/}
+                    {/*      </button>*/}
+                    {/*    ))}*/}
+                    {/*    <Outlet/>*/}
+                    {/*  </div>*/}
+                    {/*)}*/}
+              {/*    </div>*/}
+              {/*  ))}*/}
+              {/*)*/}
+            {/*})()}*/}
 
             {/* Other folders (Starred, Recent, Expiring, Trash) */}
-            {folders.slice(1).map((folder) => (
-              <button
-                key={folder.name}
-                onClick={() => setSelectedFolder(folder.name)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  selectedFolder === folder.name
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                    : 'text-gray-700 hover:bg-gray-50 border border-transparent'
-                }`}
-              >
-                <folder.icon className="w-4 h-4"/>
-                <span className="flex-1 text-left">{folder.name}</span>
-                {folder.count > 0 && (
-                  <span className="text-xs text-gray-500">{folder.count}</span>
-                )}
-              </button>
-            ))}
+            {/*{folders.slice(1).map((folder) => (*/}
+            {/*  <button*/}
+            {/*    key={folder.name}*/}
+            {/*    onClick={() => setSelectedFolder(folder.name)}*/}
+            {/*    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
+            {/*      selectedFolder === folder.name*/}
+            {/*        ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
+            {/*        : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
+            {/*    }`}*/}
+            {/*  >*/}
+            {/*    <folder.icon className="w-4 h-4"/>*/}
+            {/*    <span className="flex-1 text-left">{folder.name}</span>*/}
+            {/*    {folder.count > 0 && (*/}
+            {/*      <span className="text-xs text-gray-500">{folder.count}</span>*/}
+            {/*    )}*/}
+            {/*  </button>*/}
+            {/*))}*/}
           </div>
         </div>
 
@@ -289,131 +260,131 @@ export default function Dashboard ({ loaderData }: Route.ComponentProps) {
 
           {/* Receipt List */}
           <div className="flex-1 overflow-y-auto bg-white">
-            <div className="p-3 lg:p-4">
+            {/*<div className="p-3 lg:p-4">*/}
 
-              {/* Mobile: Show as cards */}
-              <div className="lg:hidden space-y-3">
+            {/*  /!* Mobile: Show as cards *!/*/}
+            {/*  <div className="lg:hidden space-y-3">*/}
 
-                {isAllFolders ? (
-                  // Show subfolders as cards when "All Folders" is selected
-                  <div className="space-y-2">
-                    {subfolders.map((sf) => (
-                      <button
-                        key={sf.name}
-                        onClick={() => setSelectedFolder(sf.name)}
-                        className="w-full p-4 border rounded-md bg-white border-gray-200 hover:bg-gray-50 transition-colors text-left"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <sf.icon className="w-5 h-5 text-gray-600"/>
-                            <div>
-                              <div className="font-medium text-gray-900">{sf.name}</div>
-                              {typeof sf.count === 'number' && (
-                                <div className="text-xs text-gray-500">{sf.count} items</div>
-                              )}
-                            </div>
-                          </div>
-                          <ChevronDown className="w-4 h-4 text-gray-400"/>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
+            {/*    {isAllFolders ? (*/}
+            {/*      // Show subfolders as cards when "All Folders" is selected*/}
+            {/*      <div className="space-y-2">*/}
+            {/*        {subfolders.map((sf) => (*/}
+            {/*          <button*/}
+            {/*            key={sf.name}*/}
+            {/*            onClick={() => setSelectedFolder(sf.name)}*/}
+            {/*            className="w-full p-4 border rounded-md bg-white border-gray-200 hover:bg-gray-50 transition-colors text-left"*/}
+            {/*          >*/}
+            {/*            <div className="flex items-center justify-between">*/}
+            {/*              <div className="flex items-center gap-3">*/}
+            {/*                <sf.icon className="w-5 h-5 text-gray-600"/>*/}
+            {/*                <div>*/}
+            {/*                  <div className="font-medium text-gray-900">{sf.name}</div>*/}
+            {/*                  {typeof sf.count === 'number' && (*/}
+            {/*                    <div className="text-xs text-gray-500">{sf.count} items</div>*/}
+            {/*                  )}*/}
+            {/*                </div>*/}
+            {/*              </div>*/}
+            {/*              <ChevronDown className="w-4 h-4 text-gray-400"/>*/}
+            {/*            </div>*/}
+            {/*          </button>*/}
+            {/*        ))}*/}
+            {/*      </div>*/}
+            {/*    ) : (*/}
 
-                  // Show only files for the selected subfolder
-                  <div className="space-y-3">
-                    {visibleFiles.map((file) => (
-                      <div
-                        key={file.id}
-                        className={`p-4 border rounded-md cursor-pointer transition-colors ${
-                          selectedReceipt?.id === file.id
-                            ? 'bg-blue-50 border-blue-200'
-                            : 'bg-white border-gray-200 hover:bg-gray-50'
-                        }`}
-                        onClick={() => {
-                          setSelectedReceipt(file)
-                          setPreviewOpen(true)
-                        }}
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-medium text-gray-900">{file.name}</h3>
-                          <ChevronDown className="w-4 h-4 text-gray-400"/>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>{file.date}</span>
-                          <span className="px-2 py-1 bg-gray-100 rounded text-xs">{file.category}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {/*      // Show only files for the selected subfolder*/}
+            {/*      <div className="space-y-3">*/}
+            {/*        {visibleFiles.map((file) => (*/}
+            {/*          <div*/}
+            {/*            key={file.id}*/}
+            {/*            className={`p-4 border rounded-md cursor-pointer transition-colors ${*/}
+            {/*              selectedReceipt?.id === file.id*/}
+            {/*                ? 'bg-blue-50 border-blue-200'*/}
+            {/*                : 'bg-white border-gray-200 hover:bg-gray-50'*/}
+            {/*            }`}*/}
+            {/*            onClick={() => {*/}
+            {/*              setSelectedReceipt(file)*/}
+            {/*              setPreviewOpen(true)*/}
+            {/*            }}*/}
+            {/*          >*/}
+            {/*            <div className="flex justify-between items-start mb-2">*/}
+            {/*              <h3 className="font-medium text-gray-900">{file.name}</h3>*/}
+            {/*              <ChevronDown className="w-4 h-4 text-gray-400"/>*/}
+            {/*            </div>*/}
+            {/*            <div className="flex justify-between text-sm text-gray-600">*/}
+            {/*              <span>{file.date}</span>*/}
+            {/*              <span className="px-2 py-1 bg-gray-100 rounded text-xs">{file.category}</span>*/}
+            {/*            </div>*/}
+            {/*          </div>*/}
+            {/*        ))}*/}
+            {/*      </div>*/}
+            {/*    )}*/}
+            {/*  </div>*/}
 
-              {/* Desktop */}
-              {isAllFolders ? (
+            {/*  /!* Desktop *!/*/}
+            {/*  {isAllFolders ? (*/}
 
-                // Show the subfolder grid when "All Folders" is selected
-                <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3">
-                  {subfolders.map((sf) => (
-                    <button
-                      key={sf.name}
-                      onClick={() => setSelectedFolder(sf.name)}
-                      className="p-4 bg-white rounded-md border border-gray-200 hover:bg-gray-50 text-left transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <sf.icon className="w-5 h-5 text-gray-600"/>
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{sf.name}</div>
-                          {typeof sf.count === 'number' && (
-                            <div className="text-xs text-gray-500">{sf.count} items</div>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
+            {/*    // Show the subfolder grid when "All Folders" is selected*/}
+            {/*    <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3">*/}
+            {/*      {subfolders.map((sf) => (*/}
+            {/*        <button*/}
+            {/*          key={sf.name}*/}
+            {/*          onClick={() => setSelectedFolder(sf.name)}*/}
+            {/*          className="p-4 bg-white rounded-md border border-gray-200 hover:bg-gray-50 text-left transition-colors"*/}
+            {/*        >*/}
+            {/*          <div className="flex items-center gap-3">*/}
+            {/*            <sf.icon className="w-5 h-5 text-gray-600"/>*/}
+            {/*            <div>*/}
+            {/*              <div className="text-sm font-medium text-gray-900">{sf.name}</div>*/}
+            {/*              {typeof sf.count === 'number' && (*/}
+            {/*                <div className="text-xs text-gray-500">{sf.count} items</div>*/}
+            {/*              )}*/}
+            {/*            </div>*/}
+            {/*          </div>*/}
+            {/*        </button>*/}
+            {/*      ))}*/}
+            {/*    </div>*/}
+            {/*  ) : (*/}
 
-                // Show a table of files for the selected subfolder
-                <table className="hidden lg:table w-full text-sm">
-                  <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      <div className="flex items-center gap-2">
-                        <ChevronDown className="w-4 h-4"/>
-                        {selectedFolder}
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>
-                    <th className="w-8"></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {visibleFiles.map((receipt) => (
-                    <tr
-                      key={receipt.id}
-                      className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedReceipt?.id === receipt.id ? 'bg-blue-50' : ''}`}
-                      onClick={() => {
-                        setSelectedReceipt(receipt)
-                        setPreviewOpen(true)
-                      }}
-                    >
-                      <td className="py-3 px-4 text-sm text-gray-900">{receipt.name}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{receipt.date}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>
-                      <td className="py-3 px-4">
-                        <button aria-label="Row actions"
-                                className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                          <ChevronDown className="w-4 h-4"/>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
+            {/*    // Show a table of files for the selected subfolder*/}
+            {/*    <table className="hidden lg:table w-full text-sm">*/}
+            {/*      <thead>*/}
+            {/*      <tr className="border-b border-gray-200">*/}
+            {/*        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">*/}
+            {/*          <div className="flex items-center gap-2">*/}
+            {/*            <ChevronDown className="w-4 h-4"/>*/}
+            {/*            {selectedFolder}*/}
+            {/*          </div>*/}
+            {/*        </th>*/}
+            {/*        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>*/}
+            {/*        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>*/}
+            {/*        <th className="w-8"></th>*/}
+            {/*      </tr>*/}
+            {/*      </thead>*/}
+            {/*      <tbody>*/}
+            {/*      {visibleFiles.map((receipt) => (*/}
+            {/*        <tr*/}
+            {/*          key={receipt.id}*/}
+            {/*          className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedReceipt?.id === receipt.id ? 'bg-blue-50' : ''}`}*/}
+            {/*          onClick={() => {*/}
+            {/*            setSelectedReceipt(receipt)*/}
+            {/*            setPreviewOpen(true)*/}
+            {/*          }}*/}
+            {/*        >*/}
+            {/*          <td className="py-3 px-4 text-sm text-gray-900">{receipt.name}</td>*/}
+            {/*          <td className="py-3 px-4 text-sm text-gray-600">{receipt.date}</td>*/}
+            {/*          <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>*/}
+            {/*          <td className="py-3 px-4">*/}
+            {/*            <button aria-label="Row actions"*/}
+            {/*                    className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">*/}
+            {/*              <ChevronDown className="w-4 h-4"/>*/}
+            {/*            </button>*/}
+            {/*          </td>*/}
+            {/*        </tr>*/}
+            {/*      ))}*/}
+            {/*      </tbody>*/}
+            {/*    </table>*/}
+            {/*  )}*/}
+            {/*</div>*/}
           </div>
 
           {/* Receipt Preview - Desktop */}
