@@ -33,6 +33,7 @@ export function AddFolderForm (props: Props) {
   // return early if actionData is invalid or missing success property
   // @ts-ignore
   if (actionData !== undefined && actionData?.success === true) {
+    console.log('I made it yippieeee')
     setDisplayNewFolderForm(false)
   }
 
