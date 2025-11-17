@@ -9,5 +9,5 @@ import type { Status } from '~/utils/interfaces/Status'
  * - Success/failure response with status information
  */
 export type FormActionResponse =
-  | { errors: Record<string, any>; defaultValues: unknown }
+  { errors: Record<string, any>; defaultValues: unknown }
   | { success: boolean; status: Status }
