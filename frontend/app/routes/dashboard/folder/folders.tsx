@@ -91,12 +91,12 @@ export default function Folders ({ loaderData }: Route.ComponentProps) {
   if (folders === null) return <>No Folders Found</>
 
   return (
-  <div>
-    {folders.map((folder) => (
-      <div key={folder.id}>
-        {folder.name}
-      </div>
-    ))}
-  </div>
+    <div>
+      {folders.map((folder) => (
+        <div key={folder.id}>
+          {folder.name}
+        </div>
+      ))}
+    </div>
   )
 }
