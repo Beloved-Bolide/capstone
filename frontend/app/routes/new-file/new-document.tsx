@@ -1,4 +1,48 @@
 import React, { useState } from 'react'
+import {type NewRecord, NewRecordSchema} from "~/utils/models/record.model";
+import {getValidatedFormData} from "remix-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {getSession} from "~/utils/session.server";
+import {v7 as uuid} from "uuid";
+
+const resolver = zodResolver(NewRecordSchema)
+
+export async function action ({request}: Route.ActionArgs) {
+  // get the form data from the request body
+  const {errors, data, receivedValues: defaultValues} = await getValidatedFormData<NewRecord>(request, resolver)
+
+  // if there are errors, return them
+  if (errors) {
+    return {errors, defaultValues }
+  }
+
+  // get the cookie from the request headers
+  const session = await getSession(request.headers.get('cookie'))
+
+  // get the cookie, user, and authorization from the session
+  const cookie = request.headers.get('cookie')
+  const user = session.get('user')
+  const authorization = session.get('authorization')
+
+  // if the user or authorization is not found, return an error
+  if (!cookie || !user?.id || !authorization) {
+    return {
+      success: false, status: {
+        status: 401,
+        data: null,
+        message: 'Unauthorized'
+      }
+    }
+  }
+
+  // create a new record object with the required attributes
+  const record = {
+    id: uuid(),
+    folderId: uuid(),
+    categoryId: uuid(),
+  }
+
+}
 
 
 export default function NewFilePage () {
