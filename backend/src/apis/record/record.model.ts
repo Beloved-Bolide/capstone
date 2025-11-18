@@ -36,6 +36,7 @@ export const RecordSchema = z.object({
   expDate: z.coerce.date('Please provide a valid expiration date.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
+  isStarred: z.boolean().default(false),
   lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
@@ -74,6 +75,7 @@ export async function insertRecord (record: Record): Promise<string> {
     couponCode,
     description,
     expDate,
+    isStarred,
     lastAccessedAt,
     name,
     notifyOn,
@@ -92,6 +94,7 @@ export async function insertRecord (record: Record): Promise<string> {
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -107,6 +110,7 @@ export async function insertRecord (record: Record): Promise<string> {
       ${couponCode},
       ${description},
       ${expDate},
+      ${isStarred},
       ${lastAccessedAt},
       ${name},
       ${notifyOn},
@@ -131,6 +135,7 @@ export async function updateRecord (record: Record): Promise<string> {
     couponCode,
     description,
     expDate,
+    isStarred,
     lastAccessedAt,
     name,
     notifyOn,
@@ -149,6 +154,7 @@ export async function updateRecord (record: Record): Promise<string> {
       coupon_code      = ${couponCode},
       description      = ${description},
       exp_date         = ${expDate},
+      is_starred       = ${isStarred},
       last_accessed_at = ${lastAccessedAt},
       name             = ${name},
       notify_on        = ${notifyOn},
@@ -189,6 +195,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -217,6 +224,7 @@ export async function selectRecordsByFolderId (folderId: string): Promise<Record
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -245,6 +253,7 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -273,6 +282,7 @@ export async function selectRecordsByCompanyName (companyName: string): Promise<
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -301,6 +311,7 @@ export async function selectRecordsByLastAccessedAt (lastAccessedAt: Date): Prom
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -329,6 +340,7 @@ export async function selectRecordByName (name: string): Promise<Record | null> 
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -358,6 +370,7 @@ export async function searchRecords (searchTerm: string, limit: number = 50): Pr
       coupon_code,
       description,
       exp_date,
+      is_starred,
       last_accessed_at,
       name,
       notify_on,
@@ -373,6 +386,7 @@ export async function searchRecords (searchTerm: string, limit: number = 50): Pr
       coupon_code                    ILIKE ${`%${searchTerm}%`} OR
       description                    ILIKE ${`%${searchTerm}%`} OR
       CAST(exp_date AS TEXT)         ILIKE ${`%${searchTerm}%`} OR
+      CAST(is_starred AS TEXT)       ILIKE ${`%${searchTerm}%`} OR
       CAST(last_accessed_at AS TEXT) ILIKE ${`%${searchTerm}%`} OR
       name                           ILIKE ${`%${searchTerm}%`} OR
       CAST(notify_on AS TEXT)        ILIKE ${`%${searchTerm}%`} OR
