@@ -186,7 +186,7 @@ export default function NewFilePage () {
                         <input
                           type="number"
                           id="amount"
-                          step="0.01"
+                          step="1.00"
                           className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full pl-8 p-2.5 placeholder-gray-400"
                           placeholder="0.00"
                         />

@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS record (
   coupon_code      VARCHAR(32),
   description      VARCHAR(512),
   exp_date         TIMESTAMPTZ,
+  is_starred       BOOLEAN DEFAULT FALSE,
   last_accessed_at TIMESTAMPTZ,
   name             VARCHAR(32),
   notify_on        BOOLEAN DEFAULT FALSE,
@@ -54,11 +55,12 @@ CREATE INDEX ON record (category_id);
 CREATE TABLE IF NOT EXISTS file (
   id            UUID PRIMARY KEY,
   record_id     UUID,
---description   VARCHAR(256),
+--description   VARCHAR(512),
+--document_date DATE,
   file_date     DATE,
   file_key      VARCHAR(32),
   file_url      VARCHAR(256) NOT NULL,
-  is_starred    BOOLEAN DEFAULT FALSE,
+--name          VARCHAR(64),
   ocr_data      TEXT,
   FOREIGN KEY (record_id) REFERENCES record (id)
 );
