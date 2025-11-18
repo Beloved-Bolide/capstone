@@ -16,7 +16,7 @@ import {
  * @param request from the client to the server with the user id and updated user data
  * @param response from the server to the user with a status code and a message
  * @returns a success response to the client if the user is updated successfully, a forbidden response if the user is
- *          not authorized to update the user, and a not found response if the user is not found **/
+ * not authorized to update the user, and a not found response if the user is not found **/
 export async function updateUserController (request: Request, response: Response) {
   try {
 

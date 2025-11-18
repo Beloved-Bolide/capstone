@@ -208,11 +208,13 @@ export default function Dashboard({loaderData, actionData}: Route.ComponentProps
 
           <div className="w-full flex items-center gap-2">
             <div>
+              {/* Add Folder Button */}
               <AddFolderForm
-              displayNewFolderForm={displayNewFolderForm}
-              actionData={actionData}
-              setDisplayNewFolderForm={setDisplayNewFolderForm}
+                displayNewFolderForm={displayNewFolderForm}
+                actionData={actionData}
+                setDisplayNewFolderForm={setDisplayNewFolderForm}
               />
+              {/* Folder*/}
               {folders.map((folder) => (
               <div key={folder.id}>
                 <button
