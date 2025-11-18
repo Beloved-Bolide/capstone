@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
-import {type NewRecord, NewRecordSchema} from "~/utils/models/record.model";
-import {getValidatedFormData} from "remix-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {getSession} from "~/utils/session.server";
-import {v7 as uuid} from "uuid";
+import { type NewRecord, NewRecordSchema, postRecord } from '~/utils/models/record.model'
+import { getValidatedFormData } from 'remix-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { getSession } from '~/utils/session.server'
+import { v7 as uuid } from 'uuid'
+import type { Route } from './+types/new-record-file'
+import type { NewRecordFile } from '~/utils/models/record-file.model'
+
 
 const resolver = zodResolver(NewRecordSchema)
 
-export async function action ({request}: Route.ActionArgs) {
+export async function action ({ request }: Route.ActionArgs) {
   // get the form data from the request body
-  const {errors, data, receivedValues: defaultValues} = await getValidatedFormData<NewRecord>(request, resolver)
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecordFile>(request, resolver)
 
   // if there are errors, return them
   if (errors) {
-    return {errors, defaultValues }
+    return { errors, defaultValues }
   }
 
   // get the cookie from the request headers
@@ -38,17 +41,58 @@ export async function action ({request}: Route.ActionArgs) {
   // create a new record object with the required attributes
   const record = {
     id: uuid(),
-    folderId: uuid(),
-    categoryId: uuid(),
+    folderId: data.folderId,
+    categoryId: data.categoryId,
+    amount: data.amount,
+    companyName: data.companyName,
+    couponCode: data.couponCode,
+    description: data.description,
+    expDate: data.expDate,
+    isStarred: false,
+    lastAccessedAt: new Date().toISOString(),
+    name: data.name,
+    notifyOn: true,
+    productId: data.productId,
+    purchaseDate: data.purchaseDate
+  }
+
+  // create a new file object with the required attributes
+  const file = {
+    id: uuid(),
+    recordId: record.id,
+    fileDate: new Date().toISOString(),
+    fileUrl: data.fileUrl,
+    ocrData: data.ocrData
+  }
+
+  // // post the record-file to the server
+  // const { recordResult } = await postRecord(record, authorization, cookie)
+  // const { fileResult } = await postFile(file, authorization, cookie)
+
+  const { result } = await postRecord(record, authorization, cookie) && await postFile(file, authorization, cookie)
+
+  // if the post-request fails, return an error
+  if (result.status !== 200) {
+    return { success: false, status: result }
+  }
+
+  // return a success message
+  return {
+    success: true,
+    status: {
+      status: result.status,
+      data: result.data,
+      message: 'Record-File created successfully!'
+    }
   }
 
 }
 
-
 export default function NewFilePage () {
+
   const [fileType, setFileType] = useState<string>('')
 
-  // Check if amount field should be shown (only for Receipt/Invoice)
+  // Check if the amount field should be shown (only for Receipt/Invoice)
   const showAmountField = fileType === 'Receipt/Invoice'
 
   return (

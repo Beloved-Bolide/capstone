@@ -11,20 +11,19 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape isStarred: boolean indicating if the file is starred
  * @shape ocrData: string containing OCR extracted text data **/
 export const FileSchema = z.object({
-  id: z.string().uuid('Please provide a valid uuid for id.'),
-  recordId: z.string().uuid('Please provide a valid uuid for record id.'),
+  id: z.uuidv7('Please provide a valid uuid for id.'),
+  recordId: z.uuidv7('Please provide a valid uuid for record id.'),
   fileDate: z.coerce.date().nullable(),
-  fileKey: z.string('Please provide a valid file key')
+  fileKey: z.string('Please provide a valid file key.')
     .trim()
     .min(1, 'Please provide a valid file key. (min 1 characters)')
     .max(32, 'Please provide a valid file key. (max 32 characters)')
     .nullable(),
-  fileUrl: z.string('Please provide a valid file URL')
-    .url('Please provide a valid URL.')
+  fileUrl: z.url('Please provide a valid URL.')
     .trim()
     .min(1, 'Please provide a valid file URL. (min 1 characters)')
     .max(256, 'Please provide a valid file URL. (max 256 characters)'),
-  ocrData: z.string('Please provide valid OCR data')
+  ocrData: z.string('Please provide valid OCR data.')
     .nullable()
 })
 
