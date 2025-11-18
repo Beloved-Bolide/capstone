@@ -5,7 +5,7 @@ import {
   type Folder,
   getFoldersByUserId,
   type NewFolder,
-  newFolderSchema,
+  NewFolderSchema,
   postFolder
 } from '~/utils/models/folder.model'
 import {getSession} from '~/utils/session.server'
@@ -42,7 +42,7 @@ export function meta({}: Route.MetaArgs) {
   ]
 }
 
-const resolver = zodResolver(newFolderSchema)
+const resolver = zodResolver(NewFolderSchema)
 
 export async function loader({request}: Route.LoaderArgs) {
   const session = await getSession(request.headers.get('cookie'))

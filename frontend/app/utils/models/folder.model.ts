@@ -14,8 +14,8 @@ export const FolderSchema = z.object({
 })
 export type Folder = z.infer<typeof FolderSchema>
 
-export const newFolderSchema = FolderSchema.pick({ name: true })
-export type NewFolder = z.infer<typeof newFolderSchema>
+export const NewFolderSchema = FolderSchema.pick({ name: true })
+export type NewFolder = z.infer<typeof NewFolderSchema>
 
 
 export async function postFolder (data: Folder, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {

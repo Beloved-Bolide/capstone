@@ -1,5 +1,5 @@
 import type { Route } from './+types/folders'
-import { type Folder, FolderSchema, type NewFolder, newFolderSchema, postFolder } from '~/utils/models/folder.model'
+import { type Folder, FolderSchema, type NewFolder, NewFolderSchema, postFolder } from '~/utils/models/folder.model'
 import { getFoldersByUserId } from '~/utils/models/folder.model'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getSession } from '~/utils/session.server'
@@ -11,7 +11,7 @@ import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 
 
-const resolver = zodResolver(newFolderSchema)
+const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request, params }: Route.LoaderArgs) {
 

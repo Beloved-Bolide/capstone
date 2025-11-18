@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 
-const NewFile: React.FC = () => {
+export default function NewFilePage () {
   const [fileType, setFileType] = useState<string>('')
 
   // Check if amount field should be shown (only for Receipt/Invoice)
@@ -70,21 +70,6 @@ const NewFile: React.FC = () => {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* File Name */}
-                  <div className="md:col-span-2">
-                    <label
-                      htmlFor="file-name"
-                      className="block mb-2 text-sm font-medium text-gray-700"
-                    >
-                      File Name
-                    </label>
-                    <input
-                      type="text"
-                      id="file-name"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
-                      placeholder="Enter file name"
-                    />
-                  </div>
 
                   {/* File Type */}
                   <div>
@@ -108,18 +93,34 @@ const NewFile: React.FC = () => {
                     </select>
                   </div>
 
-                  {/* Date */}
+                  {/* Purchase Date */}
                   <div>
                     <label
-                      htmlFor="date"
+                      htmlFor="purchase-date"
                       className="block mb-2 text-sm font-medium text-gray-700"
                     >
-                      Date
+                      Purchase Date
                     </label>
                     <input
                       type="date"
-                      id="date"
+                      id="purchase-date"
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    />
+                  </div>
+
+                  {/* File Name */}
+                  <div className="md:col-span-2">
+                    <label
+                      htmlFor="file-name"
+                      className="block mb-2 text-sm font-medium text-gray-700"
+                    >
+                      File Name
+                    </label>
+                    <input
+                      type="text"
+                      id="file-name"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                      placeholder="Enter file name"
                     />
                   </div>
 
@@ -158,22 +159,6 @@ const NewFile: React.FC = () => {
                       placeholder="Enter organization name"
                     />
                   </div>
-
-                  {/* Tags */}
-                  <div className="md:col-span-2">
-                    <label
-                      htmlFor="tags"
-                      className="block mb-2 text-sm font-medium text-gray-700"
-                    >
-                      Tags
-                    </label>
-                    <input
-                      type="text"
-                      id="tags"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
-                      placeholder="Enter tags (comma separated)"
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -185,6 +170,7 @@ const NewFile: React.FC = () => {
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                     {/* Amount */}
                     <div>
                       <label
@@ -231,55 +217,34 @@ const NewFile: React.FC = () => {
                       </select>
                     </div>
 
-                    {/* Payment Method */}
+                    {/* Expiration Date */}
                     <div>
                       <label
-                        htmlFor="payment-method"
+                        htmlFor="exp-date"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
-                        Payment Method
-                      </label>
-                      <select
-                        id="payment-method"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                      >
-                        <option value="">Select method...</option>
-                        <option value="cash">Cash</option>
-                        <option value="credit">Credit Card</option>
-                        <option value="debit">Debit Card</option>
-                        <option value="check">Check</option>
-                        <option value="digital">Digital Payment</option>
-                      </select>
-                    </div>
-
-                    {/* Due Date */}
-                    <div>
-                      <label
-                        htmlFor="due-date"
-                        className="block mb-2 text-sm font-medium text-gray-700"
-                      >
-                        Due Date
+                        Expiration Date
                       </label>
                       <input
                         type="date"
-                        id="due-date"
+                        id="exp-date"
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       />
                     </div>
 
-                    {/* Notes */}
+                    {/* Description */}
                     <div className="md:col-span-2">
                       <label
-                        htmlFor="notes"
+                        htmlFor="description"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
-                        Additional Notes
+                        Description
                       </label>
                       <textarea
-                        id="notes"
+                        id="description"
                         rows={2}
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
-                        placeholder="Any additional notes..."
+                        placeholder="Description..."
                       />
                     </div>
                   </div>
@@ -322,5 +287,3 @@ const NewFile: React.FC = () => {
     </div>
   )
 }
-
-export default NewFile
