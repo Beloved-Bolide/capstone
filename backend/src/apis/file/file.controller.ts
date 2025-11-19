@@ -9,7 +9,8 @@ import {
   selectFileByFileId,
   selectFilesByRecordId,
   insertFile,
-  updateFile
+  updateFile,
+  deleteFile
 } from './file.model.ts'
 
 
@@ -32,7 +33,7 @@ export async function getFileByFileIdController (request: Request, response: Res
       response.json({
         status: 404,
         data: null,
-        message: 'File not found.'
+        message: 'Get file failed: File not found.'
       })
       return
     }
@@ -47,7 +48,7 @@ export async function getFileByFileIdController (request: Request, response: Res
       response.json({
         status: 404,
         data: null,
-        message: 'Unable to post file.'
+        message: 'Get file failed: Folder associated with the file does not exist.'
       })
       return
     }
@@ -71,7 +72,7 @@ export async function getFileByFileIdController (request: Request, response: Res
 }
 
 /** Express controller for getting files by record id
- * @endpoint GET /apis/file/:recordId **/
+ * @endpoint GET /apis/file/recordId/:recordId **/
 export async function getFilesByRecordIdController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -89,24 +90,16 @@ export async function getFilesByRecordIdController (request: Request, response: 
       response.json({
         status: 404,
         data: null,
-        message: 'No files found for the specified record id.'
+        message: 'Get file(s) failed: No files associated with the record id.'
       })
       return
     }
 
     // get the first file from the array of files and check if it exists
     const file: File | null = files[0]!
-    if (!file) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'File not found.'
-      })
-      return
-    }
 
     // get the record id from the validated request body
-    const fileRecordId = files[0]!.recordId
+    const fileRecordId = file.recordId
     const record = await selectRecordByRecordId(fileRecordId)
 
     // get the folder id from the validated request body and check if it exists
@@ -115,7 +108,7 @@ export async function getFilesByRecordIdController (request: Request, response: 
       response.json({
         status: 404,
         data: null,
-        message: 'Unable to post file.'
+        message: 'Get file(s) failed: Folder associated with the file does not exist.'
       })
       return
     }
@@ -160,7 +153,7 @@ export async function postFileController (request: Request, response: Response):
       response.json({
         status: 404,
         data: null,
-        message: 'Unable to post file.'
+        message: 'Post file failed: Folder associated with the record does not exist.'
       })
       return
     }
@@ -177,7 +170,7 @@ export async function postFileController (request: Request, response: Response):
     response.json({
       status: 200,
       data: insertedFile,
-      message: 'New file successfully created!'
+      message: null
     })
 
   } catch (error: any) {
@@ -187,7 +180,7 @@ export async function postFileController (request: Request, response: Response):
 }
 
 /** Express controller for updating a file
- * @endpoint PUT /apis/file/:id **/
+ * @endpoint PUT /apis/file/id/:id **/
 export async function updateFileController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -212,7 +205,7 @@ export async function updateFileController (request: Request, response: Response
       response.json({
         status: 404,
         data: null,
-        message: 'File not found.'
+        message: 'Put file failed: File not found.'
       })
       return
     }
@@ -227,7 +220,7 @@ export async function updateFileController (request: Request, response: Response
       response.json({
         status: 404,
         data: null,
-        message: 'Unable to post file.'
+        message: 'Put file failed: Folder associated with the file does not exist.'
       })
       return
     }
@@ -254,7 +247,67 @@ export async function updateFileController (request: Request, response: Response
     response.json({
       status: 200,
       data: updatedFile,
-      message: 'File successfully updated!'
+      message: null
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for deleting a file
+ * @endpoint DELETE /apis/file/id/:id **/
+export async function deleteFileController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the file id from the request parameters and validate it
+    const validationResult = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // get the file id from the validated request parameters and check if it exists
+    const { id } = validationResult.data
+    const file: File | null = await selectFileByFileId(id)
+    if (!file) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Delete file failed: File not found.'
+      })
+      return
+    }
+
+    // get the record id from the validated request body
+    const fileRecordId = file.recordId
+    const record = await selectRecordByRecordId(fileRecordId)
+
+    // get the folder id from the validated request body and check if it exists
+    const folderId = record?.folderId
+    if (!folderId) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Put file failed: Folder associated with the file does not exist.'
+      })
+      return
+    }
+
+    // get the folder owner and check if the user making the request is the owner of the folder
+    const folder = await selectFolderByFolderId(folderId)
+    const userId = folder?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // delete the file from the database
+    const deletedFile = deleteFile(id)
+
+    // return a 200 response
+    response.json({
+      status: 200,
+      data: deletedFile,
+      message: null
     })
 
   } catch (error: any) {

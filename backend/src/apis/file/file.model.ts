@@ -29,6 +29,52 @@ export const FileSchema = z.object({
 
 export type File = z.infer<typeof FileSchema>
 
+/** Selects the File from the file table by id
+ * @param id the file's id to search for in the file table
+ * @returns File or null if no file was found **/
+export async function selectFileByFileId (id: string): Promise<File | null> {
+
+  // create a prepared statement that selects the file by file id
+  const rowList = await sql`
+    SELECT
+      id,
+      record_id,
+      file_date,
+      file_key,
+      file_url,
+      ocr_data
+    FROM
+      file
+    WHERE
+      id = ${id}`
+
+  // enforce that the result is an array of one file, or null
+  return FileSchema.array().max(1).parse(rowList)[0] ?? null
+}
+
+/** Select all files from a record's id
+ * @param id the id of the record
+ * @returns array of files **/
+export async function selectFilesByRecordId (id: string): Promise<File[] | null> {
+
+  // create a prepared statement that selects the files by record id
+  const rowList = await sql`
+    SELECT
+      id,
+      record_id,
+      file_date,
+      file_key,
+      file_url,
+      ocr_data
+    FROM
+      file
+    WHERE
+      record_id = ${id}`
+
+  // enforce that the result is an array of files
+  return FileSchema.array().parse(rowList) ?? null
+}
+
 /** Inserts a new file into the file table
  * @param file the file to insert
  * @returns { Promise<string> } 'File successfully created!' **/
@@ -73,60 +119,27 @@ export async function updateFile (file: File): Promise<string> {
   // update the file in the file table
   await sql`
     UPDATE file
-    SET record_id = ${recordId},
-        file_date = ${fileDate},
-        file_key  = ${fileKey},
-        file_url  = ${fileUrl},
-        ocr_data  = ${ocrData}
+    SET 
+      record_id = ${recordId},
+      file_date = ${fileDate},
+      file_key  = ${fileKey},
+      file_url  = ${fileUrl},
+      ocr_data  = ${ocrData}
     WHERE
-        id = ${id}`
+      id = ${id}`
 
   return 'File successfully updated!'
 }
 
-/** Selects the File from the file table by id
- * @param id the file's id to search for in the file table
- * @returns File or null if no file was found **/
-export async function selectFileByFileId (id: string): Promise<File | null> {
+/** Deletes a file from the file table
+ * @param id the file id to delete
+ * @returns { Promise<string> } 'File successfully deleted!' **/
+export async function deleteFile (id: string): Promise<string> {
 
-  // create a prepared statement that selects the file by file id
-  const rowList = await sql`
-    SELECT
-      id,
-      record_id,
-      file_date,
-      file_key,
-      file_url,
-      ocr_data
-    FROM
-      file
-    WHERE
-      id = ${id}`
+  // delete the file from the file table
+  await sql`
+    DELETE FROM file
+    WHERE id = ${id}`
 
-  // enforce that the result is an array of one file, or null
-  const result = FileSchema.array().max(1).parse(rowList)
-  return result[0] ?? null
-}
-
-/** Select all files from a record's id
- * @param id the id of the record
- * @returns array of files **/
-export async function selectFilesByRecordId (id: string): Promise<File[] | null> {
-
-  // create a prepared statement that selects the files by record id
-  const rowList = await sql`
-    SELECT
-      id,
-      record_id,
-      file_date,
-      file_key,
-      file_url,
-      ocr_data
-    FROM
-      file
-    WHERE
-      record_id = ${id}`
-
-  // enforce that the result is an array of files
-  return FileSchema.array().parse(rowList) ?? null
+  return 'File successfully deleted!'
 }
