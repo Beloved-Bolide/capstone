@@ -20,8 +20,8 @@ export default [
       route('folders', 'routes/dashboard/folder/folders.tsx')
     ]),
 
-    // New file at "/new-record-file"
-    route('new-record-file', 'routes/new-record-file/new-record-file.tsx'),
+    // New file at "/new-file-record"
+    route('new-file-record', 'routes/new-file-record/new-file-record.tsx'),
 
     // Expenses at "/expenses"
     route('expenses', 'routes/expenses/expenses.tsx')
