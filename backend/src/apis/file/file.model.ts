@@ -1,6 +1,7 @@
 import { z } from 'zod/v4'
 import { sql } from '../../utils/database.utils.ts'
 
+
 /** schema for validating file objects
  * @shape id: string for the primary key for the file
  * @shape recordId: string for the foreign key linking to the record
@@ -10,23 +11,20 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape isStarred: boolean indicating if the file is starred
  * @shape ocrData: string containing OCR extracted text data **/
 export const FileSchema = z.object({
-  id: z.string().uuid('Please provide a valid uuid for id.'),
-  recordId: z.string().uuid('Please provide a valid uuid for record id.'),
-
+  id: z.uuidv7('Please provide a valid uuid for id.'),
+  recordId: z.uuidv7('Please provide a valid uuid for record id.'),
   fileDate: z.coerce.date().nullable(),
-  fileKey: z.string('Please provide a valid file key')
-  .trim()
-  .min(1, 'Please provide a valid file key. (min 1 characters)')
-  .max(32, 'Please provide a valid file key. (max 32 characters)')
-  .nullable(),
-  fileUrl: z.string('Please provide a valid file URL')
-  .url('Please provide a valid URL.')
-  .trim()
-  .min(1, 'Please provide a valid file URL. (min 1 characters)')
-  .max(256, 'Please provide a valid file URL. (max 256 characters)'),
-  isStarred: z.boolean().default(false),
-  ocrData: z.string('Please provide valid OCR data')
-  .nullable()
+  fileKey: z.string('Please provide a valid file key.')
+    .trim()
+    .min(1, 'Please provide a valid file key. (min 1 characters)')
+    .max(32, 'Please provide a valid file key. (max 32 characters)')
+    .nullable(),
+  fileUrl: z.url('Please provide a valid URL.')
+    .trim()
+    .min(1, 'Please provide a valid file URL. (min 1 characters)')
+    .max(256, 'Please provide a valid file URL. (max 256 characters)'),
+  ocrData: z.string('Please provide valid OCR data.')
+    .nullable()
 })
 
 /** this type is used to represent a file object
@@ -48,28 +46,27 @@ export async function insertFile (file: File): Promise<string> {
   FileSchema.parse(file)
 
   // extract the file's properties
-  const { id, recordId, fileDate, fileKey, fileUrl, isStarred, ocrData } = file
+  const { id, recordId, fileDate, fileKey, fileUrl, ocrData } = file
 
   // insert the file into the file table
-  await sql `
+  await sql`
       INSERT INTO file (
           id,
           record_id,
           file_date,
           file_key,
           file_url,
-          is_starred,
           ocr_data
       )
-      VALUES (
-                 ${id},
-                 ${recordId},
-                 ${fileDate},
-                 ${fileKey},
-                 ${fileUrl},
-                 ${isStarred},
-                 ${ocrData}
-             )`
+      VALUES
+          (
+              ${id},
+              ${recordId},
+              ${fileDate},
+              ${fileKey},
+              ${fileUrl},
+              ${ocrData}
+          )`
 
   return 'File successfully created!'
 }
@@ -80,20 +77,18 @@ export async function insertFile (file: File): Promise<string> {
 export async function updateFile (file: File): Promise<string> {
 
   // validate the file object against the FileSchema
-  const { id, recordId, fileDate, fileKey, fileUrl, isStarred, ocrData } = file
+  const { id, recordId, fileDate, fileKey, fileUrl, ocrData } = file
 
   // update the file in the file table
-  await sql `
-    UPDATE file
-    SET
-      record_id = ${recordId},
-      file_date = ${fileDate},
-      file_key = ${fileKey},
-      file_url = ${fileUrl},
-      is_starred = ${isStarred},
-      ocr_data = ${ocrData}
-    WHERE
-      id = ${id}`
+  await sql`
+      UPDATE file
+      SET record_id = ${recordId},
+          file_date = ${fileDate},
+          file_key  = ${fileKey},
+          file_url  = ${fileUrl},
+          ocr_data  = ${ocrData}
+      WHERE
+          id = ${id}`
 
   return 'File successfully updated!'
 }
@@ -111,7 +106,6 @@ export async function selectFileByFileId (id: string): Promise<File | null> {
           file_date,
           file_key,
           file_url,
-          is_starred,
           ocr_data
       FROM
           file
@@ -137,11 +131,11 @@ export async function selectFilesByRecordId (id: string): Promise<File[]> {
           file_date,
           file_key,
           file_url,
-          is_starred,
           ocr_data
       FROM
           file
-      WHERE record_id = ${id}`
+      WHERE
+          record_id = ${id}`
 
   // Enforce that the result is an array of files
   return FileSchema.array().parse(rowList)

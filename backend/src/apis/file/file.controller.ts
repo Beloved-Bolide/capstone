@@ -80,14 +80,13 @@ export async function updateFileController (request: Request, response: Response
     }
 
     // get the file data from the validated request body
-    const { recordId, fileDate, fileKey, fileUrl, isStarred, ocrData } = validationResultForRequestBody.data
+    const { recordId, fileDate, fileKey, fileUrl, ocrData } = validationResultForRequestBody.data
 
     // update the file with the new data
     file.recordId = recordId
     file.fileDate = fileDate
     file.fileKey = fileKey
     file.fileUrl = fileUrl
-    file.isStarred = isStarred
     file.ocrData = ocrData
 
     // update the file in the database
@@ -142,7 +141,7 @@ export async function getFileByFileIdController (request: Request, response: Res
       message: 'File successfully found!'
     })
 
-  } catch(error: any) {
+  } catch (error: any) {
     console.error(error)
     serverErrorResponse(response, error.message)
   }
@@ -158,14 +157,14 @@ export async function getFileByRecordIdController (request: Request, response: R
 
     // validate the record id from params
     const validationResult = FileSchema.pick({ recordId: true })
-    .safeParse(request.params)
+      .safeParse(request.params)
     // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    const {recordId} = validationResult.data
+    const { recordId } = validationResult.data
     // create a file array using the record id
     const files: File[] | null = await selectFilesByRecordId(recordId)
 
@@ -186,7 +185,7 @@ export async function getFileByRecordIdController (request: Request, response: R
       message: 'All files successfully found!'
     })
 
-  } catch(error: any) {
+  } catch (error: any) {
     console.error(error)
     serverErrorResponse(response, error.message)
   }
