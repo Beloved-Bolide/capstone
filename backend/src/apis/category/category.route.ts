@@ -4,7 +4,8 @@ import {
   getCategoriesController,
   getCategoryByCategoryIdController,
   postCategoryController,
-  putCategoryController
+  putCategoryController,
+  deleteCategoryController
 } from './category.controller.ts'
 
 
@@ -12,11 +13,12 @@ const basePath = '/apis/category' as const
 const router = Router()
 
 router.route('/')
-  .post(isLoggedInController, postCategoryController)
   .get(isLoggedInController, getCategoriesController)
+  .post(isLoggedInController, postCategoryController)
 
-router.route('/id/:id')
+router.route('/:id')
   .get(isLoggedInController, getCategoryByCategoryIdController)
   .put(isLoggedInController, putCategoryController)
+  .delete(isLoggedInController, deleteCategoryController)
 
 export const categoryRoute = { basePath, router }

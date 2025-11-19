@@ -14,11 +14,11 @@ const router = Router()
 router.route('/')
   .post(isLoggedInController, postFileController)
 
-router.route('/id/:id')
+router.route('/:id')
   .put(isLoggedInController, updateFileController)
   .get(isLoggedInController, getFileByFileIdController)
 
-router.route('/recordId/:recordId')
+router.route('/:recordId')
   .get(isLoggedInController, getFilesByRecordIdController)
 
 export const fileRoute = { basePath, router }

@@ -23,12 +23,44 @@ export const CategorySchema = z.object({
     .max(32, 'You need a maximum of 32 characters for the name.')
 })
 
-/** this type is used to represent a category object
- * @shape id: string the primary key for the category
- * @shape color: string the color for the category
- * @shape icon: string the icon for the category
- * @shape name: string the name for the category **/
 export type Category = z.infer<typeof CategorySchema>
+
+/** selects the Category from the Category table by id
+ * @param id the Category's id to search for in the Category table
+ * @returns Category or null if no Category was found **/
+export async function selectCategoryByCategoryId (id: string): Promise<Category | null> {
+
+  // query the category table by id
+  const rowList = await sql`
+    SELECT 
+      id,
+      color,
+      icon,
+      name 
+    FROM category 
+    WHERE id = ${id}`
+
+  // enforce that the result is an array of one category, or null
+  return CategorySchema.array().max(1).parse(rowList)[0] ?? null
+}
+
+/** selects all categories from the category table
+ * @returns array of categories or null if no categories were found **/
+export async function selectCategories (): Promise<Category[] | null> {
+
+  // query the category table by id
+  const rowList = await sql`
+    SELECT
+      id,
+      color,
+      icon,
+      name
+    FROM category`
+
+  // return the result as an array of records, or null if no records were found
+  const result = CategorySchema.array().safeParse(rowList)
+  return result.success ? result.data : null
+}
 
 /** creates a predefined category in the category table
  * @param category the category to insert
@@ -89,39 +121,16 @@ export async function updateCategory (category: Category): Promise<string> {
   return 'Category successfully updated!'
 }
 
-/** selects the Category from the Category table by id
- * @param id the Category's id to search for in the Category table
- * @returns Category or null if no Category was found **/
-export async function selectCategoryByCategoryId (id: string): Promise<Category | null> {
+/** deletes a category from the category table
+ * @param id the category id to delete
+ * @returns {Promise<string>} 'Category successfully deleted!' **/
+export async function deleteCategory (id: string): Promise<string> {
 
-  // query the category table by id
-  const rowList = await sql`
-    SELECT 
-      id,
-      color,
-      icon,
-      name 
-    FROM category 
+  // delete the category from the category table
+  await sql`
+    DELETE FROM category
     WHERE id = ${id}`
 
-  // enforce that the result is an array of one category, or null
-  return CategorySchema.array().max(1).parse(rowList)[0] ?? null
-}
-
-/** selects all categories from the category table
- * @returns array of categories or null if no categories were found **/
-export async function selectCategories (): Promise<Category[] | null> {
-
-  // query the category table by id
-  const rowList = await sql`
-    SELECT
-      id,
-      color,
-      icon,
-      name
-    FROM category`
-
-  // return the result as an array of records, or null if no records were found
-  const result = CategorySchema.array().safeParse(rowList)
-  return result.success ? result.data : null
+  // return a success message
+  return 'Category successfully deleted!'
 }

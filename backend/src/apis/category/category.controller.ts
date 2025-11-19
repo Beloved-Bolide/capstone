@@ -1,8 +1,68 @@
 import type { Request, Response } from 'express'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
-import { selectCategoryByCategoryId, updateCategory } from './category.model.ts'
+import { selectCategoryByCategoryId, updateCategory, deleteCategory } from './category.model.ts'
 import { type Category, CategorySchema, insertCategory, selectCategories } from './category.model.ts'
 
+
+/** GET all categories
+ * @endpoint GET /apis/category **/
+export async function getCategoriesController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // select all categories
+    const categories: Category[] | null = await selectCategories()
+
+    // check if categories were found
+    if (!categories) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No categories found.'
+      })
+      return
+    }
+
+    // return the categories' attributes and a 200 response
+    response.json({
+      status: 200,
+      data: categories,
+      message: 'Categories successfully got!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** GET single category by id
+ * @endpoint GET /apis/category/:id **/
+export async function getCategoryByCategoryIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the category id from the request parameters and validate it
+    const validationResult = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // grab the id from the validated request parameters and select the category by id
+    const { id } = validationResult.data
+    const selectedCategory = await selectCategoryByCategoryId(id)
+
+    // return the category's attributes and a 200 response
+    response.json({
+      status: 200,
+      data: selectedCategory,
+      message: 'Category successfully got!'
+    })
+
+  }catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, null)
+  }
+}
 
 /** POST new category
  * @endpoint POST /apis/category **/
@@ -85,9 +145,9 @@ export async function putCategoryController (request: Request, response: Respons
   }
 }
 
-/** GET single category by id
- * @endpoint GET /apis/category/:id **/
-export async function getCategoryByCategoryIdController (request: Request, response: Response): Promise<void> {
+/** DELETE category by id
+ * @endpoint DELETE /apis/category/:id **/
+export async function deleteCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
     // parse the category id from the request parameters and validate it
@@ -97,46 +157,26 @@ export async function getCategoryByCategoryIdController (request: Request, respo
       return
     }
 
-    // grab the id from the validated request parameters and select the category by id
+    // get the category id from the validated request params, get the category, and check if it exists
     const { id } = validationResult.data
-    const selectedCategory = await selectCategoryByCategoryId(id)
-
-    // return the category's attributes and a 200 response
-    response.json({
-      status: 200,
-      data: selectedCategory,
-      message: 'Successfully retrieved category by id.'
-    })
-
-  }catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, null)
-  }
-}
-
-/** GET all categories
- * @endpoint GET /apis/category **/
-export async function getCategoriesController (request: Request, response: Response): Promise<void> {
-  try {
-
-    // select all categories
-    const categories: Category[] | null = await selectCategories()
-
-    // check if categories were found
-    if (!categories) {
+    const category: Category | null = await selectCategoryByCategoryId(id)
+    if (!category) {
       response.json({
         status: 404,
         data: null,
-        message: 'No categories found.'
+        message: 'Category not found.'
       })
       return
     }
 
-    // return the categories' attributes and a 200 response
+    // delete the category from the database
+    await deleteCategory(id)
+
+    // return a 200 response
     response.json({
       status: 200,
-      data: categories,
-      message: 'Categories successfully got!'
+      data: null,
+      message: 'Category successfully deleted!'
     })
 
   } catch (error: any) {
