@@ -53,3 +53,4 @@ export const RecordFileModel = z.object({
 export type RecordFile = z.infer<typeof RecordFileModel>
 export const NewRecordFileSchema = RecordFileModel.omit({ isStarred: true, lastAccessedAt: true, notifyOn: true })
 export type NewRecordFile = z.infer<typeof NewRecordFileSchema>
+

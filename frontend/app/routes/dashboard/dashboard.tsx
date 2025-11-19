@@ -45,8 +45,8 @@ export function meta ({}: Route.MetaArgs) {
 const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
-  const session = await getSession(request.headers.get('cookie'))
   const cookie = request.headers.get('cookie')
+  const session = await getSession(cookie)
   const user = session.get('user')
   const authorization = session.get('authorization')
 
@@ -149,9 +149,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
   // if there are no folders, set the array to an empty array
   let { folders } = loaderData
-  if (!folders) {
-    folders = []
-  }
+  if (!folders) folders = []
 
   useActionData<typeof action>()
 
