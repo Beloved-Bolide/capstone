@@ -138,7 +138,7 @@ export async function deleteRecordController (request: Request, response: Respon
   try {
 
     // parse the record id from the request parameters and check if it's valid
-    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
