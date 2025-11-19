@@ -46,7 +46,7 @@ export async function insertUser (user: PrivateUser): Promise<string> {
   } = user
 
   // insert the new user into the user table
-  await sql`
+  await sql `
     INSERT INTO "user" (
       id,
       activation_token,
@@ -84,7 +84,7 @@ export async function updatePrivateUser (user: PrivateUser): Promise<string> {
   } = user
 
   // update the user in the user table
-  await sql`
+  await sql `
     UPDATE "user"
     SET 
       activation_token = ${activationToken},
@@ -104,7 +104,7 @@ export async function updatePrivateUser (user: PrivateUser): Promise<string> {
 export async function selectPrivateUserByUserId (id: string): Promise<PrivateUser | null> {
 
   // query the user table by id
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       activation_token,
@@ -125,7 +125,7 @@ export async function selectPrivateUserByUserId (id: string): Promise<PrivateUse
 export async function selectPrivateUserByUserActivationToken (activationToken: string): Promise<PrivateUser | null> {
 
   // select the user from the user table by activation token
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       activation_token,
@@ -146,7 +146,7 @@ export async function selectPrivateUserByUserActivationToken (activationToken: s
 export async function selectPrivateUserByUserEmail (email: string): Promise<PrivateUser | null> {
 
   // select the user from the user table by email
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       activation_token,

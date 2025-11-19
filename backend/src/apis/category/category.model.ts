@@ -31,7 +31,7 @@ export type Category = z.infer<typeof CategorySchema>
 export async function selectCategoryByCategoryId (id: string): Promise<Category | null> {
 
   // query the category table by id
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT 
       id,
       color,
@@ -49,7 +49,7 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
 export async function selectCategories (): Promise<Category[] | null> {
 
   // query the category table by id
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       color,
@@ -127,7 +127,7 @@ export async function updateCategory (category: Category): Promise<string> {
 export async function deleteCategory (id: string): Promise<string> {
 
   // delete the category from the category table
-  await sql`
+  await sql `
     DELETE FROM category
     WHERE id = ${id}`
 
