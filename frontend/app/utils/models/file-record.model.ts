@@ -1,7 +1,7 @@
-import { z } from 'zod/v4/index'
+import { z } from 'zod/v4'
 
 
-export const RecordFileModel = z.object({
+export const FileRecordSchema = z.object({
   folderId: z.uuidv7('Please provide a valid uuid for folderId.'),
   recordId: z.uuidv7('Please provide a valid uuid for record id.'),
   categoryId: z.uuidv7('Please provide a valid uuid for categoryId.'),
@@ -50,7 +50,6 @@ export const RecordFileModel = z.object({
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable()
 })
-export type RecordFile = z.infer<typeof RecordFileModel>
-export const NewRecordFileSchema = RecordFileModel.omit({ isStarred: true, lastAccessedAt: true, notifyOn: true })
-export type NewRecordFile = z.infer<typeof NewRecordFileSchema>
-
+export type RecordFile = z.infer<typeof FileRecordSchema>
+export const NewFileRecordSchema = FileRecordSchema.omit({ isStarred: true, lastAccessedAt: true, notifyOn: true })
+export type NewFileRecord = z.infer<typeof NewFileRecordSchema>
