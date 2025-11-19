@@ -4,7 +4,8 @@ import {
   getFileByFileIdController,
   getFilesByRecordIdController,
   postFileController,
-  updateFileController
+  updateFileController,
+  deleteFileController
 } from './file.controller.ts'
 
 
@@ -14,11 +15,12 @@ const router = Router()
 router.route('/')
   .post(isLoggedInController, postFileController)
 
-router.route('/:id')
+router.route('/id/:id')
   .get(isLoggedInController, getFileByFileIdController)
   .put(isLoggedInController, updateFileController)
+  .delete(isLoggedInController, deleteFileController)
 
-router.route('/:recordId')
+router.route('/recordId/:recordId')
   .get(isLoggedInController, getFilesByRecordIdController)
 
 export const fileRoute = { basePath, router }
