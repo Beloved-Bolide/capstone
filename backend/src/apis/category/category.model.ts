@@ -41,7 +41,7 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
     WHERE id = ${id}`
 
   // enforce that the result is an array of one category, or null
-  return CategorySchema.array().max(1).parse(rowList)[0] ?? null
+  return CategorySchema.parse(rowList) ?? null
 }
 
 /** Selects all categories from the category table
