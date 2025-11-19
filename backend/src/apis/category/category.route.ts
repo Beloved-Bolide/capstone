@@ -13,8 +13,8 @@ const basePath = '/apis/category' as const
 const router = Router()
 
 router.route('/')
-  .get(isLoggedInController, getCategoriesController)
-  .post(isLoggedInController, postCategoryController)
+  .get( getCategoriesController)
+  //.post(isLoggedInController, postCategoryController)
 
 router.route('/id/:id')
   .get(isLoggedInController, getCategoryByCategoryIdController)

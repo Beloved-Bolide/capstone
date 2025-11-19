@@ -1,11 +1,9 @@
-import { z } from 'zod/v4'
-import type { Status } from '~/utils/interfaces/Status'
-import type { Folder } from '~/utils/models/folder.model'
+import { z } from 'zod/v4/index'
 
 
-export const RecordSchema = z.object({
-  id: z.uuidv7('Please provide a valid uuid for id.'),
+export const RecordFileModel = z.object({
   folderId: z.uuidv7('Please provide a valid uuid for folderId.'),
+  recordId: z.uuidv7('Please provide a valid uuid for record id.'),
   categoryId: z.uuidv7('Please provide a valid uuid for categoryId.'),
   amount: z.coerce.number('Please provide a valid amount.')
     .nullable(),
@@ -23,6 +21,16 @@ export const RecordSchema = z.object({
   expDate: z.coerce.date('Please provide a valid expiration date.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
+  fileDate: z.coerce.date().nullable(),
+  fileKey: z.string('Please provide a valid file key.')
+    .trim()
+    .min(1, 'Please provide a valid file key. (min 1 characters)')
+    .max(32, 'Please provide a valid file key. (max 32 characters)')
+    .nullable(),
+  fileUrl: z.url('Please provide a valid URL.')
+    .trim()
+    .min(1, 'Please provide a valid file URL. (min 1 characters)')
+    .max(256, 'Please provide a valid file URL. (max 256 characters)'),
   isStarred: z.boolean().default(false),
   lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
@@ -33,6 +41,8 @@ export const RecordSchema = z.object({
     .nullable(),
   notifyOn: z.boolean('Please provide either true or false.')
     .nullable(),
+  ocrData: z.string('Please provide valid OCR data.')
+    .nullable(),
   productId: z.string('Please provide a valid productId.')
     .max(32, 'Please provide a valid productId (max 32 characters).')
     .nullable(),
@@ -40,50 +50,7 @@ export const RecordSchema = z.object({
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable()
 })
-export type Record = z.infer<typeof RecordSchema>
-export const NewRecordSchema = RecordSchema.omit({ id: true, isStarred: true, lastAccessedAt: true, notifyOn: true })
-export type NewRecord = z.infer<typeof NewRecordSchema>
-
-
-export async function postRecord (data: Record, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {
-
-  const response = await fetch('/api/record', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': authorization,
-      'Cookie': cookie ?? ''
-    },
-    body: JSON.stringify(data)
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to create new record')
-  }
-
-  const headers = response.headers
-  const result = await response.json()
-  return { headers, result }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export type RecordFile = z.infer<typeof RecordFileModel>
+export const NewRecordFileSchema = RecordFileModel.omit({ isStarred: true, lastAccessedAt: true, notifyOn: true })
+export type NewRecordFile = z.infer<typeof NewRecordFileSchema>
 

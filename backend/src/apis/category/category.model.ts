@@ -8,7 +8,7 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape icon: string the icon for the category
  * @shape name: string the name for the category **/
 export const CategorySchema = z.object({
-  id: z.uuidv7('Please provide a valid uuid for id.'),
+  id: z.uuid('Please provide a valid uuid for id.'),
   color: z.string('Please provide a valid color.')
     .trim()
     .min(1, 'You need a minimum of 1 characters for the color.')
@@ -46,7 +46,9 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
 
 /** Selects all categories from the category table
  * @returns array of categories or null if no categories were found **/
-export async function selectCategories (): Promise<Category[] | null> {
+
+export async function selectCategories (): Promise<Category[]> {
+
 
   // query the category table by id
   const rowList = await sql `
@@ -58,8 +60,9 @@ export async function selectCategories (): Promise<Category[] | null> {
     FROM category`
 
   // return the result as an array of records, or null if no records were found
-  const result = CategorySchema.array().safeParse(rowList)
-  return result.success ? result.data : null
+
+
+   return CategorySchema.array().parse(rowList)
 }
 
 /** Creates a predefined category in the category table

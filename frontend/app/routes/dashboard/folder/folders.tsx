@@ -29,7 +29,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
   }
 
   // get the folders for the user from the server
-  const folders: Folder[] | null = await getFoldersByUserId(user.id, authorization, cookie)
+  const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
 
   // return the folders
   return { folders }
