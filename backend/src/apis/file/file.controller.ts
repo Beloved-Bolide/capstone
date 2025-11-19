@@ -231,12 +231,11 @@ export async function putFileController (request: Request, response: Response): 
     if (!(await validateSessionUser(request, response, userId))) return
 
     // get the file data from the validated request body
-    const { recordId, fileDate, fileKey, fileUrl, ocrData } = validatedRequestBody.data
+    const { recordId, fileDate, fileUrl, ocrData } = validatedRequestBody.data
 
     // update the file with the new data
     file.recordId = recordId
     file.fileDate = fileDate
-    file.fileKey = fileKey
     file.fileUrl = fileUrl
     file.ocrData = ocrData
 

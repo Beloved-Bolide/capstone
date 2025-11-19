@@ -20,6 +20,10 @@ export const RecordSchema = z.object({
   description: z.string('Please provide a valid description.')
     .max(512, 'Please provide a valid description (max 512 characters).')
     .nullable(),
+  docType: z.string('Please provide a valid document type.')
+    .min(1, 'Please provide a valid document type.')
+    .max(32, 'Please provide a valid document type (max 32 characters).')
+    .nullable(),
   expDate: z.coerce.date('Please provide a valid expiration date.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),

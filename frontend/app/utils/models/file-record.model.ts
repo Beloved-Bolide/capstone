@@ -22,7 +22,7 @@ export const FileRecordSchema = z.object({
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable(),
   fileDate: z.coerce.date().nullable(),
-  fileKey: z.string('Please provide a valid file key.')
+  docType: z.string('Please provide a valid file key.')
     .trim()
     .min(1, 'Please provide a valid file key. (min 1 characters)')
     .max(32, 'Please provide a valid file key. (max 32 characters)')
@@ -32,7 +32,7 @@ export const FileRecordSchema = z.object({
     .min(1, 'Please provide a valid file URL. (min 1 characters)')
     .max(256, 'Please provide a valid file URL. (max 256 characters)'),
   isStarred: z.boolean().default(false),
- // lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
+  // lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
   //  .min(new Date('1900-01-01'), {error: 'Too old!'})
   //   .nullable(),
   name: z.string('Please provide a valid name.')

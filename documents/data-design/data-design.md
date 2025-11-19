@@ -39,7 +39,6 @@ Table file {
     record_id uuid [not null]
     description text
     document_date date
-    file_key varchar [not null, unique]
     is_starred boolean [default: false]
     name varchar [not null]
     ocr_data text
