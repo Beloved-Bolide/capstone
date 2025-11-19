@@ -32,9 +32,9 @@ export const FileRecordSchema = z.object({
     .min(1, 'Please provide a valid file URL. (min 1 characters)')
     .max(256, 'Please provide a valid file URL. (max 256 characters)'),
   isStarred: z.boolean().default(false),
-  lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
-    .min(new Date('1900-01-01'), {error: 'Too old!'})
-    .nullable(),
+ // lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
+  //  .min(new Date('1900-01-01'), {error: 'Too old!'})
+  //   .nullable(),
   name: z.string('Please provide a valid name.')
     .trim()
     .max(32, 'Please provide a valid name (max 32 characters).')
@@ -50,6 +50,4 @@ export const FileRecordSchema = z.object({
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable()
 })
-export type RecordFile = z.infer<typeof FileRecordSchema>
-export const NewFileRecordSchema = FileRecordSchema.omit({ isStarred: true, lastAccessedAt: true, notifyOn: true })
-export type NewFileRecord = z.infer<typeof NewFileRecordSchema>
+export type FileRecord = z.infer<typeof FileRecordSchema>
