@@ -36,12 +36,12 @@ export async function getCategoriesController (request: Request, response: Respo
 }
 
 /** GET single category by id
- * @endpoint GET /apis/category/:id **/
+ * @endpoint GET /apis/category/id/:id **/
 export async function getCategoryByCategoryIdController (request: Request, response: Response): Promise<void> {
   try {
 
     // parse the category id from the request parameters and validate it
-    const validationResult = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validationResult = CategorySchema.pick({ id: true }).safeParse(request.params)
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
@@ -77,13 +77,13 @@ export async function postCategoryController (request: Request, response: Respon
     }
 
     // insert the new category data into the database
-    await insertCategory(validationResult.data)
+    const message = await insertCategory(validationResult.data)
 
     // return a 200 response
     response.json({
       status: 200,
       data: null,
-      message: 'New category successfully created!'
+      message: message
     })
 
   } catch (error: any) {
@@ -93,12 +93,12 @@ export async function postCategoryController (request: Request, response: Respon
 }
 
 /** PUT update category
- * @endpoint PUT /apis/category/:id **/
+ * @endpoint PUT /apis/category/id/:id **/
 export async function putCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
     // parse the category id from the request parameters and validate it
-    const validatedRequestParams = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validatedRequestParams = CategorySchema.pick({ id: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
@@ -130,13 +130,13 @@ export async function putCategoryController (request: Request, response: Respons
     category.name = name
 
     // update the category in the database
-    await updateCategory(category)
+    const message = await updateCategory(category)
 
     // return a 200 response
     response.json({
       status: 200,
       data: null,
-      message: 'Category successfully updated!'
+      message: message
     })
 
   } catch (error: any) {
@@ -146,12 +146,12 @@ export async function putCategoryController (request: Request, response: Respons
 }
 
 /** DELETE category by id
- * @endpoint DELETE /apis/category/:id **/
+ * @endpoint DELETE /apis/category/id/:id **/
 export async function deleteCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
     // parse the category id from the request parameters and validate it
-    const validationResult = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validationResult = CategorySchema.pick({ id: true }).safeParse(request.params)
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
@@ -170,13 +170,13 @@ export async function deleteCategoryController (request: Request, response: Resp
     }
 
     // delete the category from the database
-    await deleteCategory(id)
+    const message = await deleteCategory(id)
 
     // return a 200 response
     response.json({
       status: 200,
       data: null,
-      message: 'Category successfully deleted!'
+      message: message
     })
 
   } catch (error: any) {
