@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import { postRecord } from '~/utils/models/record.model'
-import { getValidatedFormData } from 'remix-hook-form'
+import {getValidatedFormData, useRemixForm} from 'remix-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getSession } from '~/utils/session.server'
 import { v7 as uuid } from 'uuid'
 import type { Route } from './+types/new-file-record'
-import { type NewFileRecord, NewFileRecordSchema } from '~/utils/models/file-record.model'
+import {type FileRecord, FileRecordSchema} from '~/utils/models/file-record.model'
 import { postFile } from '~/utils/models/file.model'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import {type Category, getCategories} from "~/utils/models/category.model";
+import {Form} from "react-router";
 
 
-const resolver = zodResolver(NewFileRecordSchema)
+const resolver = zodResolver(FileRecordSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
 
@@ -32,7 +33,7 @@ export async function loader ({ request }: Route.LoaderArgs) {
 export async function action ({ request }: Route.ActionArgs) {
 
   // get the form data from the request body
-  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewFileRecord>(request, resolver)
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<FileRecord>(request, resolver)
 
   // if there are errors, return them
   if (errors) {
@@ -120,6 +121,14 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
   // Check if the amount field should be shown (only for Receipt/Invoice)
   const showAmountField = fileType === 'Receipt/Invoice'
 
+  // use the useRemixForm hook to handle form submission and validation
+  const {
+    handleSubmit,
+    formState: { errors },
+    register
+  } = useRemixForm<FileRecord>({ mode: 'onSubmit', resolver })
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -138,6 +147,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
           <div className="bg-blue-50 px-6 py-4 rounded-t-lg border-b border-blue-100">
             <h2 className="text-lg font-medium text-blue-900">Upload Document</h2>
           </div>
+          <Form onSubmit={handleSubmit} noValidate={true} method="POST">
 
           {/* Card Body */}
           <div className="p-6">
@@ -335,6 +345,13 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                       />
                     </div>
 
+                    {/* Is Starred */}
+                    <div>
+                      <input type="checkbox" id="IsStarred" name="IsStarred" value="starred"/>
+                      <label htmlFor="IsStarred">Is Starred</label>
+                    </div>
+
+
                     {/* Description */}
                     <div className="md:col-span-2">
                       <label
@@ -385,6 +402,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
               </button>
             </div>
           </div>
+          </Form>
         </div>
       </div>
     </div>
