@@ -1,54 +1,23 @@
 import type { Request, Response } from 'express'
-import {
-  type Category,
-  CategorySchema, insertCategory
-} from './category.model.ts'
+import { type Category, CategorySchema, insertCategory, selectCategories } from './category.model.ts'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import { selectCategoryByCategoryId, updateCategory } from './category.model.ts'
-import type { Status } from '../../utils/interfaces/Status.ts'
 
 
-/** Express controller for creating a new category
- * @endpoint POST /apis/category
- * @param request an object containing the body with category data
- * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the category creation was successful **/
+/** POST new category
+ * @endpoint POST /apis/category **/
 export async function postCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the new category data coming from the request body
+    // parse the new category data from the request body and validate it
     const validationResult = CategorySchema.safeParse(request.body)
-    // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    // NEEDS WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // // grab the user id from the session
-    // const userFromSession = request.session?.user
-    // const idFromSession = userFromSession?.id
-    // // grab the new data from the request body
-    // const { userId } = validationResult.data
-    // // if the user id from the request body does not match the user id from the session, return a preformatted response to the client
-    // if (userId !== idFromSession) {
-    //   response.json({
-    //     status: 403,
-    //     data: null,
-    //     message: 'Forbidden: You cannot create a folder for another user.'
-    //   })
-    //   return
-    // }
-
     // insert the new category data into the database
     const insertedCategory = await insertCategory(validationResult.data)
-
-    // create a preformatted response to the client
-    const status: Status = {
-      status: 200,
-      data: null,
-      message: insertedCategory
-    }
 
     // return the success response to the client
     response.json({
@@ -63,36 +32,29 @@ export async function postCategoryController (request: Request, response: Respon
   }
 }
 
-/** Express controller for updating a category
- * @endpoint PUT /apis/category/:id
- * @param request an object containing the body with category data
- * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the category update was successful **/
-export async function updateCategoryController (request: Request, response: Response): Promise<void> {
+/** PUT update category
+ * @endpoint PUT /apis/category/:id **/
+export async function putCategoryController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the category id coming from the request parameters
-    const validationResultForRequestParams = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
-    // if the validation of the params is unsuccessful, return a preformatted response to the client
-    if (!validationResultForRequestParams.success) {
-      zodErrorResponse(response, validationResultForRequestParams.error)
+    // parse the category id from the request parameters and validate it
+    const validatedRequestParams = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
-    // validate the category data coming from the request body
-    const validationResultForRequestBody = CategorySchema.safeParse(request.body)
-    // if the validation is unsuccessful, return a preformatted response to the client
-    if (!validationResultForRequestBody.success) {
-      zodErrorResponse(response, validationResultForRequestBody.error)
+    // parse the updated category data from the request body and validate it
+    const validatedRequestBody = CategorySchema.safeParse(request.body)
+    if (!validatedRequestBody.success) {
+      zodErrorResponse(response, validatedRequestBody.error)
       return
     }
 
-    // grab the category id from the validated request parameters
-    const { id } = validationResultForRequestParams.data
-    // grab the category by id
+    // get the category id from the validated request params, get the category, and check if it exists
+    const { id } = validatedRequestParams.data
     const category: Category | null = await selectCategoryByCategoryId(id)
-    // if the category does not exist, return a preformatted response to the client
-    if (category === null) {
+    if (!category) {
       response.json({
         status: 404,
         data: null,
@@ -101,22 +63,8 @@ export async function updateCategoryController (request: Request, response: Resp
       return
     }
 
-    // NEEDS WORK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // // grab the user id from the session
-    // const userFromSession = request.session?.user
-    // const userIdFromSession = userFromSession?.id
-    // // if the user is not authorized to update the category, return a preformatted response to the client
-    // if (userIdFromSession !== category.userId) {
-    //   response.json({
-    //     status: 403,
-    //     data: null,
-    //     message: 'Forbidden: You do not own this category.'
-    //   })
-    // }
-
-    // grab the category data from the validated request body
-    const { color, icon, name } = validationResultForRequestBody.data
     // update the category with the new data
+    const { color, icon, name } = validatedRequestBody.data
     category.color = color
     category.icon = icon
     category.name = name
@@ -124,7 +72,7 @@ export async function updateCategoryController (request: Request, response: Resp
     // update the category in the database
     await updateCategory(category)
 
-    // if the category update was successful, return a preformatted response to the client
+    // if the category update was successful, return a 200 response
     response.json({
       status: 200,
       data: null,
@@ -137,26 +85,20 @@ export async function updateCategoryController (request: Request, response: Resp
   }
 }
 
-/** Express controller for getting the Category by id
- * @param request from the client to the server to get all Categories by CategoryID
- * @param response from the server to the client with all Categories by CategoryID or an error message
- * @return A promise containing the response for the client with the requested information,
- * or null if the information could not be found, set to the data field. **/
+/** GET single category by id
+ * @endpoint GET /apis/category/:id **/
 export async function getCategoryByCategoryIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // validate the id coming from the request parameters
+    // parse the category id from the request parameters and validate it
     const validationResult = CategorySchema.pick({ id: true }).safeParse({ id: request.params.id })
-    // if the validation is unsuccessful, return a preformatted response to the client
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
     }
 
-    // grab the id from the validated request parameters
+    // grab the id from the validated request parameters and select the category by id
     const { id } = validationResult.data
-
-    // select the category by id
     const selectedCategory = await selectCategoryByCategoryId(id)
 
     // return the response to the client with the requested information
@@ -169,5 +111,36 @@ export async function getCategoryByCategoryIdController (request: Request, respo
   }catch (error: any) {
     console.error(error)
     serverErrorResponse(response, null)
+  }
+}
+
+/** GET all categories
+ * @endpoint GET /apis/category **/
+export async function getCategoriesController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // select all categories
+    const categories: Category[] | null = await selectCategories()
+
+    // check if categories were found
+    if (!categories) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No categories found.'
+      })
+      return
+    }
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: categories,
+      message: 'Categories successfully got!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
   }
 }

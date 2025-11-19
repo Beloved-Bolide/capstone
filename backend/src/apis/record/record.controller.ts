@@ -294,7 +294,7 @@ export async function getRecordsByFolderIdController (request: Request, response
 export async function getRecordsByCategoryIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // parse the categoryId from the request parameters and check if it's valid
+    // parse the category id from the request parameters and validate it
     const validatedRequestParams = RecordSchema.pick({ categoryId: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)

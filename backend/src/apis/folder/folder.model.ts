@@ -117,7 +117,7 @@ export async function hasRecords (id: string): Promise<boolean> {
   const records = await selectRecordsByFolderId(id)
 
   // return true if there are records, false otherwise
-  return records? records.length > 0 : false
+  return records ? records.length > 0 : false
 }
 
 /** Deletes a folder from the folder table

@@ -51,23 +51,23 @@ export async function updateFileController (request: Request, response: Response
   try {
 
     // validate the file id coming from the request parameters
-    const validationResultForRequestParams = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validatedRequestParams = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
     // if the validation of the params is unsuccessful, return a preformatted response to the client
-    if (!validationResultForRequestParams.success) {
-      zodErrorResponse(response, validationResultForRequestParams.error)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
     // validate the updated file data coming from the request body
-    const validationResultForRequestBody = FileSchema.safeParse(request.body)
+    const validatedRequestBody = FileSchema.safeParse(request.body)
     // if the validation of the body is unsuccessful, return a preformatted response to the client
-    if (!validationResultForRequestBody.success) {
-      zodErrorResponse(response, validationResultForRequestBody.error)
+    if (!validatedRequestBody.success) {
+      zodErrorResponse(response, validatedRequestBody.error)
       return
     }
 
     // get the file from the validated request body
-    const file: File | null = await selectFileByFileId(validationResultForRequestParams.data.id)
+    const file: File | null = await selectFileByFileId(validatedRequestParams.data.id)
 
     // if the file is not found, return a preformatted response to the client
     if (file === null) {
@@ -80,7 +80,7 @@ export async function updateFileController (request: Request, response: Response
     }
 
     // get the file data from the validated request body
-    const { recordId, fileDate, fileKey, fileUrl, ocrData } = validationResultForRequestBody.data
+    const { recordId, fileDate, fileKey, fileUrl, ocrData } = validatedRequestBody.data
 
     // update the file with the new data
     file.recordId = recordId
