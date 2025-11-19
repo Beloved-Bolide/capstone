@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import { selectCategoryByCategoryId, updateCategory, deleteCategory } from './category.model.ts'
-import { type Category, CategorySchema, insertCategory, selectCategories } from './category.model.ts'
+import { type Category, CategorySchema, selectCategories, insertCategory } from './category.model.ts'
 
 
 /** GET all categories

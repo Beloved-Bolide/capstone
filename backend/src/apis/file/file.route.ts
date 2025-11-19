@@ -1,10 +1,10 @@
 import { Router } from 'express'
 import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 import {
-  postFileController,
-  updateFileController,
   getFileByFileIdController,
-  getFilesByRecordIdController
+  getFilesByRecordIdController,
+  postFileController,
+  updateFileController
 } from './file.controller.ts'
 
 
@@ -15,8 +15,8 @@ router.route('/')
   .post(isLoggedInController, postFileController)
 
 router.route('/:id')
-  .put(isLoggedInController, updateFileController)
   .get(isLoggedInController, getFileByFileIdController)
+  .put(isLoggedInController, updateFileController)
 
 router.route('/:recordId')
   .get(isLoggedInController, getFilesByRecordIdController)

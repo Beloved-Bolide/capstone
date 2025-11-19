@@ -2,7 +2,7 @@ import { z } from 'zod/v4'
 import { sql } from '../../utils/database.utils.ts'
 
 
-/** schema for validating file objects
+/** Schema for validating file objects
  * @shape id: string for the primary key for the file
  * @shape recordId: string for the foreign key linking to the record
  * @shape fileDate: Date for when the file was created
@@ -29,7 +29,7 @@ export const FileSchema = z.object({
 
 export type File = z.infer<typeof FileSchema>
 
-/** inserts a new file into the file table
+/** Inserts a new file into the file table
  * @param file the file to insert
  * @returns { Promise<string> } 'File successfully created!' **/
 export async function insertFile (file: File): Promise<string> {
@@ -62,7 +62,7 @@ export async function insertFile (file: File): Promise<string> {
   return 'File successfully created!'
 }
 
-/** updates a file in the file table
+/** Updates a file in the file table
  * @param file the file to update
  * @returns { Promise<string> } 'File successfully updated!' **/
 export async function updateFile (file: File): Promise<string> {
@@ -108,7 +108,7 @@ export async function selectFileByFileId (id: string): Promise<File | null> {
   return result[0] ?? null
 }
 
-/** select all files from a record's id
+/** Select all files from a record's id
  * @param id the id of the record
  * @returns array of files **/
 export async function selectFilesByRecordId (id: string): Promise<File[] | null> {
