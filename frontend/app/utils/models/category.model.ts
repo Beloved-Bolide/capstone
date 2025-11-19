@@ -4,7 +4,7 @@ import type {Folder} from "~/utils/models/folder.model";
 
 
 export const CategorySchema = z.object({
-  id: z.uuidv7('Please provide a valid uuid for id.'),
+  id: z.uuid('Please provide a valid uuid for id.'),
   color: z.string('Please provide a valid color.')
   .trim()
   .min(1, 'You need a minimum of 1 characters for the color.')

@@ -249,8 +249,8 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                       id="folder"
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
-                      {folders.map((folder) => (
-                        <option value={folder.name}>{folder.name}</option>
+                      {folders.map((folder,index) => (
+                        <option key={index} value={folder.name}>{folder.name}</option>
                       ))}
                     </select>
                   </div>
@@ -316,16 +316,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                         id="category"
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       >
-
-                        <option value="">Select category...</option>
-                        <option value="food">Food & Dining</option>
-                        <option value="transportation">Transportation</option>
-                        <option value="shopping">Shopping</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="bills">Bills & Utilities</option>
-                        <option value="healthcare">Healthcare</option>
-                        <option value="business">Business</option>
-                        <option value="other">Other</option>
+                        {categories.map((category,index)=><option key={index} value={category.id}>{category.icon + " " + category.name}</option>)}
                       </select>
                     </div>
 

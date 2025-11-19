@@ -14,7 +14,7 @@ const router = Router()
 
 router.route('/')
   .get( getCategoriesController)
-  .post(isLoggedInController, postCategoryController)
+  //.post(isLoggedInController, postCategoryController)
 
 router.route('/id/:id')
   .get(isLoggedInController, getCategoryByCategoryIdController)
