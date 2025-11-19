@@ -8,6 +8,7 @@ import type { Route } from './+types/new-record-file'
 import type { NewRecordFile } from '~/utils/models/record-file.model'
 import { postFile } from '~/utils/models/file.model'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
+import {type Category, getCategoriesByUserId} from "~/utils/models/category.model";
 
 
 const resolver = zodResolver(NewRecordSchema)
@@ -24,6 +25,7 @@ export async function loader ({ request }: Route.LoaderArgs) {
   }
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
+  const categories: Category[] = await getCategoriesByUserId(user.id, authorization, cookie)
   return { folders }
 }
 

@@ -25,6 +25,7 @@ import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
 import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 import { zodResolver } from '@hookform/resolvers/zod'
+import {type Category, getCategoriesByUserId, postCategory} from "~/utils/models/category.model";
 
 
 type Receipt = {
@@ -54,6 +55,16 @@ export async function loader ({ request }: Route.LoaderArgs) {
   if (!cookie || !user?.id || !authorization) {
     return { folders: null }
   }
+
+  const categories : Category[]=[
+    {id:uuid(),color:'#65f2b2',icon:'/logo.png',name:'Shopping'}
+  ]
+
+  if (! await getCategoriesByUserId(user.id, authorization, cookie)) {
+    for (const category in categories){await postCategory(categories[category], authorization, cookie)}
+  }
+
+
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
   return { folders }
