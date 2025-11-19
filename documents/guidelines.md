@@ -20,7 +20,7 @@ frontend/
 │   │   ├── expenses/
 │   │   ├── home/
 │   │   ├── login/
-│   │   └── new-file/
+│   │   └── new-file-record/
 │   ├── app.css          # Global styles
 │   ├── root.tsx         # Root component with Layout and ErrorBoundary
 │   └── routes.ts        # Route configuration

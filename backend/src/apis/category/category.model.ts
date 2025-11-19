@@ -46,7 +46,9 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
 
 /** Selects all categories from the category table
  * @returns array of categories or null if no categories were found **/
+
 export async function selectCategories (): Promise<Category[]> {
+
 
   // query the category table by id
   const rowList = await sql `
@@ -58,6 +60,8 @@ export async function selectCategories (): Promise<Category[]> {
     FROM category`
 
   // return the result as an array of records, or null if no records were found
+
+
    return CategorySchema.array().parse(rowList)
 }
 

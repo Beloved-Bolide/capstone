@@ -55,7 +55,6 @@ export async function loader ({ request }: Route.LoaderArgs) {
     return { folders: null }
   }
 
-
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
   return { folders }
 }
@@ -97,6 +96,8 @@ export async function action ({ request }: Route.ActionArgs) {
     userId: user.id,
     name: data.name
   }
+
+  console.log('Sending folder data:', JSON.stringify(folder, null, 2))
 
   // post the folder to the server
   const { result } = await postFolder(folder, authorization, cookie)
@@ -329,7 +330,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
               {/* New File Button */}
               <Link aria-label="Add new"
-                    to="/new-record-file"
+                    to="/new-file-record"
                     className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <Plus className="w-5 h-5 text-gray-600"/>
               </Link>

@@ -1,17 +1,17 @@
 import React, { useState } from 'react'
-import { type NewRecord, NewRecordSchema, postRecord } from '~/utils/models/record.model'
+import { postRecord } from '~/utils/models/record.model'
 import { getValidatedFormData } from 'remix-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getSession } from '~/utils/session.server'
 import { v7 as uuid } from 'uuid'
-import type { Route } from './+types/new-record-file'
-import type { NewRecordFile } from '~/utils/models/record-file.model'
+import type { Route } from './+types/new-file-record'
+import { type NewFileRecord, NewFileRecordSchema } from '~/utils/models/file-record.model'
 import { postFile } from '~/utils/models/file.model'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import {type Category, getCategories} from "~/utils/models/category.model";
 
 
-const resolver = zodResolver(NewRecordSchema)
+const resolver = zodResolver(NewFileRecordSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
 
@@ -32,7 +32,7 @@ export async function loader ({ request }: Route.LoaderArgs) {
 export async function action ({ request }: Route.ActionArgs) {
 
   // get the form data from the request body
-  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecordFile>(request, resolver)
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewFileRecord>(request, resolver)
 
   // if there are errors, return them
   if (errors) {
@@ -113,7 +113,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
 
   let { folders,categories } = loaderData
   if (!folders) folders = []
-  console.log(categories)
+  if (!categories) categories = []
 
   const [fileType, setFileType] = useState<string>('')
 
