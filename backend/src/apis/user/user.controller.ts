@@ -1,23 +1,63 @@
 import { type Request, type Response } from 'express'
 import { serverErrorResponse, zodErrorResponse } from '../../utils/response.utils.ts'
 import { generateJwt, validateSessionUser } from '../../utils/auth.utils.ts'
-import pkg from 'jsonwebtoken'
-const { verify } = pkg
 import {
   type PrivateUser,
   PrivateUserSchema,
   updatePrivateUser,
   selectPrivateUserByUserId
 } from './user.model.ts'
+import pkg from 'jsonwebtoken'
+const { verify } = pkg
 
+
+/** Express controller for getting user by user id
+ * @endpoint GET /apis/user/id/:id **/
+export async function getUserByUserIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the user id from the request parameters and validate it
+    const validationResult = PrivateUserSchema.pick({ id: true }).safeParse(request.params)
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // get the user id from the validated parameters
+    const { id } = validationResult.data
+
+    // check if the session user is the same as the user from the request parameters
+    if (!(await validateSessionUser(request, response, id))) return
+
+    // get the user by id
+    const user: PrivateUser | null = await selectPrivateUserByUserId(id)
+
+    // if the user is not found, return 404
+    if (!user) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'User not found.'
+      })
+      return
+    }
+
+    // return a 200 response
+    response.json({
+      status: 200,
+      data: null,
+      message: 'User successfully got!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
 
 /** Express controller for updating a user
- * @endpoint PUT /apis/user/id/:id
- * @param request from the client to the server with the user id and updated user data
- * @param response from the server to the user with a status code and a message
- * @returns a success response to the client if the user is updated successfully, a forbidden response if the user is
- * not authorized to update the user, and a not found response if the user is not found **/
-export async function updateUserController (request: Request, response: Response) {
+ * @endpoint PUT /apis/user/id/:id **/
+export async function putUserController (request: Request, response: Response) {
   try {
 
     // parse the user id from the request parameters and validate it
@@ -41,7 +81,7 @@ export async function updateUserController (request: Request, response: Response
       response.json({
         status: 404,
         data: null,
-        message: 'User not found.'
+        message: 'Put user failed: User not found.'
       })
       return
     }
@@ -52,7 +92,7 @@ export async function updateUserController (request: Request, response: Response
       response.json({
         status: 403,
         data: null,
-        message: 'Forbidden: You cannot update another user\'s data.'
+        message: 'Put user failed: Forbidden: You cannot update another user\'s data.'
       })
     }
 
@@ -68,7 +108,7 @@ export async function updateUserController (request: Request, response: Response
       response.json({
         status: 404,
         data: null,
-        message: 'User not found.'
+        message: 'Put user failed: User not found.'
       })
       return
     }
@@ -93,7 +133,7 @@ export async function updateUserController (request: Request, response: Response
       response.json({
         status: 401,
         data: null,
-        message: 'Unauthorized: Invalid token.'
+        message: 'Put user failed: Unauthorized: Invalid token.'
       })
       return
     }
@@ -131,54 +171,6 @@ export async function updateUserController (request: Request, response: Response
       status: 200,
       data: null,
       message: 'User successfully updated!'
-    })
-
-  } catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, error.message)
-  }
-}
-
-/** Express controller for getting user by user id
- * @endpoint GET /apis/user/id/:id
- * @param request an object containing the user id in params
- * @param response an object modeling the response that will be sent to the client
- * @returns response with the user data or error **/
-export async function getUserByUserIdController (request: Request, response: Response): Promise<void> {
-  try {
-
-    // parse the user id from the request parameters and validate it
-    const validationResult = PrivateUserSchema.pick({ id: true }).safeParse(request.params)
-    if (!validationResult.success) {
-      zodErrorResponse(response, validationResult.error)
-      return
-    }
-
-    // get the user id from the validated parameters
-    const { id } = validationResult.data
-
-    // check if the session user is the same as the user from the request parameters
-    if (!(await validateSessionUser(request, response, id))) return
-
-    // get the user by id
-    const user: PrivateUser | null = await selectPrivateUserByUserId(id)
-
-    // if the user is not found, return 404
-    if (user === null) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'User not found.'
-      })
-      return
-    }
-
-    // return the user data (without sensitive fields for public endpoints)
-    // for now returning full private user since it's authenticated
-    response.json({
-      status: 200,
-      data: user,
-      message: 'User found successfully!'
     })
 
   } catch (error: any) {
