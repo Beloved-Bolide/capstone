@@ -25,13 +25,6 @@ export const PrivateUserSchema = z.object({
     .length(97, { message: 'please provide a valid hash (max 97 characters)' }),
 })
 
-/** this type is used to represent a private user object
- * @shape id: string for the primary key for the user
- * @shape activationToken: string | null for the activation token for the user
- * @shape email: string for the email for the user
- * @shape hash: string for the password hash for the user
- * @shape name: string for the name for the user
- * @shape notifications: boolean for the notifications for the user **/
 export type PrivateUser = z.infer<typeof PrivateUserSchema>
 
 /** Inserts a new user into the user table
