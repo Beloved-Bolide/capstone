@@ -39,7 +39,9 @@ export async function selectFolderByFolderId (id: string): Promise<Folder | null
       id = ${id}`
 
   // enforce that the result is an array of one folder, or null
-  return FolderSchema.parse(rowList) ?? null
+  const result = FolderSchema.array().max(1).parse(rowList)
+  // return the first folder found, or null if no folder was found
+  return result[0] ?? null
 }
 
 /** Selects all folders by parent folder if
@@ -77,8 +79,8 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[] | nul
       folder
     WHERE user_id = ${id}`
 
-  // Enforce that the result is an array of folders
-  return FolderSchema.array().parse(rowList)
+  // return the folders or null if no folders were found
+  return FolderSchema.array().parse(rowList) ?? null
 }
 
 /** selects the folder from the folder table by name
@@ -96,7 +98,10 @@ export async function selectFolderByFolderName (name: string): Promise<Folder | 
     FROM folder
     WHERE name = ${name}`
 
-  return FolderSchema.parse(rowList) ?? null
+  // enforce that the result is an array of one folder, or null
+  const result = FolderSchema.array().max(1).parse(rowList)
+  // return the first folder found, or null if no folder was found
+  return result[0] ?? null
 }
 
 /** inserts a new folder into the folder table

@@ -208,20 +208,36 @@ export async function getFolderByFolderNameController (request: Request, respons
 export async function postFolderController (request: Request, response: Response): Promise<void> {
   try {
 
+    console.log('request body: ' + request.body.data)
     // parse the new folder data from the request body and validate it
     const validatedRequestBody = FolderSchema.safeParse(request.body)
+    console.log('validated request body: ' + validatedRequestBody.data)
     if (!validatedRequestBody.success) {
       zodErrorResponse(response, validatedRequestBody.error)
       return
     }
 
-    // grab the userId from the request body and validate it
-    const { userId } = validatedRequestBody.data
-    if (!(await validateSessionUser(request, response, userId))) return
+    // get the new folder from the validated request body
+    const { id, userId, parentFolderId, name } = validatedRequestBody.data
+
+    // create a new folder object with the validated data
+    const newFolder: Folder | null = { id, userId, parentFolderId, name }
+
+    // if the folder data is missing, return a 400 response
+    if (!newFolder) {
+      response.json({
+        status: 400,
+        data: null,
+        message: 'Post folder failed: Folder data is missing.'
+      })
+      return
+    }
+
+    // check if the session user is the owner of the folder
+    if (!(await validateSessionUser(request, response, newFolder.userId))) return
 
     // check if a folder with the same name already exists
-    const { name } = validatedRequestBody.data
-    const existingFolder = await selectFolderByFolderName(name)
+    const existingFolder = await selectFolderByFolderName(newFolder.name)
     if (existingFolder) {
       response.json({
         status: 409,
@@ -232,7 +248,7 @@ export async function postFolderController (request: Request, response: Response
     }
 
     // insert the new folder data into the database
-    const message = await insertFolder(validatedRequestBody.data)
+    const message = await insertFolder(newFolder)
 
     // return the success response to the client
     response.json({

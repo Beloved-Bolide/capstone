@@ -55,7 +55,6 @@ export async function loader ({ request }: Route.LoaderArgs) {
     return { folders: null }
   }
 
-
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
   return { folders }
 }
@@ -97,6 +96,8 @@ export async function action ({ request }: Route.ActionArgs) {
     userId: user.id,
     name: data.name
   }
+
+  console.log('Sending folder data:', JSON.stringify(folder, null, 2))
 
   // post the folder to the server
   const { result } = await postFolder(folder, authorization, cookie)
