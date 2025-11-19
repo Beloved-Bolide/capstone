@@ -20,7 +20,7 @@ export async function getFileByFileIdController (request: Request, response: Res
   try {
 
     // parse the file id from the request parameters and validate it
-    const validationResult = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validationResult = FileSchema.pick({ id: true }).safeParse(request.params)
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
@@ -77,7 +77,7 @@ export async function getFilesByRecordIdController (request: Request, response: 
   try {
 
     // parse the record id from the request parameters and validate it
-    const validationResult = FileSchema.pick({ recordId: true }).safeParse({ recordId: request.params.recordId })
+    const validationResult = FileSchema.pick({ recordId: true }).safeParse(request.params)
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
@@ -164,13 +164,13 @@ export async function postFileController (request: Request, response: Response):
     if (!(await validateSessionUser(request, response, userId))) return
 
     // insert the new file data into the database
-    const insertedFile = await insertFile(validationResult.data)
+    const message = await insertFile(validationResult.data)
 
     // return the inserted file's attributes and a 200 response
     response.json({
       status: 200,
-      data: insertedFile,
-      message: null
+      data: null,
+      message: message
     })
 
   } catch (error: any) {
@@ -181,11 +181,11 @@ export async function postFileController (request: Request, response: Response):
 
 /** Express controller for updating a file
  * @endpoint PUT /apis/file/id/:id **/
-export async function updateFileController (request: Request, response: Response): Promise<void> {
+export async function putFileController (request: Request, response: Response): Promise<void> {
   try {
 
     // parse the file id from the request parameters and validate it
-    const validatedRequestParams = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validatedRequestParams = FileSchema.pick({ id: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
@@ -241,13 +241,13 @@ export async function updateFileController (request: Request, response: Response
     file.ocrData = ocrData
 
     // update the file in the database
-    const updatedFile = await updateFile(file)
+    const message = await updateFile(file)
 
     // return the file's attributes and a 200 response
     response.json({
       status: 200,
-      data: updatedFile,
-      message: null
+      data: null,
+      message: message
     })
 
   } catch (error: any) {
@@ -262,7 +262,7 @@ export async function deleteFileController (request: Request, response: Response
   try {
 
     // parse the file id from the request parameters and validate it
-    const validationResult = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    const validationResult = FileSchema.pick({ id: true }).safeParse(request.params)
     if (!validationResult.success) {
       zodErrorResponse(response, validationResult.error)
       return
@@ -301,13 +301,13 @@ export async function deleteFileController (request: Request, response: Response
     if (!(await validateSessionUser(request, response, userId))) return
 
     // delete the file from the database
-    const deletedFile = await deleteFile(id)
+    const message = await deleteFile(id)
 
     // return a 200 response
     response.json({
       status: 200,
-      data: deletedFile,
-      message: null
+      data: null,
+      message: message
     })
 
   } catch (error: any) {
