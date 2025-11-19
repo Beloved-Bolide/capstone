@@ -45,6 +45,7 @@ export function meta ({}: Route.MetaArgs) {
 const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
+
   const cookie = request.headers.get('cookie')
   const session = await getSession(cookie)
   const user = session.get('user')
@@ -68,11 +69,9 @@ export async function action ({ request }: Route.ActionArgs) {
     return { errors, defaultValues }
   }
 
-  // get the cookie from the request headers
-  const session = await getSession(request.headers.get('cookie'))
-
   // get the cookie, user, and authorization from the session
   const cookie = request.headers.get('cookie')
+  const session = await getSession(cookie)
   const user = session.get('user')
   const authorization = session.get('authorization')
 

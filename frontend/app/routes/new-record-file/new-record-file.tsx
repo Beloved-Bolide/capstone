@@ -6,19 +6,20 @@ import { getSession } from '~/utils/session.server'
 import { v7 as uuid } from 'uuid'
 import type { Route } from './+types/new-record-file'
 import type { NewRecordFile } from '~/utils/models/record-file.model'
-import {postFile} from "~/utils/models/file.model";
-import {type Folder, getFoldersByUserId} from "~/utils/models/folder.model";
+import { postFile } from '~/utils/models/file.model'
+import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 
 
 const resolver = zodResolver(NewRecordSchema)
 
-export async function loader ({ request }: Route.LoaderArgs){
+export async function loader ({ request }: Route.LoaderArgs) {
+
   const cookie = request.headers.get('cookie')
   const session = await getSession(cookie)
   const user = session.get('user')
   const authorization = session.get('authorization')
 
-  if (!cookie || !user?.id || authorization) {
+  if (!cookie || !user?.id || !authorization) {
     return { folders: null }
   }
 
@@ -27,6 +28,7 @@ export async function loader ({ request }: Route.LoaderArgs){
 }
 
 export async function action ({ request }: Route.ActionArgs) {
+
   // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecordFile>(request, resolver)
 
@@ -105,7 +107,7 @@ export async function action ({ request }: Route.ActionArgs) {
 
 }
 
-export default function NewFilePage ({ loaderData, actionData }: Route.ComponentProps ) {
+export default function NewFilePage ({ loaderData, actionData }: Route.ComponentProps) {
 
   let { folders } = loaderData
   if (!folders) folders = []
@@ -244,8 +246,8 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                       id="folder"
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
-                      {folders.map((folder)=>(
-                      <option value={folder.name}>{folder.name}</option>
+                      {folders.map((folder) => (
+                        <option value={folder.name}>{folder.name}</option>
                       ))}
                     </select>
                   </div>
