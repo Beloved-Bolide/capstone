@@ -19,11 +19,11 @@ export async function postCategoryController (request: Request, response: Respon
     // insert the new category data into the database
     const insertedCategory = await insertCategory(validationResult.data)
 
-    // return the success response to the client
+    // return the inserted category's attributes and a 200 response
     response.json({
       status: 200,
-      data: null,
-      message: insertedCategory
+      data: insertedCategory,
+      message: 'New category successfully created!'
     })
 
   } catch (error: any) {
@@ -70,12 +70,12 @@ export async function putCategoryController (request: Request, response: Respons
     category.name = name
 
     // update the category in the database
-    await updateCategory(category)
+    const updatedCategory = await updateCategory(category)
 
     // if the category update was successful, return a 200 response
     response.json({
       status: 200,
-      data: null,
+      data: updatedCategory,
       message: 'Category successfully updated!'
     })
 
@@ -101,7 +101,7 @@ export async function getCategoryByCategoryIdController (request: Request, respo
     const { id } = validationResult.data
     const selectedCategory = await selectCategoryByCategoryId(id)
 
-    // return the response to the client with the requested information
+    // return the category's attributes and a 200 response
     response.json({
       status: 200,
       data: selectedCategory,
@@ -132,7 +132,7 @@ export async function getCategoriesController (request: Request, response: Respo
       return
     }
 
-    // return a success response
+    // return the categories' attributes and a 200 response
     response.json({
       status: 200,
       data: categories,
