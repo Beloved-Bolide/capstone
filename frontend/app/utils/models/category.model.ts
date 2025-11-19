@@ -42,20 +42,20 @@ export async function postCategory (data: Category, authorization: string, cooki
   return { headers, result }
 }
 
-export async function getCategoriesByUserId (userId: string | null, authorization: string, cookie: string | null):Promise<Category[]> {
+export async function getCategories ():Promise<Category[]> {
 
-  const response = await fetch(`${process.env.REST_API_URL}/category/userId/${userId}`, {
+  const response = await fetch(`${process.env.REST_API_URL}/category`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-       'Authorization': authorization,
-       'Cookie': cookie?? ''
+      // 'Authorization': authorization,
+      // 'Cookie': cookie?? ''
     },
     body: null
   })
 
   if(!response.ok){
-    throw new Error('Failed to get category')
+    throw new Error('Failed to get categories')
   }
 
   const { data } = await response.json()

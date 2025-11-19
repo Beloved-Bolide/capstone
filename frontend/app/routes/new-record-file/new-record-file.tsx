@@ -8,7 +8,7 @@ import type { Route } from './+types/new-record-file'
 import type { NewRecordFile } from '~/utils/models/record-file.model'
 import { postFile } from '~/utils/models/file.model'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
-import {type Category, getCategoriesByUserId} from "~/utils/models/category.model";
+import {type Category, getCategories} from "~/utils/models/category.model";
 
 
 const resolver = zodResolver(NewRecordSchema)
@@ -25,8 +25,8 @@ export async function loader ({ request }: Route.LoaderArgs) {
   }
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
-  const categories: Category[] = await getCategoriesByUserId(user.id, authorization, cookie)
-  return { folders }
+  const categories: Category[] = await getCategories()
+  return { folders,categories }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
@@ -111,8 +111,9 @@ export async function action ({ request }: Route.ActionArgs) {
 
 export default function NewFilePage ({ loaderData, actionData }: Route.ComponentProps) {
 
-  let { folders } = loaderData
+  let { folders,categories } = loaderData
   if (!folders) folders = []
+  console.log(categories)
 
   const [fileType, setFileType] = useState<string>('')
 
@@ -315,6 +316,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                         id="category"
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       >
+
                         <option value="">Select category...</option>
                         <option value="food">Food & Dining</option>
                         <option value="transportation">Transportation</option>
