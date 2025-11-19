@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { useRemixForm } from 'remix-hook-form'
 import { FolderOpen } from 'lucide-react'
 import { StatusMessage } from '~/components/StatusMessage'
-import { type NewFolder, newFolderSchema } from '~/utils/models/folder.model'
+import { type NewFolder, NewFolderSchema } from '~/utils/models/folder.model'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { FormActionResponse } from '~/utils/interfaces/FormActionResponse'
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 }
 
 
-const resolver = zodResolver(newFolderSchema)
+const resolver = zodResolver(NewFolderSchema)
 
 export function AddFolderForm (props: Props) {
 

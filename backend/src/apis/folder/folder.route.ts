@@ -1,12 +1,13 @@
 import { Router } from 'express'
 import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 import {
-  postFolderController,
-  updateFolderController,
   getFolderByFolderIdController,
   getFolderByFolderNameController,
   getFoldersByParentFolderIdController,
-  getFoldersByUserIdController, deleteFolderController
+  getFoldersByUserIdController,
+  postFolderController,
+  putFolderController,
+  deleteFolderController
 } from './folder.controller.ts'
 
 
@@ -18,16 +19,16 @@ router.route('/')
 
 router.route('/id/:id')
   .get(isLoggedInController, getFolderByFolderIdController)
-  .put(isLoggedInController, updateFolderController)
+  .put(isLoggedInController, putFolderController)
   .delete(isLoggedInController, deleteFolderController)
 
 router.route('/parentFolderId/:parentFolderId')
-.get(isLoggedInController, getFoldersByParentFolderIdController)
+  .get(isLoggedInController, getFoldersByParentFolderIdController)
 
-router.route('/userId/:id')
+router.route('/userId/:userId')
   .get(isLoggedInController, getFoldersByUserIdController)
 
 router.route('/name/:name')
-.get(isLoggedInController, getFolderByFolderNameController)
+  .get(isLoggedInController, getFolderByFolderNameController)
 
 export const folderRoute = { basePath, router }

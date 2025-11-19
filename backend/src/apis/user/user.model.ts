@@ -25,13 +25,6 @@ export const PrivateUserSchema = z.object({
     .length(97, { message: 'please provide a valid hash (max 97 characters)' }),
 })
 
-/** this type is used to represent a private user object
- * @shape id: string for the primary key for the user
- * @shape activationToken: string | null for the activation token for the user
- * @shape email: string for the email for the user
- * @shape hash: string for the password hash for the user
- * @shape name: string for the name for the user
- * @shape notifications: boolean for the notifications for the user **/
 export type PrivateUser = z.infer<typeof PrivateUserSchema>
 
 /** Inserts a new user into the user table
@@ -53,7 +46,7 @@ export async function insertUser (user: PrivateUser): Promise<string> {
   } = user
 
   // insert the new user into the user table
-  await sql`
+  await sql `
     INSERT INTO "user" (
       id,
       activation_token,
@@ -91,7 +84,7 @@ export async function updatePrivateUser (user: PrivateUser): Promise<string> {
   } = user
 
   // update the user in the user table
-  await sql`
+  await sql `
     UPDATE "user"
     SET 
       activation_token = ${activationToken},
@@ -111,7 +104,7 @@ export async function updatePrivateUser (user: PrivateUser): Promise<string> {
 export async function selectPrivateUserByUserId (id: string): Promise<PrivateUser | null> {
 
   // query the user table by id
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       activation_token,
@@ -123,7 +116,7 @@ export async function selectPrivateUserByUserId (id: string): Promise<PrivateUse
     WHERE id = ${id}`
 
   // return the user or null if no user was found
-  return PrivateUserSchema.array().max(1).parse(rowList)[0] ?? null
+  return PrivateUserSchema.parse(rowList) ?? null
 }
 
 /** Selects a user from the user table by activationToken
@@ -132,7 +125,7 @@ export async function selectPrivateUserByUserId (id: string): Promise<PrivateUse
 export async function selectPrivateUserByUserActivationToken (activationToken: string): Promise<PrivateUser | null> {
 
   // select the user from the user table by activation token
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       activation_token,
@@ -144,7 +137,7 @@ export async function selectPrivateUserByUserActivationToken (activationToken: s
     WHERE activation_token = ${activationToken}`
 
   // return the user or null if no user was found
-  return PrivateUserSchema.array().max(1).parse(rowList)[0] ?? null
+  return PrivateUserSchema.parse(rowList) ?? null
 }
 
 /** Selects the private user from the user table by email
@@ -153,7 +146,7 @@ export async function selectPrivateUserByUserActivationToken (activationToken: s
 export async function selectPrivateUserByUserEmail (email: string): Promise<PrivateUser | null> {
 
   // select the user from the user table by email
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       activation_token,
@@ -165,5 +158,5 @@ export async function selectPrivateUserByUserEmail (email: string): Promise<Priv
     WHERE email = ${email}`
 
   // return the user or null if no user was found
-  return PrivateUserSchema.array().max(1).parse(rowList)[0] ?? null
+  return PrivateUserSchema.parse(rowList) ?? null
 }

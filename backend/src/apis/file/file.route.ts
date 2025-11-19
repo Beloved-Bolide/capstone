@@ -1,24 +1,26 @@
 import { Router } from 'express'
+import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 import {
   getFileByFileIdController,
-  getFileByRecordIdController,
+  getFilesByRecordIdController,
   postFileController,
-  updateFileController
+  putFileController,
+  deleteFileController
 } from './file.controller.ts'
-import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 
 
 const basePath = '/apis/file' as const
 const router = Router()
 
 router.route('/')
-.post(isLoggedInController, postFileController)
+  .post(isLoggedInController, postFileController)
 
 router.route('/id/:id')
-.get(isLoggedInController, getFileByFileIdController)
-.put(isLoggedInController, updateFileController)
+  .get(isLoggedInController, getFileByFileIdController)
+  .put(isLoggedInController, putFileController)
+  .delete(isLoggedInController, deleteFileController)
 
-router.route('/record/:id')
-.get(isLoggedInController, getFileByRecordIdController)
+router.route('/recordId/:recordId')
+  .get(isLoggedInController, getFilesByRecordIdController)
 
 export const fileRoute = { basePath, router }

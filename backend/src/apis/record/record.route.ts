@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 import {
   postRecordController,
-  updateRecordController,
+  putRecordController,
   getRecordsByFolderIdController,
   getRecordByRecordIdController,
   getRecordsByCategoryIdController,
@@ -22,7 +22,7 @@ router.route('/')
 
 router.route('/id/:id')
   .get(isLoggedInController, getRecordByRecordIdController)
-  .put(isLoggedInController, updateRecordController)
+  .put(isLoggedInController, putRecordController)
   .delete(isLoggedInController, deleteRecordController)
 
 router.route('/folderId/:folderId')
