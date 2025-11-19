@@ -6,7 +6,6 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape id: string for the primary key for the file
  * @shape recordId: string for the foreign key linking to the record
  * @shape fileDate: Date for when the file was created
- * @shape fileKey: string for the file key/identifier
  * @shape fileUrl: string for the URL where the file is stored
  * @shape isStarred: boolean indicating if the file is starred
  * @shape ocrData: string containing OCR extracted text data **/
@@ -14,11 +13,6 @@ export const FileSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id.'),
   recordId: z.uuidv7('Please provide a valid uuid for record id.'),
   fileDate: z.coerce.date().nullable(),
-  fileKey: z.string('Please provide a valid file key.')
-    .trim()
-    .min(1, 'Please provide a valid file key. (min 1 characters)')
-    .max(32, 'Please provide a valid file key. (max 32 characters)')
-    .nullable(),
   fileUrl: z.url('Please provide a valid URL.')
     .trim()
     .min(1, 'Please provide a valid file URL. (min 1 characters)')
@@ -40,7 +34,6 @@ export async function selectFileByFileId (id: string): Promise<File | null> {
       id,
       record_id,
       file_date,
-      file_key,
       file_url,
       ocr_data
     FROM
@@ -63,7 +56,6 @@ export async function selectFilesByRecordId (id: string): Promise<File[] | null>
       id,
       record_id,
       file_date,
-      file_key,
       file_url,
       ocr_data
     FROM
@@ -84,7 +76,7 @@ export async function insertFile (file: File): Promise<string> {
   FileSchema.parse(file)
 
   // extract the file's properties
-  const { id, recordId, fileDate, fileKey, fileUrl, ocrData } = file
+  const { id, recordId, fileDate, fileUrl, ocrData } = file
 
   // insert the file into the file table
   await sql `
@@ -92,7 +84,6 @@ export async function insertFile (file: File): Promise<string> {
       id,
       record_id,
       file_date,
-      file_key,
       file_url,
       ocr_data
     )
@@ -100,7 +91,6 @@ export async function insertFile (file: File): Promise<string> {
       ${id},
       ${recordId},
       ${fileDate},
-      ${fileKey},
       ${fileUrl},
       ${ocrData}
     )`
@@ -114,7 +104,7 @@ export async function insertFile (file: File): Promise<string> {
 export async function updateFile (file: File): Promise<string> {
 
   // validate the file object against the FileSchema
-  const { id, recordId, fileDate, fileKey, fileUrl, ocrData } = file
+  const { id, recordId, fileDate, fileUrl, ocrData } = file
 
   // update the file in the file table
   await sql `
@@ -122,7 +112,6 @@ export async function updateFile (file: File): Promise<string> {
     SET 
       record_id = ${recordId},
       file_date = ${fileDate},
-      file_key  = ${fileKey},
       file_url  = ${fileUrl},
       ocr_data  = ${ocrData}
     WHERE

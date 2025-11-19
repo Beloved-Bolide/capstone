@@ -10,7 +10,9 @@ import { sql } from '../../utils/database.utils.ts'
  * @shape companyName: string for the name of the company
  * @shape couponCode: string for the coupon code
  * @shape description: string for the description
+ * @shape docType: string for the document type
  * @shape expirationDate: date for the expiration
+ * @shape isStarred: boolean for whether the record is starred
  * @shape lastAccessedAt: datetime for the last time it was accessed
  * @shape name: string for the name
  * @shape notifyOn: boolean for the notifications
@@ -32,6 +34,10 @@ export const RecordSchema = z.object({
     .nullable(),
   description: z.string('Please provide a valid description.')
     .max(512, 'Please provide a valid description (max 512 characters).')
+    .nullable(),
+  docType: z.string('Please provide a valid document type.')
+    .min(1, 'Please provide a valid document type.')
+    .max(32, 'Please provide a valid document type (max 32 characters).')
     .nullable(),
   expDate: z.coerce.date('Please provide a valid expiration date.')
     .min(new Date('1900-01-01'), {error: 'Too old!'})
@@ -71,6 +77,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
       company_name,
       coupon_code,
       description,
+      doc_type,
       exp_date,
       is_starred,
       last_accessed_at,
@@ -91,7 +98,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
 export async function selectRecordsByFolderId (folderId: string): Promise<Record[] | null> {
 
   // query the database to select the records by folderId
-  const rowList = await  `
+  const rowList = await sql `
     SELECT 
       id,
       folder_id,
@@ -100,6 +107,7 @@ export async function selectRecordsByFolderId (folderId: string): Promise<Record
       company_name,
       coupon_code,
       description,
+      doc_type,
       exp_date,
       is_starred,
       last_accessed_at,
@@ -129,6 +137,7 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
       company_name,
       coupon_code,
       description,
+      doc_type,
       exp_date,
       is_starred,
       last_accessed_at,
@@ -159,6 +168,7 @@ export async function selectRecordsByCompanyName (companyName: string): Promise<
       company_name,
       coupon_code,
       description,
+      doc_type,
       exp_date,
       is_starred,
       last_accessed_at,
@@ -188,6 +198,7 @@ export async function selectRecordsByLastAccessedAt (lastAccessedAt: Date): Prom
       company_name,
       coupon_code,
       description,
+      doc_type,
       exp_date,
       is_starred,
       last_accessed_at,
@@ -217,6 +228,7 @@ export async function selectRecordByName (name: string): Promise<Record | null> 
       company_name,
       coupon_code,
       description,
+      doc_type,
       exp_date,
       is_starred,
       last_accessed_at,
@@ -247,6 +259,7 @@ export async function searchRecords (searchTerm: string, limit: number = 50): Pr
       company_name,
       coupon_code,
       description,
+      doc_type,
       exp_date,
       is_starred,
       last_accessed_at,
@@ -263,6 +276,7 @@ export async function searchRecords (searchTerm: string, limit: number = 50): Pr
       company_name                   ILIKE ${`%${searchTerm}%`} OR
       coupon_code                    ILIKE ${`%${searchTerm}%`} OR
       description                    ILIKE ${`%${searchTerm}%`} OR
+      doc_type                       ILIKE ${`%${searchTerm}%`} OR
       CAST(exp_date AS TEXT)         ILIKE ${`%${searchTerm}%`} OR
       CAST(is_starred AS TEXT)       ILIKE ${`%${searchTerm}%`} OR
       CAST(last_accessed_at AS TEXT) ILIKE ${`%${searchTerm}%`} OR
@@ -295,6 +309,7 @@ export async function insertRecord (record: Record): Promise<string> {
     companyName,
     couponCode,
     description,
+    docType,
     expDate,
     isStarred,
     lastAccessedAt,
@@ -314,6 +329,7 @@ export async function insertRecord (record: Record): Promise<string> {
       company_name,
       coupon_code,
       description,
+      doc_type,                  
       exp_date,
       is_starred,
       last_accessed_at,
@@ -330,6 +346,7 @@ export async function insertRecord (record: Record): Promise<string> {
       ${companyName},
       ${couponCode},
       ${description},
+      ${docType},      
       ${expDate},
       ${isStarred},
       ${lastAccessedAt},
@@ -356,6 +373,7 @@ export async function updateRecord (record: Record): Promise<string> {
     companyName,
     couponCode,
     description,
+    docType,
     expDate,
     isStarred,
     lastAccessedAt,
@@ -375,6 +393,7 @@ export async function updateRecord (record: Record): Promise<string> {
       company_name     = ${companyName},
       coupon_code      = ${couponCode},
       description      = ${description},
+      doc_type         = ${docType},     
       exp_date         = ${expDate},
       is_starred       = ${isStarred},
       last_accessed_at = ${lastAccessedAt},
