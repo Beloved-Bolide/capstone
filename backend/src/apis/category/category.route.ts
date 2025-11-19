@@ -1,10 +1,11 @@
 import { Router } from 'express'
+import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 import {
+  getCategoriesController,
   getCategoryByCategoryIdController,
   postCategoryController,
-  updateCategoryController
+  putCategoryController
 } from './category.controller.ts'
-import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
 
 
 const basePath = '/apis/category' as const
@@ -12,9 +13,10 @@ const router = Router()
 
 router.route('/')
   .post(isLoggedInController, postCategoryController)
+  .get(isLoggedInController, getCategoriesController)
 
 router.route('/id/:id')
   .get(isLoggedInController, getCategoryByCategoryIdController)
-  .put(isLoggedInController, updateCategoryController)
+  .put(isLoggedInController, putCategoryController)
 
 export const categoryRoute = { basePath, router }

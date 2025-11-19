@@ -263,7 +263,8 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
     WHERE category_id = ${categoryId}`
 
   // return the result as an array of records, or null if no records were found
-  return RecordSchema.array().parse(rowList) ?? null
+  const result = RecordSchema.array().safeParse(rowList)
+  return result.success ? result.data : null
 }
 
 /** Selects the record from the record table by companyName

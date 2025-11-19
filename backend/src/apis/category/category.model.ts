@@ -70,7 +70,9 @@ export async function insertCategory (category: Category): Promise<string> {
  * @returns {Promise<string>} 'Category successfully updated!' **/
 export async function updateCategory (category: Category): Promise<string> {
 
-  // validate the folder object against the CategorySchema
+  // validate the category object against the CategorySchema
+  CategorySchema.parse(category)
+
   const { id, color, icon, name } = category
 
   // update the category in the category table
@@ -104,4 +106,22 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
 
   // enforce that the result is an array of one category, or null
   return CategorySchema.array().max(1).parse(rowList)[0] ?? null
+}
+
+/** selects all categories from the category table
+ * @returns array of categories or null if no categories were found **/
+export async function selectCategories (): Promise<Category[] | null> {
+
+  // query the category table by id
+  const rowList = await sql`
+    SELECT
+      id,
+      color,
+      icon,
+      name
+    FROM category`
+
+  // return the result as an array of records, or null if no records were found
+  const result = CategorySchema.array().safeParse(rowList)
+  return result.success ? result.data : null
 }
