@@ -6,12 +6,137 @@ import { selectFolderByFolderId } from '../folder/folder.model.ts'
 import {
   type File,
   FileSchema,
-  insertFile,
-  updateFile,
   selectFileByFileId,
-  selectFilesByRecordId
+  selectFilesByRecordId,
+  insertFile,
+  updateFile
 } from './file.model.ts'
 
+
+/** Express controller for getting a file by its id
+ * @endpoint GET /apis/file/id/:id **/
+export async function getFileByFileIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the file id from the request parameters and validate it
+    const validationResult = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // get the file id from the validated request parameters and check if it exists
+    const { id } = validationResult.data
+    const file: File | null = await selectFileByFileId(id)
+    if (!file) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'File not found.'
+      })
+      return
+    }
+
+    // get the record id from the validated request body
+    const fileRecordId = file.recordId
+    const record = await selectRecordByRecordId(fileRecordId)
+
+    // get the folder id from the validated request body and check if it exists
+    const folderId = record?.folderId
+    if (!folderId) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Unable to post file.'
+      })
+      return
+    }
+
+    // get the folder owner and check if the user making the request is the owner of the folder
+    const folder = await selectFolderByFolderId(folderId)
+    const userId = folder?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // return the file's attributes and a 200 response
+    response.json({
+      status: 200,
+      data: file,
+      message: 'File successfully found!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting files by record id
+ * @endpoint GET /apis/file/:recordId **/
+export async function getFilesByRecordIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the record id from the request parameters and validate it
+    const validationResult = FileSchema.pick({ recordId: true }).safeParse({ recordId: request.params.recordId })
+    if (!validationResult.success) {
+      zodErrorResponse(response, validationResult.error)
+      return
+    }
+
+    // get the record id from the validated request parameters, the files associated with the record id, and check if they exist
+    const { recordId } = validationResult.data
+    const files: File[] | null = await selectFilesByRecordId(recordId)
+    if (!files) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'No files found for the specified record id.'
+      })
+      return
+    }
+
+    // get the first file from the array of files and check if it exists
+    const file: File | null = files[0]!
+    if (!file) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'File not found.'
+      })
+      return
+    }
+
+    // get the record id from the validated request body
+    const fileRecordId = files[0]!.recordId
+    const record = await selectRecordByRecordId(fileRecordId)
+
+    // get the folder id from the validated request body and check if it exists
+    const folderId = record?.folderId
+    if (!folderId) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Unable to post file.'
+      })
+      return
+    }
+
+    // get the folder owner and check if the user making the request is the owner of the folder
+    const folder = await selectFolderByFolderId(folderId)
+    const userId = folder?.userId
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // return the files' attributes and a 200 response
+    response.json({
+      status: 200,
+      data: files,
+      message: 'All files successfully found!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
 
 /** Express controller for creating a new file
  * @endpoint POST /apis/file **/
@@ -62,7 +187,7 @@ export async function postFileController (request: Request, response: Response):
 }
 
 /** Express controller for updating a file
- * @endpoint PUT /apis/file/id/:id **/
+ * @endpoint PUT /apis/file/:id **/
 export async function updateFileController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -130,131 +255,6 @@ export async function updateFileController (request: Request, response: Response
       status: 200,
       data: updatedFile,
       message: 'File successfully updated!'
-    })
-
-  } catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, error.message)
-  }
-}
-
-/** Express controller for getting a file by its id
- * @endpoint GET /apis/file/id/:id **/
-export async function getFileByFileIdController (request: Request, response: Response): Promise<void> {
-  try {
-
-    // parse the file id from the request parameters and validate it
-    const validationResult = FileSchema.pick({ id: true }).safeParse({ id: request.params.id })
-    if (!validationResult.success) {
-      zodErrorResponse(response, validationResult.error)
-      return
-    }
-
-    // get the file id from the validated request parameters and check if it exists
-    const { id } = validationResult.data
-    const file: File | null = await selectFileByFileId(id)
-    if (!file) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'File not found.'
-      })
-      return
-    }
-    
-    // get the record id from the validated request body
-    const fileRecordId = file.recordId
-    const record = await selectRecordByRecordId(fileRecordId)
-
-    // get the folder id from the validated request body and check if it exists
-    const folderId = record?.folderId
-    if (!folderId) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'Unable to post file.'
-      })
-      return
-    }
-
-    // get the folder owner and check if the user making the request is the owner of the folder
-    const folder = await selectFolderByFolderId(folderId)
-    const userId = folder?.userId
-    if (!(await validateSessionUser(request, response, userId))) return
-
-    // return the file's attributes and a 200 response
-    response.json({
-      status: 200,
-      data: file,
-      message: 'File successfully found!'
-    })
-
-  } catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, error.message)
-  }
-}
-
-/** Express controller for getting files by record id
- * @endpoint GET /apis/file/recordId/:recordId **/
-export async function getFilesByRecordIdController (request: Request, response: Response): Promise<void> {
-  try {
-
-    // parse the record id from the request parameters and validate it
-    const validationResult = FileSchema.pick({ recordId: true }).safeParse({ recordId: request.params.recordId })
-    if (!validationResult.success) {
-      zodErrorResponse(response, validationResult.error)
-      return
-    }
-
-    // get the record id from the validated request parameters, the files associated with the record id, and check if they exist
-    const { recordId } = validationResult.data
-    const files: File[] | null = await selectFilesByRecordId(recordId)
-    if (!files) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'No files found for the specified record id.'
-      })
-      return
-    }
-
-    // get the first file from the array of files and check if it exists
-    const file: File | null = files[0]!
-    if (!file) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'File not found.'
-      })
-      return
-    }
-
-    // get the record id from the validated request body
-    const fileRecordId = files[0]!.recordId
-    const record = await selectRecordByRecordId(fileRecordId)
-
-    // get the folder id from the validated request body and check if it exists
-    const folderId = record?.folderId
-    if (!folderId) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'Unable to post file.'
-      })
-      return
-    }
-
-    // get the folder owner and check if the user making the request is the owner of the folder
-    const folder = await selectFolderByFolderId(folderId)
-    const userId = folder?.userId
-    if (!(await validateSessionUser(request, response, userId))) return
-
-    // return the files' attributes and a 200 response
-    response.json({
-      status: 200,
-      data: files,
-      message: 'All files successfully found!'
     })
 
   } catch (error: any) {

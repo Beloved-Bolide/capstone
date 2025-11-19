@@ -2,7 +2,7 @@ import { z } from 'zod/v4'
 import { sql } from '../../utils/database.utils.ts'
 
 
-/** schema for validating private category objects
+/** Schema for validating private category objects
  * @shape id: string the primary key for the category
  * @shape color: string the color for the category
  * @shape icon: string the icon for the category
@@ -25,7 +25,7 @@ export const CategorySchema = z.object({
 
 export type Category = z.infer<typeof CategorySchema>
 
-/** selects the Category from the Category table by id
+/** Selects the Category from the Category table by id
  * @param id the Category's id to search for in the Category table
  * @returns Category or null if no Category was found **/
 export async function selectCategoryByCategoryId (id: string): Promise<Category | null> {
@@ -44,7 +44,7 @@ export async function selectCategoryByCategoryId (id: string): Promise<Category 
   return CategorySchema.array().max(1).parse(rowList)[0] ?? null
 }
 
-/** selects all categories from the category table
+/** Selects all categories from the category table
  * @returns array of categories or null if no categories were found **/
 export async function selectCategories (): Promise<Category[] | null> {
 
@@ -62,7 +62,7 @@ export async function selectCategories (): Promise<Category[] | null> {
   return result.success ? result.data : null
 }
 
-/** creates a predefined category in the category table
+/** Creates a predefined category in the category table
  * @param category the category to insert
  * @returns {Promise<string>} 'Category successfully created' **/
 export async function insertCategory (category: Category): Promise<string> {
@@ -97,7 +97,7 @@ export async function insertCategory (category: Category): Promise<string> {
   return 'Category successfully created!'
 }
 
-/** updates a category in the category table
+/** Updates a category in the category table
  * @param category the category to update
  * @returns {Promise<string>} 'Category successfully updated!' **/
 export async function updateCategory (category: Category): Promise<string> {
@@ -121,7 +121,7 @@ export async function updateCategory (category: Category): Promise<string> {
   return 'Category successfully updated!'
 }
 
-/** deletes a category from the category table
+/** Deletes a category from the category table
  * @param id the category id to delete
  * @returns {Promise<string>} 'Category successfully deleted!' **/
 export async function deleteCategory (id: string): Promise<string> {
