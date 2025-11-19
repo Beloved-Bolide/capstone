@@ -49,7 +49,7 @@ export async function selectFileByFileId (id: string): Promise<File | null> {
       id = ${id}`
 
   // enforce that the result is an array of one file, or null
-  return FileSchema.array().max(1).parse(rowList)[0] ?? null
+  return FileSchema.parse(rowList) ?? null
 }
 
 /** Select all files from a record's id

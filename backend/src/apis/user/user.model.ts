@@ -123,7 +123,7 @@ export async function selectPrivateUserByUserId (id: string): Promise<PrivateUse
     WHERE id = ${id}`
 
   // return the user or null if no user was found
-  return PrivateUserSchema.array().max(1).parse(rowList)[0] ?? null
+  return PrivateUserSchema.parse(rowList) ?? null
 }
 
 /** Selects a user from the user table by activationToken
@@ -144,7 +144,7 @@ export async function selectPrivateUserByUserActivationToken (activationToken: s
     WHERE activation_token = ${activationToken}`
 
   // return the user or null if no user was found
-  return PrivateUserSchema.array().max(1).parse(rowList)[0] ?? null
+  return PrivateUserSchema.parse(rowList) ?? null
 }
 
 /** Selects the private user from the user table by email
@@ -165,5 +165,5 @@ export async function selectPrivateUserByUserEmail (email: string): Promise<Priv
     WHERE email = ${email}`
 
   // return the user or null if no user was found
-  return PrivateUserSchema.array().max(1).parse(rowList)[0] ?? null
+  return PrivateUserSchema.parse(rowList) ?? null
 }

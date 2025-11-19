@@ -18,10 +18,7 @@ import {
 
 
 /** Express controller for getting a folder by its id
- * @endpoint GET /apis/folder/id/:id
- * @param request an object containing the folder id in params
- * @param response an object modeling the response that will be sent to the client
- * @returns response with the folder data or null if not found **/
+ * @endpoint GET /apis/folder/id/:id **/
 export async function getFolderByFolderIdController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -63,10 +60,7 @@ export async function getFolderByFolderIdController (request: Request, response:
 }
 
 /** Express controller for getting folders by parent folder id
- * @endpoint GET /apis/folder/parentFolderId/:parentFolderId
- * @param request an object containing the parent folder id in params (use 'root' for root folders)
- * @param response an object modeling the response that will be sent to the client
- * @returns response with an array of child folders or error **/
+ * @endpoint GET /apis/folder/parentFolderId/:parentFolderId **/
 export async function getFoldersByParentFolderIdController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -127,10 +121,7 @@ export async function getFoldersByParentFolderIdController (request: Request, re
 }
 
 /** Express controller for getting folders by user id
- * @endpoint GET /apis/folder/userId/:userId
- * @param request an object containing the user id in params
- * @param response an object modeling the response that will be sent to the client
- * @returns response with an array of folders or error **/
+ * @endpoint GET /apis/folder/userId/:userId **/
 export async function getFoldersByUserIdController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -172,10 +163,7 @@ export async function getFoldersByUserIdController (request: Request, response: 
 }
 
 /** Express controller for getting folders by name
- * @endpoint GET /apis/folder/name/:name
- * @param request an object containing the folder name in the parameters
- * @param response an object modeling the response that will be sent to the client
- * @returns response with an array of folders or error **/
+ * @endpoint GET /apis/folder/name/:name **/
 export async function getFolderByFolderNameController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -216,10 +204,7 @@ export async function getFolderByFolderNameController (request: Request, respons
 }
 
 /** Express controller for creating a new folder
- * @endpoint POST /apis/folder
- * @param request an object containing the body with folder data
- * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the folder creation was successful **/
+ * @endpoint POST /apis/folder **/
 export async function postFolderController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -263,10 +248,7 @@ export async function postFolderController (request: Request, response: Response
 }
 
 /** Express controller for updating a folder
- * @endpoint PUT /apis/folder/id/:id
- * @param request an object containing the parameters and body with folder data
- * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the folder update was successful **/
+ * @endpoint PUT /apis/folder/id/:id **/
 export async function putFolderController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -371,10 +353,7 @@ export async function putFolderController (request: Request, response: Response)
 }
 
 /** Express controller for deleting a folder
- * @endpoint DELETE /apis/folder/id/:id
- * @param request an object containing the folder id in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
+ * @endpoint DELETE /apis/folder/id/:id **/
 export async function deleteFolderController (request: Request, response: Response): Promise<void> {
   try {
 

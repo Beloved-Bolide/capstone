@@ -20,187 +20,12 @@ import {
 } from './record.model.ts'
 
 
-/** Express controller for creating a new record
- * @endpoint POST /apis/record/
- * @param request an object containing the body with record data
- * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the record creation was successful **/
-export async function postRecordController (request: Request, response: Response): Promise<void> {
-  try {
-
-    // parse the data from the request body and check if it's valid
-    const validatedRequestBody = RecordSchema.safeParse(request.body)
-    if (!validatedRequestBody.success) {
-      zodErrorResponse(response, validatedRequestBody.error)
-      return
-    }
-
-    // put the new record data into a variable
-    const newRecord: Record = validatedRequestBody.data
-
-    // insert the new record data into the database
-    await insertRecord(newRecord)
-
-    // return the success response to the client
-    response.json({
-      status: 200,
-      data: null,
-      message: newRecord.name + ' successfully added!'
-    })
-
-  } catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, error.message)
-  }
-}
-
-/** Express controller for updating a record
- * @endpoint PUT /apis/record/id/:id
- * @param request an object containing the body with the record data
- * @param response an object modeling the response that will be sent to the client
- * @returns response to the client indicating whether the folder update was successful **/
-export async function updateRecordController (request: Request, response: Response): Promise<void> {
-  try {
-
-    // parse the id from the request parameters and check if it's valid
-    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
-    if (!validatedRequestParams.success) {
-      zodErrorResponse(response, validatedRequestParams.error)
-      return
-    }
-
-    // get the record id from the validated request parameters, get the existing record, and check if it exists
-    const { id } = validatedRequestParams.data
-    const existingRecord: Record | null = await selectRecordByRecordId(id)
-    if (!existingRecord) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'Record not found.'
-      })
-      return
-    }
-
-    // get the folder from the validated request body and get the user id from that folder
-    const folder: Folder | null = await selectFolderByFolderId(existingRecord.folderId)
-    const userId = folder?.userId
-
-    // if the session user is not the folder's owner, return a 403 error
-    if (!(await validateSessionUser(request, response, userId))) return
-
-    // parse the record data from the request body and check if it's valid
-    const validatedRequestBody = RecordSchema.safeParse(request.body)
-    if (!validatedRequestBody.success) {
-      zodErrorResponse(response, validatedRequestBody.error)
-      return
-    }
-
-    // if updating folderId, verify the new folder also belongs to this user
-    if (validatedRequestBody.data.folderId !== existingRecord.folderId) {
-
-      // get the new folder's user id from the validated request body
-      const newFolder: Folder | null = await selectFolderByFolderId(validatedRequestBody.data.folderId)
-      const newFolderUserId = newFolder?.userId
-
-      // if the new folder's user id does not match the session user's id, return a 403 error
-      if (!(await validateSessionUser(request, response, newFolderUserId))) {
-        response.json({
-          status: 403,
-          data: null,
-          message: 'Forbidden: You cannot move a record to another user\'s folder.'
-        })
-        return
-      }
-    }
-
-    // update the record in the database
-    await updateRecord(validatedRequestBody.data)
-
-    // return a preformatted response to the client upon successful update
-    response.json({
-      status: 200,
-      data: null,
-      message: 'Record successfully updated!'
-    })
-
-  } catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, error.message)
-  }
-}
-
-/** Express controller for deleting a record
- * @endpoint DELETE /apis/record/:id
- * @param request an object containing the record id in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
-export async function deleteRecordController (request: Request, response: Response): Promise<void> {
-  try {
-
-    // parse the record id from the request parameters and check if it's valid
-    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
-    if (!validatedRequestParams.success) {
-      zodErrorResponse(response, validatedRequestParams.error)
-      return
-    }
-
-    // get the record id from the validated request parameters
-    const { id } = validatedRequestParams.data
-
-    // get the user from the current session and check if they are signed in
-    const user = request.session?.user
-    if (!user) {
-      response.json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized: Please sign in to perform this action.'
-      })
-      return
-    }
-
-    // get the record by id and check if it exists
-    const record = await selectRecordByRecordId(id)
-    if (!record) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'Record not found!'
-      })
-      return
-    }
-
-    // get the folder owner from the record and check if the user is the owner
-    const folder = await selectFolderByFolderId(record.folderId)
-    const userId = folder?.userId
-
-    // check if the user making the request is the owner of the folder
-    if (!(await validateSessionUser(request, response, userId))) return
-
-    // delete the record
-    const message = await deleteRecord(id)
-
-    // return a success response
-    response.json({
-      status: 200,
-      data: null,
-      message: message
-    })
-
-  } catch (error: any) {
-    console.error(error)
-    serverErrorResponse(response, error.message)
-  }
-}
-
 /** Express controller for getting a record by its id
- * @endpoint GET /apis/record/id/:id
- * @param request an object containing the record id in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
+ * @endpoint GET /apis/record/id/:id **/
 export async function getRecordByRecordIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // parse the recordId from the request parameters and check if it's valid
+    // parse the record id from the request parameters and check if it's valid
     const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
@@ -219,7 +44,7 @@ export async function getRecordByRecordIdController (request: Request, response:
       return
     }
 
-    // verify ownership using the existing record's folderId
+    // verify ownership using the existing record's folder id
     const existingFolder: Folder | null = await selectFolderByFolderId(record.folderId)
     const userId = existingFolder?.userId
     if (!(await validateSessionUser(request, response, userId))) return
@@ -238,21 +63,18 @@ export async function getRecordByRecordIdController (request: Request, response:
 }
 
 /** Express controller for getting record by folderId
- * @endpoint GET /apis/record/folderId/:folderId
- * @param request an object containing the folderId in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
+ * @endpoint GET /apis/record/folderId/:folderId **/
 export async function getRecordsByFolderIdController (request: Request, response: Response): Promise<void> {
   try {
 
-    // parse the folderId from the request parameters and check if it's valid
+    // parse the folder id from the request parameters and check if it's valid
     const validatedRequestParams = RecordSchema.pick({ folderId: true }).safeParse(request.params)
     if (!validatedRequestParams.success) {
       zodErrorResponse(response, validatedRequestParams.error)
       return
     }
 
-    // get the folderId from the validated request parameters
+    // get the folder id from the validated request parameters
     const { folderId } = validatedRequestParams.data
     const existingFolder: Folder | null = await selectFolderByFolderId(folderId)
 
@@ -261,7 +83,7 @@ export async function getRecordsByFolderIdController (request: Request, response
       response.json({
         status: 404,
         data: null,
-        message: 'Records with that folder id do not exist.'
+        message: 'Get record failed: Records with that folder id do not exist.'
       })
       return
     }
@@ -287,10 +109,7 @@ export async function getRecordsByFolderIdController (request: Request, response
 }
 
 /** Express controller for getting record by categoryId
- * @endpoint GET /apis/record/categoryId/:categoryId
- * @param request an object containing the categoryId in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
+ * @endpoint GET /apis/record/categoryId/:categoryId **/
 export async function getRecordsByCategoryIdController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -301,14 +120,14 @@ export async function getRecordsByCategoryIdController (request: Request, respon
       return
     }
 
-    // get the categoryId from the validated request parameters and check if it exists
+    // get the category id from the validated request parameters and check if it exists
     const { categoryId } = validatedRequestParams.data
     const category: Category | null = await selectCategoryByCategoryId(categoryId)
     if (!category) {
       response.json({
         status: 404,
         data: null,
-        message: 'No records found for that category.'
+        message: 'Get record failed: No records found for that category.'
       })
       return
     }
@@ -319,18 +138,18 @@ export async function getRecordsByCategoryIdController (request: Request, respon
       response.json({
         status: 404,
         data: null,
-        message: 'No records found for that category.'
+        message: 'Get record failed: No records found for that category.'
       })
       return
     }
 
-    // get the folderId from the first record in the validated request body and verify it exists
+    // get the folder id from the first record in the validated request body and verify it exists
     const folderId = records[0]?.folderId
     if (!folderId) {
       response.json({
         status: 404,
         data: null,
-        message: 'No records found for that category.'
+        message: 'Get record failed: No records found for that category.'
       })
       return
     }
@@ -354,10 +173,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
 }
 
 /** Express controller for getting record by companyName
- * @endpoint GET /apis/record/companyName/:companyName
- * @param request an object containing the companyName in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
+ * @endpoint GET /apis/record/companyName/:companyName **/
 export async function getRecordsByCompanyNameController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -374,7 +190,7 @@ export async function getRecordsByCompanyNameController (request: Request, respo
       response.json({
         status: 404,
         data: null,
-        message: 'No records found with that company name.'
+        message: 'Get record failed: No records found with that company name.'
       })
       return
     }
@@ -385,12 +201,12 @@ export async function getRecordsByCompanyNameController (request: Request, respo
       response.json({
         status: 404,
         data: null,
-        message: 'No records found with that company name.'
+        message: 'Get record failed: No records found with that company name.'
       })
       return
     }
 
-    // get the folderId from the first record in the validated request body and verify it exists
+    // get the folder id from the first record in the validated request body and verify it exists
     const folderId = records[0]?.folderId
     if (!folderId) {
       response.json({
@@ -420,10 +236,7 @@ export async function getRecordsByCompanyNameController (request: Request, respo
 }
 
 /** Express controller for getting record by when it was last accessed at
- * @endpoint GET /apis/record/lastAccessedAt/:lastAccessedAt
- * @param request an object containing the lastAccessedAt in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
+ * @endpoint GET /apis/record/lastAccessedAt/:lastAccessedAt **/
 export async function getRecordsByLastAccessedAtController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -440,7 +253,7 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
       response.json({
         status: 404,
         data: null,
-        message: 'No records found that were last accessed at that time.'
+        message: 'Get record failed: No records found that were last accessed at that time.'
       })
       return
     }
@@ -451,18 +264,18 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
       response.json({
         status: 404,
         data: null,
-        message: 'No records found with that were accessed at that time.'
+        message: 'Get record failed: No records found with that were accessed at that time.'
       })
       return
     }
 
-    // get the folderId from the first record in the validated request body and verify it exists
+    // get the folder id from the first record in the validated request body and verify it exists
     const folderId = records[0]?.folderId
     if (!folderId) {
       response.json({
         status: 404,
         data: null,
-        message: 'No records found with that were accessed at that time.'
+        message: 'Get record failed: No records found with that were accessed at that time.'
       })
       return
     }
@@ -486,10 +299,7 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
 }
 
 /** Express controller for getting record by name
- * @endpoint GET /apis/record/name/:name
- * @param request an object containing the record name in params
- * @param response an object modeling the response that will be sent to the client
- * @returns success response or error **/
+ * @endpoint GET /apis/record/name/:name **/
 export async function getRecordByNameController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -506,7 +316,7 @@ export async function getRecordByNameController (request: Request, response: Res
       response.json({
         status: 404,
         data: null,
-        message: 'No record with that name because that record does not exist.'
+        message: 'Get record failed: No record with that name because that record does not exist.'
       })
       return
     }
@@ -517,7 +327,7 @@ export async function getRecordByNameController (request: Request, response: Res
       response.json({
         status: 404,
         data: null,
-        message: 'No record found with that name found.'
+        message: 'Get record failed: No record found with that name found.'
       })
       return
     }
@@ -531,7 +341,7 @@ export async function getRecordByNameController (request: Request, response: Res
     response.json({
       status: 200,
       data: record,
-      message: record.name + ' selected by name!'
+      message: 'Record by name successfully got!'
     })
 
   } catch (error: any) {
@@ -541,10 +351,7 @@ export async function getRecordByNameController (request: Request, response: Res
 }
 
 /** Express controller for searching for a record
- * @endpoint GET /apis/record/search/
- * @param request an object containing the search query in query params
- * @param response an object modeling the response that will be sent to the client
- * @returns an array of records that match the search query **/
+ * @endpoint GET /apis/record/search **/
 export async function searchRecordsController (request: Request, response: Response): Promise<void> {
   try {
 
@@ -573,7 +380,7 @@ export async function searchRecordsController (request: Request, response: Respo
       response.json({
         status: 404,
         data: null,
-        message: 'No records found with that search term.'
+        message: 'Search failed: No records found with that search term.'
       })
       return
     }
@@ -583,6 +390,187 @@ export async function searchRecordsController (request: Request, response: Respo
       status: 200,
       data: records,
       message: records.length + ' record(s) found!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for creating a new record
+ * @endpoint POST /apis/record **/
+export async function postRecordController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the data from the request body and check if it's valid
+    const validatedRequestBody = RecordSchema.safeParse(request.body)
+    if (!validatedRequestBody.success) {
+      zodErrorResponse(response, validatedRequestBody.error)
+      return
+    }
+
+    // get the folder id from the validated request body and check if it exists
+    const { folderId } = validatedRequestBody.data
+    if (!folderId) {
+      response.json({
+        status: 400,
+        data: null,
+        message: 'Post record failed: Folder id is required.'
+      })
+      return
+    }
+
+    // get the user id from the folder in the validated request body and verify it exists
+    const folder: Folder | null = await selectFolderByFolderId(folderId)
+    const userId = folder?.userId
+
+    // if the session user is not the folder's owner, return a 403 error
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // put the new record data into a variable
+    const newRecord: Record = validatedRequestBody.data
+
+    // insert the new record data into the database
+    const message = await insertRecord(newRecord)
+
+    // return the success response to the client
+    response.json({
+      status: 200,
+      data: null,
+      message: message
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for updating a record
+ * @endpoint PUT /apis/record/id/:id **/
+export async function putRecordController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the id from the request parameters and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // get the record id from the validated request parameters, get the existing record, and check if it exists
+    const { id } = validatedRequestParams.data
+    const existingRecord: Record | null = await selectRecordByRecordId(id)
+    if (!existingRecord) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Put record failed: Record not found.'
+      })
+      return
+    }
+
+    // get the folder from the validated request body and get the user id from that folder
+    const folder: Folder | null = await selectFolderByFolderId(existingRecord.folderId)
+    const userId = folder?.userId
+
+    // if the session user is not the folder's owner, return a 403 error
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // parse the record data from the request body and check if it's valid
+    const validatedRequestBody = RecordSchema.safeParse(request.body)
+    if (!validatedRequestBody.success) {
+      zodErrorResponse(response, validatedRequestBody.error)
+      return
+    }
+
+    // if updating folder id, verify the new folder also belongs to this user
+    if (validatedRequestBody.data.folderId !== existingRecord.folderId) {
+
+      // get the new folder's user id from the validated request body
+      const newFolder: Folder | null = await selectFolderByFolderId(validatedRequestBody.data.folderId)
+      const newFolderUserId = newFolder?.userId
+
+      // if the new folder's user id does not match the session user's id, return a 403 error
+      if (!(await validateSessionUser(request, response, newFolderUserId))) {
+        response.json({
+          status: 403,
+          data: null,
+          message: 'Put record failed: Forbidden: You cannot move a record to another user\'s folder.'
+        })
+        return
+      }
+    }
+
+    // update the record in the database
+    await updateRecord(validatedRequestBody.data)
+
+    // return a preformatted response to the client upon successful update
+    response.json({
+      status: 200,
+      data: null,
+      message: 'Record successfully updated!'
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for deleting a record
+ * @endpoint DELETE /apis/record/:id **/
+export async function deleteRecordController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // parse the record id from the request parameters and check if it's valid
+    const validatedRequestParams = RecordSchema.pick({ id: true }).safeParse(request.params)
+    if (!validatedRequestParams.success) {
+      zodErrorResponse(response, validatedRequestParams.error)
+      return
+    }
+
+    // get the record id from the validated request parameters
+    const { id } = validatedRequestParams.data
+
+    // get the user from the current session and check if they are signed in
+    const user = request.session?.user
+    if (!user) {
+      response.json({
+        status: 401,
+        data: null,
+        message: 'Delete record failed: Unauthorized: Please sign in to perform this action.'
+      })
+      return
+    }
+
+    // get the record by id and check if it exists
+    const record = await selectRecordByRecordId(id)
+    if (!record) {
+      response.json({
+        status: 404,
+        data: null,
+        message: 'Delete record failed: Record not found.'
+      })
+      return
+    }
+
+    // get the folder owner from the record and check if the user is the owner
+    const folder = await selectFolderByFolderId(record.folderId)
+    const userId = folder?.userId
+
+    // check if the user making the request is the owner of the folder
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // delete the record
+    const message = await deleteRecord(id)
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: null,
+      message: message
     })
 
   } catch (error: any) {
