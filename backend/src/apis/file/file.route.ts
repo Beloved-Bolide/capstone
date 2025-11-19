@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import {
-  getFileByFileIdController,
-  getFileByRecordIdController,
-  postFileController,
-  updateFileController
-} from './file.controller.ts'
 import { isLoggedInController } from '../../utils/controllers/is-logged-in.controller.ts'
+import {
+  postFileController,
+  updateFileController,
+  getFileByFileIdController,
+  getFilesByRecordIdController
+} from './file.controller.ts'
 
 
 const basePath = '/apis/file' as const
@@ -15,10 +15,10 @@ router.route('/')
   .post(isLoggedInController, postFileController)
 
 router.route('/id/:id')
-  .get(isLoggedInController, getFileByFileIdController)
   .put(isLoggedInController, updateFileController)
+  .get(isLoggedInController, getFileByFileIdController)
 
-router.route('/record/:id')
-  .get(isLoggedInController, getFileByRecordIdController)
+router.route('/recordId/:recordId')
+  .get(isLoggedInController, getFilesByRecordIdController)
 
 export const fileRoute = { basePath, router }
