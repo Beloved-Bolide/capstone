@@ -67,7 +67,7 @@ export async function selectFoldersByParentFolderId(parentFolderId: string): Pro
 export async function selectFoldersByUserId (id: string): Promise<Folder[] | null> {
 
   // create a prepared statement that selects the folders by user id
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT 
       id,
       parent_folder_id,

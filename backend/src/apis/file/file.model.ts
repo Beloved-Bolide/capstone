@@ -35,7 +35,7 @@ export type File = z.infer<typeof FileSchema>
 export async function selectFileByFileId (id: string): Promise<File | null> {
 
   // create a prepared statement that selects the file by file id
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       record_id,
@@ -87,7 +87,7 @@ export async function insertFile (file: File): Promise<string> {
   const { id, recordId, fileDate, fileKey, fileUrl, ocrData } = file
 
   // insert the file into the file table
-  await sql`
+  await sql `
     INSERT INTO file (
       id,
       record_id,
@@ -117,7 +117,7 @@ export async function updateFile (file: File): Promise<string> {
   const { id, recordId, fileDate, fileKey, fileUrl, ocrData } = file
 
   // update the file in the file table
-  await sql`
+  await sql `
     UPDATE file
     SET 
       record_id = ${recordId},
@@ -137,7 +137,7 @@ export async function updateFile (file: File): Promise<string> {
 export async function deleteFile (id: string): Promise<string> {
 
   // delete the file from the file table
-  await sql`
+  await sql `
     DELETE FROM file
     WHERE id = ${id}`
 

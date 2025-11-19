@@ -62,7 +62,7 @@ export type Record = z.infer<typeof RecordSchema>
 export async function selectRecordByRecordId (id: string): Promise<Record | null> {
 
   // query the database to select the record by record id
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT 
       id,
       folder_id,
@@ -91,7 +91,7 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
 export async function selectRecordsByFolderId (folderId: string): Promise<Record[] | null> {
 
   // query the database to select the records by folderId
-  const rowList = await sql`
+  const rowList = await  `
     SELECT 
       id,
       folder_id,
@@ -120,7 +120,7 @@ export async function selectRecordsByFolderId (folderId: string): Promise<Record
 export async function selectRecordsByCategoryId (categoryId: string): Promise<Record[] | null> {
 
   // query the database to select the records by categoryId
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       folder_id,
@@ -150,7 +150,7 @@ export async function selectRecordsByCategoryId (categoryId: string): Promise<Re
 export async function selectRecordsByCompanyName (companyName: string): Promise<Record[] | null> {
 
   // query the database to select the record by companyName
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT 
       id,
       folder_id,
@@ -179,7 +179,7 @@ export async function selectRecordsByCompanyName (companyName: string): Promise<
 export async function selectRecordsByLastAccessedAt (lastAccessedAt: Date): Promise<Record[] | null> {
 
   // query the database to select the records by categoryId
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       folder_id,
@@ -208,7 +208,7 @@ export async function selectRecordsByLastAccessedAt (lastAccessedAt: Date): Prom
 export async function selectRecordByName (name: string): Promise<Record | null> {
 
   // query the database to select the record by name
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT 
       id,
       folder_id,
@@ -238,7 +238,7 @@ export async function selectRecordByName (name: string): Promise<Record | null> 
 export async function searchRecords (searchTerm: string, limit: number = 50): Promise<Record[] | null> {
 
   // query the database to select the records by search term
-  const rowList = await sql`
+  const rowList = await sql `
     SELECT
       id,
       folder_id,
@@ -305,7 +305,7 @@ export async function insertRecord (record: Record): Promise<string> {
   } = record
 
   // insert the record into the record table
-  await sql`
+  await sql `
     INSERT INTO record (
       id,
       folder_id,
@@ -366,7 +366,7 @@ export async function updateRecord (record: Record): Promise<string> {
   } = record
 
   // update the record in the record table
-  await sql`
+  await sql `
     UPDATE record
     SET 
       folder_id        = ${folderId},
@@ -393,7 +393,7 @@ export async function updateRecord (record: Record): Promise<string> {
 export async function deleteRecord(id: string): Promise<string> {
 
   // delete the record from the database
-  await sql`
+  await sql `
 		DELETE FROM record
 		WHERE id = ${id}`
 
