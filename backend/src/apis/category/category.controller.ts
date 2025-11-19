@@ -17,7 +17,7 @@ export async function getCategoriesController (request: Request, response: Respo
       response.json({
         status: 404,
         data: null,
-        message: 'No categories found.'
+        message: 'Get categories failed: No categories found.'
       })
       return
     }
@@ -49,12 +49,12 @@ export async function getCategoryByCategoryIdController (request: Request, respo
 
     // grab the id from the validated request parameters and select the category by id
     const { id } = validationResult.data
-    const selectedCategory = await selectCategoryByCategoryId(id)
+    const category = await selectCategoryByCategoryId(id)
 
     // return the category's attributes and a 200 response
     response.json({
       status: 200,
-      data: selectedCategory,
+      data: category,
       message: 'Category successfully got!'
     })
 
@@ -77,12 +77,12 @@ export async function postCategoryController (request: Request, response: Respon
     }
 
     // insert the new category data into the database
-    const insertedCategory = await insertCategory(validationResult.data)
+    await insertCategory(validationResult.data)
 
-    // return the inserted category's attributes and a 200 response
+    // return a 200 response
     response.json({
       status: 200,
-      data: insertedCategory,
+      data: null,
       message: 'New category successfully created!'
     })
 
@@ -118,7 +118,7 @@ export async function putCategoryController (request: Request, response: Respons
       response.json({
         status: 404,
         data: null,
-        message: 'Category not found.'
+        message: 'Put category failed: Category not found.'
       })
       return
     }
@@ -130,12 +130,12 @@ export async function putCategoryController (request: Request, response: Respons
     category.name = name
 
     // update the category in the database
-    const updatedCategory = await updateCategory(category)
+    await updateCategory(category)
 
-    // if the category update was successful, return a 200 response
+    // return a 200 response
     response.json({
       status: 200,
-      data: updatedCategory,
+      data: null,
       message: 'Category successfully updated!'
     })
 
@@ -164,7 +164,7 @@ export async function deleteCategoryController (request: Request, response: Resp
       response.json({
         status: 404,
         data: null,
-        message: 'Category not found.'
+        message: 'Delete category failed: Category not found.'
       })
       return
     }

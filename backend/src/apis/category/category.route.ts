@@ -16,7 +16,7 @@ router.route('/')
   .get(isLoggedInController, getCategoriesController)
   .post(isLoggedInController, postCategoryController)
 
-router.route('/:id')
+router.route('/id/:id')
   .get(isLoggedInController, getCategoryByCategoryIdController)
   .put(isLoggedInController, putCategoryController)
   .delete(isLoggedInController, deleteCategoryController)
