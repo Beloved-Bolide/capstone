@@ -44,10 +44,8 @@ export const RecordSchema = z.object({
     .min(new Date('1900-01-01'), {error: 'Too old!'})
     .nullable()
 })
-export type Record = z.infer<typeof RecordSchema>
-export const NewRecordSchema = RecordSchema.omit({ id: true, isStarred: true, lastAccessedAt: true, notifyOn: true })
-export type NewRecord = z.infer<typeof NewRecordSchema>
 
+export type Record = z.infer<typeof RecordSchema>
 
 export async function postRecord (data: Record, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {
 

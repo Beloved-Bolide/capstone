@@ -41,8 +41,11 @@ export async function selectFileByFileId (id: string): Promise<File | null> {
     WHERE
       id = ${id}`
 
-  // enforce that the result is an array of one file, or null
-  return FileSchema.parse(rowList) ?? null
+  // enforce that the result is an array of one profile, or null
+  const result = FileSchema.array().max(1).parse(rowList)
+
+  // return the profile or null if no profile was found
+  return result[0] ?? null
 }
 
 /** Select all files from a record's id
@@ -63,8 +66,11 @@ export async function selectFilesByRecordId (id: string): Promise<File[] | null>
     WHERE
       record_id = ${id}`
 
-  // enforce that the result is an array of files
-  return FileSchema.array().parse(rowList) ?? null
+  // enforce that the result is an array of one profile, or null
+  const result = FileSchema.array().parse(rowList)
+
+  // return the profile or null if no profile was found
+  return result ?? null
 }
 
 /** Inserts a new file into the file table

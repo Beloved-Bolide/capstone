@@ -143,8 +143,11 @@ export async function postFileController (request: Request, response: Response):
       return
     }
 
+    // get the file data from the validated request body
+    const newFile: File = validationResult.data
+
     // get the record id from the validated request body
-    const { recordId } = validationResult.data
+    const { recordId } = newFile
     const record = await selectRecordByRecordId(recordId)
 
     // get the folder id from the validated request body and check if it exists
@@ -164,7 +167,7 @@ export async function postFileController (request: Request, response: Response):
     if (!(await validateSessionUser(request, response, userId))) return
 
     // insert the new file data into the database
-    const message = await insertFile(validationResult.data)
+    const message = await insertFile(newFile)
 
     // return the inserted file's attributes and a 200 response
     response.json({

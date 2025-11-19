@@ -88,8 +88,11 @@ export async function selectRecordByRecordId (id: string): Promise<Record | null
     FROM record
     WHERE id = ${id}`
 
-  // return the result as a single record or null if no record was found
-  return RecordSchema.parse(rowList) ?? null
+  // enforce that the result is an array with a maximum length of 1
+  const result = RecordSchema.array().max(1).parse(rowList)
+
+  // return the first record in the result array, or null
+  return result[0] ?? null
 }
 
 /** Selects the record from the record table by folderId
@@ -346,7 +349,7 @@ export async function insertRecord (record: Record): Promise<string> {
       ${companyName},
       ${couponCode},
       ${description},
-      ${docType},      
+      ${docType},
       ${expDate},
       ${isStarred},
       ${lastAccessedAt},
