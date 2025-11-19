@@ -329,7 +329,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
               {/* New File Button */}
               <Link aria-label="Add new"
-                    to="/new-file"
+                    to="/new-record-file"
                     className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <Plus className="w-5 h-5 text-gray-600"/>
               </Link>
