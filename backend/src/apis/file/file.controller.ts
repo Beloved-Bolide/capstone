@@ -46,7 +46,7 @@ export async function getFileByFileIdController (request: Request, response: Res
     const folderId = record?.folderId
     if (!folderId) {
       response.json({
-        status: 404,
+        status: 422,
         data: null,
         message: 'Get file failed: Folder associated with the file does not exist.'
       })
@@ -106,7 +106,7 @@ export async function getFilesByRecordIdController (request: Request, response: 
     const folderId = record?.folderId
     if (!folderId) {
       response.json({
-        status: 404,
+        status: 422,
         data: null,
         message: 'Get file(s) failed: Folder associated with the file does not exist.'
       })
@@ -151,7 +151,7 @@ export async function postFileController (request: Request, response: Response):
     const folderId = record?.folderId
     if (!folderId) {
       response.json({
-        status: 404,
+        status: 422,
         data: null,
         message: 'Post file failed: Folder associated with the record does not exist.'
       })
@@ -218,7 +218,7 @@ export async function updateFileController (request: Request, response: Response
     const folderId = record?.folderId
     if (!folderId) {
       response.json({
-        status: 404,
+        status: 422,
         data: null,
         message: 'Put file failed: Folder associated with the file does not exist.'
       })
@@ -288,9 +288,9 @@ export async function deleteFileController (request: Request, response: Response
     const folderId = record?.folderId
     if (!folderId) {
       response.json({
-        status: 404,
+        status: 422,
         data: null,
-        message: 'Put file failed: Folder associated with the file does not exist.'
+        message: 'Delete file failed: Folder associated with the file does not exist.'
       })
       return
     }
@@ -301,7 +301,7 @@ export async function deleteFileController (request: Request, response: Response
     if (!(await validateSessionUser(request, response, userId))) return
 
     // delete the file from the database
-    const deletedFile = deleteFile(id)
+    const deletedFile = await deleteFile(id)
 
     // return a 200 response
     response.json({
