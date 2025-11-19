@@ -235,7 +235,8 @@ export async function postFolderController (request: Request, response: Response
     if (!(await validateSessionUser(request, response, userId))) return
 
     // check if a folder with the same name already exists
-    const existingFolder = await selectFolderByFolderName(validatedRequestBody.data.name)
+    const { name } = validatedRequestBody.data
+    const existingFolder = await selectFolderByFolderName(name)
     if (existingFolder) {
       response.json({
         status: 409,
