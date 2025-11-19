@@ -113,7 +113,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
 
   let { folders,categories } = loaderData
   if (!folders) folders = []
-  console.log(categories)
+  if (!categories) categories = []
 
   const [fileType, setFileType] = useState<string>('')
 
