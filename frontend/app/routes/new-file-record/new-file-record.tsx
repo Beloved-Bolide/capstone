@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { postRecord } from '~/utils/models/record.model'
+import {type NewRecord, NewRecordSchema, postRecord} from '~/utils/models/record.model'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getSession } from '~/utils/session.server'
@@ -9,10 +9,10 @@ import { type FileRecord, FileRecordSchema } from '~/utils/models/file-record.mo
 import { postFile } from '~/utils/models/file.model'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
-import { Form } from 'react-router'
+import {Form, Link} from 'react-router'
+import { type Record as RecordType } from '~/utils/models/record.model'
 
-
-const resolver = zodResolver(FileRecordSchema)
+const resolver = zodResolver(NewRecordSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
 
@@ -33,18 +33,18 @@ export async function loader ({ request }: Route.LoaderArgs) {
 export async function action ({ request }: Route.ActionArgs) {
 
   // get the form data from the request body
-  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<FileRecord>(request, resolver)
+  // const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<FileRecord>(request, resolver)
+
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecord>(request, resolver)
 
   // if there are errors, return them
   if (errors) {
     return { errors, defaultValues }
   }
 
-  // get the cookie from the request headers
-  const session = await getSession(request.headers.get('cookie'))
-
   // get the cookie, user, and authorization from the session
   const cookie = request.headers.get('cookie')
+  const session = await getSession(cookie)
   const user = session.get('user')
   const authorization = session.get('authorization')
 
@@ -70,22 +70,22 @@ export async function action ({ request }: Route.ActionArgs) {
     description: data.description,
     docType: data.docType,
     expDate: data.expDate,
-    isStarred: false,
+    isStarred: data.isStarred ?? false,
     lastAccessedAt: new Date(),
     name: data.name,
-    notifyOn: true,
+    notifyOn: data.notifyOn ?? false,
     productId: data.productId,
     purchaseDate: data.purchaseDate
   }
 
   // create a new file object with the required attributes
-  const file = {
-    id: uuid(),
-    recordId: record.id,
-    fileDate: new Date(),
-    fileUrl: data.fileUrl,
-    ocrData: data.ocrData
-  }
+  // const file = {
+  //   id: uuid(),
+  //   recordId: record.id,
+  //   fileDate: new Date(),
+  //   fileUrl: data.fileUrl,
+  //   ocrData: data.ocrData
+  // }
 
 // Run both operations separately
   const{ result } = await postRecord(record, authorization, cookie)
@@ -115,23 +115,29 @@ export async function action ({ request }: Route.ActionArgs) {
 
 }
 
-export default function NewFilePage ({ loaderData, actionData }: Route.ComponentProps) {
+export default function NewFileRecord ({ loaderData, actionData }: Route.ComponentProps) {
 
   let { folders, categories } = loaderData
   if (!folders) folders = []
   if (!categories) categories = []
 
-  const [fileType, setFileType] = useState<string>('')
+  const [docType, setdocType] = useState<string>('')
 
   // Check if the amount field should be shown (only for Receipt/Invoice)
-  const showAmountField = fileType === 'Receipt/Invoice'
+  const showAmountField = docType === 'Receipt/Invoice'
 
   // use the useRemixForm hook to handle form submission and validation
   const {
     handleSubmit,
     formState: { errors },
     register
-  } = useRemixForm<FileRecord>({ mode: 'onSubmit', resolver })
+  } = useRemixForm<NewRecord>({
+    mode: 'onSubmit',
+    resolver,
+  defaultValues: {
+      isStarred: false,
+    notifyOn: false
+  }})
 
 
   return (
@@ -200,24 +206,26 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                  {/* File Type */}
+                  {/* Document Type */}
                   <div>
                     <label
-                    htmlFor="file-type"
+                    htmlFor="doc-type"
                     className="block mb-2 text-sm font-medium text-gray-700"
                     >
-                      File Type
+                      Document Type
                     </label>
                     <select
-                    id="file-type"
-                    value={fileType}
-                    onChange={(e) => setFileType(e.target.value)}
+                    {...register('docType')}
+                    id="doc-type"
+                    // value={docType}
+                    // onChange={(e) => setDocType(e.target.value)}
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
                       <option value="">Select type...</option>
                       <option value="Receipt/Invoice">Receipt/Invoice</option>
                       <option value="Warranty">Warranty</option>
-                      <option value="Contract">Contract</option>
+                      <option value="Coupon">Coupon</option>
+                      <option value="Manual">Manual</option>
                       <option value="Other">Other</option>
                     </select>
                   </div>
@@ -225,14 +233,15 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                   {/* Purchase Date */}
                   <div>
                     <label
-                    htmlFor="purchase-date"
+                    htmlFor="purchaseDate"
                     className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Purchase Date
                     </label>
                     <input
+                    {...register('purchaseDate', {valueAsDate: true})}
                     type="date"
-                    id="purchase-date"
+                    id="purchaseDate"
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
                   </div>
@@ -240,14 +249,15 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                   {/* File Name */}
                   <div className="md:col-span-2">
                     <label
-                    htmlFor="file-name"
+                    htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       File Name
                     </label>
                     <input
+                    {...register('name')}
                     type="text"
-                    id="file-name"
+                    id="name"
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                     placeholder="Enter file name"
                     />
@@ -256,13 +266,14 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                   {/* Folder */}
                   <div>
                     <label
-                    htmlFor="folder"
+                    htmlFor="folderId"
                     className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Folder
                     </label>
                     <select
-                    id="folder"
+                    {...register('folderId')}
+                    id="folderId"
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
                       {folders.map((folder, index) => (
@@ -305,6 +316,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                         <span className="text-gray-500">$</span>
                       </div>
                       <input
+                      {...register('amount', {valueAsNumber: true})}
                       type="number"
                       id="amount"
                       step="1.00"
@@ -317,13 +329,14 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                   {/* Category */}
                   <div>
                     <label
-                    htmlFor="category"
+                    htmlFor="categoryId"
                     className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Category
                     </label>
                     <select
-                    id="category"
+                    {...register('categoryId')}
+                    id="categoryId"
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
                       {categories.map((category, index) => <option key={index}
@@ -334,33 +347,85 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                   {/* Expiration Date */}
                   <div>
                     <label
-                    htmlFor="exp-date"
+                    htmlFor="expDate"
                     className="block mb-2 text-sm font-medium text-gray-700"
                     >
                       Expiration Date
                     </label>
                     <input
+                    {...register('expDate', {valueAsDate: true})}
                     type="date"
-                    id="exp-date"
+                    id="expDate"
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    />
+                  </div>
+
+                  {/* Product Id */}
+                  <div>
+                    <label
+                    htmlFor="productId"
+                    className="block mb-2 text-sm font-medium text-gray-700"
+                    >
+                      Product Id
+                    </label>
+                    <input
+                    {...register('productId')}
+                    type="text"
+                    id="productId"
+                    placeholder="Enter Product Id"
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                    />
+                  </div>
+
+                  {/* Coupon Code */}
+                  <div>
+                    <label
+                    htmlFor="couponCode"
+                    className="block mb-2 text-sm font-medium text-gray-700"
+                    >
+                      Coupon Code
+                    </label>
+                    <input
+                    {...register('couponCode')}
+                    type="text"
+                    id="couponCode"
+                    placeholder="Enter Coupon Code"
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                     />
                   </div>
 
                   {/* Starred */}
                   <div>
+                    <div>
+                      <label
+                      htmlFor="isStarred"
+                      className="block mb-2 text-sm font-medium text-gray-700"
+                      >
+                        Mark as Starred
+                      </label>
+                      <input
+                      {...register('isStarred')}
+                      type="checkbox"
+                      id="isStarred"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      />
+                    </div>
+
+                    <div>
                     <label
-                    htmlFor="isStarred"
+                    htmlFor="notifyOn"
                     className="block mb-2 text-sm font-medium text-gray-700"
                     >
-                      Mark as Starred
+                      Notify On
                     </label>
                     <input
-                    {...register('isStarred')}
+                    {...register('notifyOn')}
                     type="checkbox"
-                    id="isStarred"
-                    name="isStarred"
+                    id="notifyOn"
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
+                  </div>
+
                   </div>
 
                   {/* Description */}
@@ -372,6 +437,7 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                       Description
                     </label>
                     <textarea
+                    {...register('description')}
                     id="description"
                     rows={2}
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
@@ -381,10 +447,10 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
                 </div>
 
               {/* Status Messages */}
-              {fileType && (
+              {docType && (
               <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
                 <p className="text-sm text-gray-700">
-                  <span className="font-medium text-gray-900">Selected Type:</span> {fileType}
+                  <span className="font-medium text-gray-900">Selected Type:</span> {docType}
                   {showAmountField ? (
                   <span className="text-blue-600 ml-2">(Financial details available)</span>
                   ) : (
@@ -397,14 +463,16 @@ export default function NewFilePage ({ loaderData, actionData }: Route.Component
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
-              <button
+              <Link to="/dashboard">
+                <button
               type="button"
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-blue-100 transition-colors cursor-pointer"
               >
                 Cancel
-              </button>
+                </button>
+              </Link>
               <button
-              type="button"
+              type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-colors cursor-pointer"
               >
                 Upload File
