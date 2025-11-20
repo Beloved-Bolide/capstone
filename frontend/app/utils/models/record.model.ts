@@ -25,11 +25,11 @@ export const RecordSchema = z.object({
     .max(32, 'Please provide a valid document type (max 32 characters).')
     .nullable(),
   expDate: z.date('Please provide a valid expiration date.')
-    .min(new Date('1900-01-01'), {error: 'Too old!'})
+    .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
   isStarred: z.boolean(),
-  lastAccessedAt: z.coerce.date('Please provide a valid last accessed at date and time.')
-    .min(new Date('1900-01-01'), {error: 'Too old!'})
+  lastAccessedAt: z.date('Please provide a valid last accessed at date and time.')
+    .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
   name: z.string('Please provide a valid name.')
     .trim()
@@ -40,13 +40,12 @@ export const RecordSchema = z.object({
     .max(32, 'Please provide a valid productId (max 32 characters).')
     .nullable(),
   purchaseDate: z.date('Please provide a valid purchase date.')
-    .min(new Date('1900-01-01'), {error: 'Too old!'})
+    .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable()
 })
-
 export type Record = z.infer<typeof RecordSchema>
 
-export const NewRecordSchema = RecordSchema.omit({lastAccessedAt: true, id: true})
+export const NewRecordSchema = RecordSchema.omit({ lastAccessedAt: true, id: true })
 export type NewRecord = z.infer<typeof NewRecordSchema>
 
 export async function postRecord (data: Record, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers }> {
