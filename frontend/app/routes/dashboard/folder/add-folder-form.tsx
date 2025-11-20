@@ -33,7 +33,8 @@ export function AddFolderForm (props: Props) {
 
   useEffect(() => {
     if (actionData && 'success' in actionData && actionData.success) {
-      // Reset form or hide it
+
+      // reset the form or hide it
       setDisplayNewFolderForm(false)
       reset()
     }
