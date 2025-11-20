@@ -68,6 +68,7 @@ export async function action ({ request }: Route.ActionArgs) {
     companyName: data.companyName,
     couponCode: data.couponCode,
     description: data.description,
+    docType: data.docType,
     expDate: data.expDate,
     isStarred: false,
     lastAccessedAt: new Date(),
@@ -86,18 +87,23 @@ export async function action ({ request }: Route.ActionArgs) {
     ocrData: data.ocrData
   }
 
-  // // post the record-file to the server
-  // const { recordResult } = await postRecord(record, authorization, cookie)
-  // const { fileResult } = await postFile(file, authorization, cookie)
+// Run both operations separately
+  const{ result } = await postRecord(record, authorization, cookie)
+ // const fileResult = await postFile(file, authorization, cookie)
 
-  const { result } = await postRecord(record, authorization, cookie) && await postFile(file, authorization, cookie)
+// Check if EITHER failed
+//   if (recordResult.status !== 200 || fileResult.status !== 200) {
+//     return {
+//       success: false,
+//       status: recordResult.status !== 200 ? recordResult : fileResult
+//     }
+//   }
 
-  // if the post-request fails, return an error
-  if (result.status !== 200) {
+  if(result.status!==200) {
     return { success: false, status: result }
   }
 
-  // return a success message
+// Both succeeded!
   return {
     success: true,
     status: {
