@@ -97,11 +97,8 @@ export async function action ({ request }: Route.ActionArgs) {
     name: data.name
   }
 
-  console.log('Sending folder data:', JSON.stringify(folder, null, 2))
-
   // post the folder to the server
   const { result } = await postFolder(folder, authorization, cookie)
-  console.log('Dashboard action: ', result.data)
 
   // if the post-request fails, return an error
   if (result.status !== 200) {
