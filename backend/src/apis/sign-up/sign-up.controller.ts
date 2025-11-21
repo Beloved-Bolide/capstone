@@ -6,6 +6,7 @@ import { SignUpUserSchema } from './sign-up.schema.ts'
 import { type PrivateUser, insertUser } from '../user/user.model.ts'
 import { zodErrorResponse } from '../../utils/response.utils.ts'
 import { setActivationToken, setHash } from '../../utils/auth.utils'
+import { seedFolders } from './seeder.ts'
 
 
 export async function signUpUserController (request: Request, response: Response) {
@@ -48,6 +49,9 @@ export async function signUpUserController (request: Request, response: Response
       html: message
     }
     await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
+
+    // seed default folders for the new user
+    await seedFolders(id)
 
     // create a status message
     const status: Status = {
