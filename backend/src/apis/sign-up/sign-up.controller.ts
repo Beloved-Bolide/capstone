@@ -6,6 +6,10 @@ import { SignUpUserSchema } from './sign-up.schema.ts'
 import { type PrivateUser, insertUser } from '../user/user.model.ts'
 import { zodErrorResponse } from '../../utils/response.utils.ts'
 import { setActivationToken, setHash } from '../../utils/auth.utils'
+import {sql} from "../../utils/database.utils.ts";
+import { v7 as uuid } from 'uuid'
+import {getFolderByFolderIdController, getFoldersByUserIdController} from "../folder/folder.controller.ts";
+import {type Folder, selectFoldersByUserId} from "../folder/folder.model.ts";
 
 
 export async function signUpUserController (request: Request, response: Response) {
@@ -48,6 +52,52 @@ export async function signUpUserController (request: Request, response: Response
       html: message
     }
     await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${null}, ${id}, ${'All Folders'})`
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${null}, ${id}, ${'Starred'})`
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${null}, ${id}, ${'Recent'})`
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${null}, ${id}, ${'Expiring'})`
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${null}, ${id}, ${'Trash'})`
+
+    const folders: Folder[] | null = await selectFoldersByUserId(id)
+    if(!folders) {
+      return
+    }
+    // @ts-ignore
+    const parent: string = folders[0]?.parentFolderId
+
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${parent}, ${id}, ${'Receipts'})`
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${parent}, ${id}, ${'Warranties'})`
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${parent}, ${id}, ${'Manuals'})`
+
+    await sql `
+    INSERT INTO folder(id, parent_folder_id, user_id, name)
+    VALUES (${uuid()}, ${parent}, ${id}, ${'Coupons'})`
+
+
 
     // create a status message
     const status: Status = {
