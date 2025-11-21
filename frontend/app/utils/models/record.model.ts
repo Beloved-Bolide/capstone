@@ -6,7 +6,7 @@ import type { Folder } from '~/utils/models/folder.model'
 export const RecordSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id.'),
   folderId: z.uuidv7('Please provide a valid uuid for folderId.'),
-  categoryId: z.uuidv7('Please provide a valid uuid for categoryId.'),
+  categoryId: z.uuid('Please provide a valid uuid for categoryId.'),
   amount: z.number('Please provide a valid amount.')
     .nullable(),
   companyName: z.string('Please provide a valid company name.')
@@ -24,8 +24,8 @@ export const RecordSchema = z.object({
     .min(1, 'Please provide a valid document type.')
     .max(32, 'Please provide a valid document type (max 32 characters).')
     .nullable(),
-  expDate: z.date('Please provide a valid expiration date.')
-    .min(new Date('1900-01-01'), { error: 'Too old!' })
+  expDate: z.iso.date('Please provide a valid expiration date.')
+    //.min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
   isStarred: z.boolean(),
   lastAccessedAt: z.date('Please provide a valid last accessed at date and time.')
@@ -39,8 +39,8 @@ export const RecordSchema = z.object({
   productId: z.string('Please provide a valid productId.')
     .max(32, 'Please provide a valid productId (max 32 characters).')
     .nullable(),
-  purchaseDate: z.date('Please provide a valid purchase date.')
-    .min(new Date('1900-01-01'), { error: 'Too old!' })
+  purchaseDate: z.iso.date('Please provide a valid purchase date.')
+    //.min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable()
 })
 export type Record = z.infer<typeof RecordSchema>

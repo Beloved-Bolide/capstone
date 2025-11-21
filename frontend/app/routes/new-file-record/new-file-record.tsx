@@ -9,8 +9,9 @@ import { type FileRecord, FileRecordSchema } from '~/utils/models/file-record.mo
 import { postFile } from '~/utils/models/file.model'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
-import { Form, Link } from 'react-router'
+import {Form, Link, useActionData} from 'react-router'
 import { type Record as RecordType } from '~/utils/models/record.model'
+import {StatusMessage} from "~/components/StatusMessage";
 
 
 const resolver = zodResolver(NewRecordSchema)
@@ -37,7 +38,7 @@ export async function action ({ request }: Route.ActionArgs) {
   // const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<FileRecord>(request, resolver)
 
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecord>(request, resolver)
-
+console.log(errors)
   // if there are errors, return them
   if (errors) {
     return { errors, defaultValues }
@@ -140,6 +141,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
     }
   })
 
+  useActionData<typeof action>()
+
+console.log(errors)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -229,6 +233,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         <option value="Manual">Manual</option>
                         <option value="Other">Other</option>
                       </select>
+                      {errors.docType && (
+                      <p className="text-sm text-red-500">{errors.docType.message} </p>
+                      )}
                     </div>
 
                     {/* Purchase Date */}
@@ -240,11 +247,14 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         Purchase Date
                       </label>
                       <input
-                        {...register('purchaseDate', { valueAsDate: true })}
+                        {...register('purchaseDate')}
                         type="date"
                         id="purchaseDate"
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       />
+                      {errors.purchaseDate && (
+                      <p className="text-sm text-red-500">{errors.purchaseDate.message} </p>
+                      )}
                     </div>
 
                     {/* File Name */}
@@ -262,6 +272,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                         placeholder="Enter file name"
                       />
+                      {errors.name && (
+                      <p className="text-sm text-red-500">{errors.name.message} </p>
+                      )}
                     </div>
 
                     {/* Folder */}
@@ -279,9 +292,12 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       >
                         <option value="">Select folder...</option>
                         {folders.map((folder, index) => (
-                          <option key={index} value={folder.name}>{folder.name}</option>
+                          <option key={index} value={folder.id}>{folder.name}</option>
                         ))}
                       </select>
+                      {errors.name && (
+                      <p className="text-sm text-red-500">{errors.name.message} </p>
+                      )}
                     </div>
 
                     {/* Company Name */}
@@ -299,6 +315,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         placeholder="Enter Company Name"
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                       />
+                      {errors.companyName && (
+                      <p className="text-sm text-red-500">{errors.companyName.message} </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -325,6 +344,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full pl-8 p-2.5 placeholder-gray-400"
                         placeholder="0.00"
                       />
+                      {errors.amount && (
+                      <p className="text-sm text-red-500">{errors.amount.message} </p>
+                      )}
                     </div>
                   </div>
 
@@ -341,9 +363,11 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       id="categoryId"
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
-                      {categories.map((category, index) => <option key={index}
-                                                                   value={category.id}>{category.icon + ' ' + category.name}</option>)}
+                      {categories.map((category, index) => <option key={index} value={category.id}>{category.icon + ' ' + category.name}</option>)}
                     </select>
+                    {errors.name && (
+                    <p className="text-sm text-red-500">{errors.name.message} </p>
+                    )}
                   </div>
 
                   {/* Expiration Date */}
@@ -355,11 +379,14 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       Expiration Date
                     </label>
                     <input
-                      {...register('expDate', { valueAsDate: true })}
+                      {...register('expDate')}
                       type="date"
                       id="expDate"
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
+                    {errors.expDate && (
+                    <p className="text-sm text-red-500">{errors.expDate.message} </p>
+                    )}
                   </div>
 
                   {/* Product Id */}
@@ -377,6 +404,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       placeholder="Enter Product Id"
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                     />
+                    {errors.productId && (
+                    <p className="text-sm text-red-500">{errors.productId.message} </p>
+                    )}
                   </div>
 
                   {/* Coupon Code */}
@@ -394,6 +424,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       placeholder="Enter Coupon Code"
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                     />
+                    {errors.couponCode && (
+                    <p className="text-sm text-red-500">{errors.couponCode.message} </p>
+                    )}
                   </div>
 
                   {/* Starred */}
@@ -411,6 +444,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         id="isStarred"
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       />
+                      {errors.isStarred && (
+                      <p className="text-sm text-red-500">{errors.isStarred.message} </p>
+                      )}
                     </div>
 
                     <div>
@@ -426,6 +462,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         id="notifyOn"
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       />
+                      {errors.notifyOn && (
+                      <p className="text-sm text-red-500">{errors.notifyOn.message} </p>
+                      )}
                     </div>
 
                   </div>
@@ -445,6 +484,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
                       placeholder="Description..."
                     />
+                    {errors.description && (
+                    <p className="text-sm text-red-500">{errors.description.message} </p>
+                    )}
                   </div>
                 </div>
 
@@ -481,6 +523,8 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                 </button>
               </div>
             </div>
+            {/* Success Message */}
+            <StatusMessage actionData={actionData}/>
           </Form>
         </div>
       </div>
