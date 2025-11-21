@@ -25,7 +25,7 @@ export const RecordSchema = z.object({
     .max(32, 'Please provide a valid document type (max 32 characters).')
     .nullable(),
   expDate: z.iso.date('Please provide a valid expiration date.')
-    //.min(new Date('1900-01-01'), { error: 'Too old!' })
+    // .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable(),
   isStarred: z.boolean(),
   lastAccessedAt: z.date('Please provide a valid last accessed at date and time.')
@@ -40,7 +40,7 @@ export const RecordSchema = z.object({
     .max(32, 'Please provide a valid productId (max 32 characters).')
     .nullable(),
   purchaseDate: z.iso.date('Please provide a valid purchase date.')
-    //.min(new Date('1900-01-01'), { error: 'Too old!' })
+    // .min(new Date('1900-01-01'), { error: 'Too old!' })
     .nullable()
 })
 export type Record = z.infer<typeof RecordSchema>

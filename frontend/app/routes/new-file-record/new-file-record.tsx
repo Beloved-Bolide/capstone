@@ -5,12 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { getSession } from '~/utils/session.server'
 import { v7 as uuid } from 'uuid'
 import type { Route } from './+types/new-file-record'
-import { type FileRecord, FileRecordSchema } from '~/utils/models/file-record.model'
-import { postFile } from '~/utils/models/file.model'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
 import {Form, Link, useActionData} from 'react-router'
-import { type Record as RecordType } from '~/utils/models/record.model'
 import {StatusMessage} from "~/components/StatusMessage";
 
 
@@ -37,12 +34,11 @@ export async function action ({ request }: Route.ActionArgs) {
   // get the form data from the request body
   // const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<FileRecord>(request, resolver)
 
+  // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecord>(request, resolver)
-console.log(errors)
+
   // if there are errors, return them
-  if (errors) {
-    return { errors, defaultValues }
-  }
+  if (errors) return { errors, defaultValues }
 
   // get the cookie, user, and authorization from the session
   const cookie = request.headers.get('cookie')
