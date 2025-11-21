@@ -21,7 +21,7 @@ import { sql } from '../../utils/database.utils.ts'
 export const RecordSchema = z.object({
   id: z.uuidv7('Please provide a valid uuid for id.'),
   folderId: z.uuidv7('Please provide a valid uuid for folderId.'),
-  categoryId: z.uuidv7('Please provide a valid uuid for categoryId.'),
+  categoryId: z.uuid('Please provide a valid uuid for categoryId.'),
   amount: z.coerce.number('Please provide a valid amount.')
     .nullable(),
   companyName: z.string('Please provide a valid company name.')
