@@ -102,7 +102,7 @@ export async function getFoldersByUserId (userId: string | null, authorization: 
   return data
 }
 
-export async function getChildFoldersFolderId(parentFolderId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
+export async function getFoldersByParentFolderId(parentFolderId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
 
   const response = await fetch(`${process.env.REST_API_URL}/folder/parentFolderId/${parentFolderId}`, {
     method: 'GET',

@@ -1,6 +1,5 @@
 import { z } from 'zod/v4'
 import type { Status } from '~/utils/interfaces/Status'
-import type { Folder } from '~/utils/models/folder.model'
 
 
 export const RecordSchema = z.object({
@@ -72,6 +71,27 @@ export async function postRecord (data: Record, authorization: string, cookie: s
 export async function getRecordsByFolderId (folderId: string | null, authorization: string, cookie: string | null): Promise<Record[]> {
 
   const response = await fetch(`${process.env.REST_API_URL}/record/folderId/${folderId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get folder')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
+export async function getRecordById (id: string | null, authorization: string, cookie: string | null): Promise<Record> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
