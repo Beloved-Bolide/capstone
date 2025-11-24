@@ -2,6 +2,7 @@ import * as argon2 from 'argon2'
 import * as crypto from 'crypto'
 import { type Request, type Response } from 'express'
 import pkg from 'jsonwebtoken'
+import type { PrivateUser } from '../apis/user/user.model.ts'
 const { sign } = pkg
 
 // generate a jwt token
@@ -50,13 +51,25 @@ export async function validateSessionUser (request: Request, response: Response,
     response.json({
       status: 403,
       data: null,
-      message: 'Forbidden: You do not have access to this resource. Please sign-up with the correct credentials.'
+      message: 'Forbidden: You do not have access to this resource.'
     })
     return false
   }
 
   // get the user id from the session
-  const sessionUser = request.session?.user
+  const sessionUser: PrivateUser | undefined = request.session?.user
+
+  // if the user id from the session is undefined, send a 401 and return false
+  if (!sessionUser) {
+    response.json({
+      status: 401,
+      data: null,
+      message: 'Unauthorized: You must be signed in to access this resource.'
+    })
+    return false
+  }
+
+  // get the user id from the session
   const sessionUserId = sessionUser?.id
 
   // check if the user id from the request body matches the user id from the session
@@ -64,7 +77,7 @@ export async function validateSessionUser (request: Request, response: Response,
     response.json({
       status: 403,
       data: null,
-      message: 'Forbidden: You do not have access to this resource. Please sign-up with the correct credentials.'
+      message: 'Forbidden: You do not own this resource.'
     })
     return false
   }
