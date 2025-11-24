@@ -164,7 +164,6 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   useActionData<typeof action>()
 
   const [selectedFolder, setSelectedFolder] = useState('All Folders')
-  const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
@@ -216,7 +215,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
             <div className="w-full flex items-center gap-2">
               <div>
-                {/* Add Folder Button */}
+                {/* Add Folder Form */}
                 <AddFolderForm
                   displayNewFolderForm={displayNewFolderForm}
                   actionData={actionData}
