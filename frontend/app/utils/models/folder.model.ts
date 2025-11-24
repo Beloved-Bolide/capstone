@@ -39,7 +39,7 @@ export async function postFolder (data: Folder, authorization: string, cookie: s
   return { headers, result }
 }
 
-export async function getFolderById (id: string | null, authorization: string, cookie: string | null): Promise<Folder | null> {
+export async function getFolderById (id: string | null, authorization: string, cookie: string | null): Promise<Folder> {
 
   const response = await fetch(`${process.env.REST_API_URL}/folder/id/${id}`, {
     method: 'GET',
@@ -57,7 +57,7 @@ export async function getFolderById (id: string | null, authorization: string, c
 
   const folder: Folder = await response.json()
 
-  return folder ?? null
+  return folder
 }
 
 export async function getFolderByName (name: string, authorization: string, cookie: string | null): Promise<Folder | null> {

@@ -224,7 +224,8 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 {/* Folder*/}
                 {folders.map((folder) => (
                   <div key={folder.id}>
-                    <button
+                    <Link
+                      to={`./${folder.id}`}
                       onClick={() => setSelectedFolder(folder.name)}
                       className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         selectedFolder === folder.name
@@ -237,7 +238,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                       {/*{folders.length > 0 && (*/}
                       {/*  <span className="text-xs text-gray-500">{folders.length}</span>*/}
                       {/*)}*/}
-                    </button>
+                    </Link>
                     <AddFolderForm
                       displayNewFolderForm={displayNewFolderForm}
                       actionData={actionData}
@@ -369,24 +370,33 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
           {/* Main Content */}
           <div className="flex-1 overflow-y-auto bg-white">
-            {folders.map((folder) => (
-              <div key={folder.id}>
-                <button
-                  onClick={() => setSelectedFolder(folder.name)}
-                  className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    selectedFolder === folder.name
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                      : 'text-gray-700 hover:bg-gray-50 border border-transparent'
-                  }`}
-                >
-                  <FolderOpen className="w-4 h-4"/>
-                  <span className="flex-1 text-left">{folder.name}</span>
-                  {/*{folders.length > 0 && (*/}
-                  {/*  <span className="text-xs text-gray-500">{folders.length}</span>*/}
-                  {/*)}*/}
-                </button>
-              </div>
-            ))}
+
+            <Outlet/>
+
+            {/*{folders.map((folder) => (*/}
+            {/*  <div key={folder.id}>*/}
+            {/*    <Link*/}
+            {/*      to={`./${folder.id}`}*/}
+            {/*      onClick={() => setSelectedFolder(folder.name)}*/}
+            {/*      className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
+            {/*        selectedFolder === folder.name*/}
+            {/*          ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
+            {/*          : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
+            {/*      }`}*/}
+            {/*    >*/}
+            {/*      <FolderOpen className="w-4 h-4"/>*/}
+            {/*      <span className="flex-1 text-left">{folder.name}</span>*/}
+            {/*      /!*{folders.length > 0 && (*!/*/}
+            {/*      /!*  <span className="text-xs text-gray-500">{folders.length}</span>*!/*/}
+            {/*      /!*)}*!/*/}
+            {/*      {folders.filter(folder => folder.parentFolderId === folder.id).length > 0 && (*/}
+            {/*        <span className="text-xs text-gray-500">*/}
+            {/*          {folder.name}*/}
+            {/*        </span>*/}
+            {/*      )}*/}
+            {/*    </Link>*/}
+            {/*  </div>*/}
+            {/*))}*/}
             {/*<div className="p-3 lg:p-4">*/}
 
             {/*  /!* Mobile: Show as cards *!/*/}
