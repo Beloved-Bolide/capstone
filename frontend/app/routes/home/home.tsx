@@ -49,19 +49,12 @@ export default function FileWiseLanding () {
             {/* Logo */}
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => scrollToSection('home')}>
               <div className="relative group">
-                <div
-                  className="w-12 h-12 bg-gradient-to-br from-blue-900 to-blue-700 rounded-xl flex items-center justify-center transform transition-transform group-hover:scale-110 group-hover:rotate-3 shadow-lg">
-                  <svg viewBox="0 0 24 24" className="w-8 h-8 text-white" fill="currentColor">
-                    <path
-                      d="M12 2C10 2 8 3 8 5v2H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-2V5c0-2-2-3-4-3zm0 2c1 0 2 .5 2 1v2h-4V5c0-.5 1-1 2-1z"/>
-                    <circle cx="10" cy="12" r="1.5"/>
-                    <circle cx="14" cy="12" r="1.5"/>
-                    <path d="M12 16c-1.5 0-2.5-.5-3-1h6c-.5.5-1.5 1-3 1z"/>
-                  </svg>
+                <div className="w-8 h-8 rounded-md flex items-center justify-center">
+                  <img src="/logo-croppy.png" alt="logo"/>
                 </div>
               </div>
               <span
-                className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
                 FileWise
               </span>
             </div>
@@ -185,29 +178,10 @@ export default function FileWiseLanding () {
                   Start Free Trial
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
                 </Link>
-                <button
-                  className="px-8 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all border-2 border-gray-200 hover:border-blue-300 shadow-lg">
-                  Watch Demo
-                </button>
+
               </div>
 
-              <div className="flex items-center gap-8 pt-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i}
-                           className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white"></div>
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-600 font-medium">10k+ happy users</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400"/>
-                  ))}
-                  <span className="ml-2 text-sm text-gray-600 font-medium">4.9/5 rating</span>
-                </div>
-              </div>
+
             </div>
 
             {/* Right Content - Visual */}
@@ -296,7 +270,7 @@ export default function FileWiseLanding () {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Fast Search</h3>
               <p className="text-gray-600 leading-relaxed">
-                Find any receipt instantly with our powerful AI-powered search. Search by store name, date, amount, or
+                Find any receipt instantly with our powerful search. Search by store name, date, amount, or
                 category in seconds.
               </p>
             </div>
@@ -366,8 +340,7 @@ export default function FileWiseLanding () {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Coupon Keeper</h3>
               <p className="text-gray-600 leading-relaxed">
-                Export your receipts and expenses in tax-ready format. Simplify tax season with organized, categorized
-                financial records.
+                Organize digital or scanned coupons with expiry notifications, so users never miss a saving opportunity.
               </p>
             </div>
           </div>
