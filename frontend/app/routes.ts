@@ -16,7 +16,8 @@ export default [
 
     // Dashboard at "/dashboard"
     route('dashboard', 'routes/dashboard/dashboard.tsx', [
-      route('*', 'routes/dashboard/folder/folder.tsx')
+      route('*', 'routes/dashboard/folder/folder.tsx'),
+      route('*', 'routes/dashboard/record/record.tsx')
     ]),
 
     // New file at "/new-file-record"

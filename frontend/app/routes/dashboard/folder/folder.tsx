@@ -1,10 +1,11 @@
 import type { Route } from './+types/folder'
-import { Link, useLoaderData } from 'react-router'
+import { Link, Outlet, useLoaderData } from 'react-router'
 import { getChildFoldersFolderId, getFolderByName, getFoldersByUserId } from '~/utils/models/folder.model'
 import React, { useState } from 'react'
 import { FileText, FolderOpen } from 'lucide-react'
 import { getSession } from '~/utils/session.server'
 import type { Folder } from '~/utils/models/folder.model'
+import { getRecordsByFolderId, type Record } from '~/utils/models/record.model'
 
 
 export async function loader ({ request, params }: Route.LoaderArgs) {
@@ -31,7 +32,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
   const childFolders: Folder[] = await getChildFoldersFolderId(lastParam, authorization, cookie)
 
   // get the files for the selected folder
-  // code goes here
+  const records: Record[] = await getRecordsByFolderId(lastParam, authorization, cookie)
 
   // return the folder data
   return { childFolders }
@@ -62,6 +63,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
       >
         <FolderOpen className="w-4 h-4"/>
         <span className="flex-1 text-left">{folder.name}</span>
+        <Outlet/>
       </Link>
     </div>
     ))}
