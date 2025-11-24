@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, Outlet, redirect, useActionData, useLoaderData } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
-  type Folder,
+  type Folder, getFolderById,
   getFoldersByUserId,
   type NewFolder,
   NewFolderSchema,
@@ -61,6 +61,9 @@ export async function loader ({ request }: Route.LoaderArgs) {
 
 export async function action ({ request }: Route.ActionArgs) {
 
+  // // get the loader data from the loader function
+  // const loaderData = useLoaderData<typeof loader>()
+
   // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewFolder>(request, resolver)
 
@@ -86,13 +89,22 @@ export async function action ({ request }: Route.ActionArgs) {
     }
   }
 
-  // get the parent folder id from the request query parameters
-  // code here
+  // get the folders for the current user
+  const folders: Folder[] | null = await getFoldersByUserId(user.id, authorization, cookie)
+
+  // if there are folders, find the "All Folders" parent folder
+  let allFoldersParent: Folder | null | undefined = null
+  if (folders) {
+    allFoldersParent = folders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
+  }
+
+  // find the parent folder of the selected folder
+  const allFoldersId = allFoldersParent ? allFoldersParent.id : null
 
   // create a new folder object with the required attributes
   const folder = {
     id: uuid(),
-    parentFolderId: null, // needs work
+    parentFolderId: allFoldersId, // needs work
     userId: user.id,
     name: data.name
   }
@@ -227,6 +239,11 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                       {/*  <span className="text-xs text-gray-500">{folders.length}</span>*/}
                       {/*)}*/}
                     </button>
+                    <AddFolderForm
+                      displayNewFolderForm={displayNewFolderForm}
+                      actionData={actionData}
+                      setDisplayNewFolderForm={setDisplayNewFolderForm}
+                    />
                   </div>
                 ))}
               </div>
@@ -351,7 +368,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden bg-gray-50">
 
-          {/* Receipt List */}
+          {/* Main Content */}
           <div className="flex-1 overflow-y-auto bg-white">
             {folders.map((folder) => (
               <div key={folder.id}>
