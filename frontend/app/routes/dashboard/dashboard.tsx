@@ -1,39 +1,19 @@
 import React, { useState } from 'react'
-import { Link, Outlet, redirect, useActionData, useLoaderData } from 'react-router'
+import { Link, Outlet, useActionData, useLocation } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
-  type Folder, getFolderById,
-  getFoldersByUserId,
+  type Folder,
   type NewFolder,
   NewFolderSchema,
+  getFoldersByUserId,
   postFolder
 } from '~/utils/models/folder.model'
 import { getSession } from '~/utils/session.server'
-import {
-  Search,
-  Plus,
-  FolderOpen,
-  Star,
-  RotateCw,
-  ClockAlert,
-  FileText,
-  Trash2,
-  Settings,
-  ChevronDown
-} from 'lucide-react'
+import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
 import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-
-type Receipt = {
-  id: number
-  name: string
-  date: string
-  category: string
-  folder: string
-}
 
 export function meta ({}: Route.MetaArgs) {
   return [
@@ -60,9 +40,6 @@ export async function loader ({ request }: Route.LoaderArgs) {
 }
 
 export async function action ({ request }: Route.ActionArgs) {
-
-  // // get the loader data from the loader function
-  // const loaderData = useLoaderData<typeof loader>()
 
   // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewFolder>(request, resolver)
@@ -145,28 +122,43 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     total: 154.06
   }
 
-  // // transform backend folders into a hierarchical structure
-  // const backendFolders = Array.isArray(loaderData?.folders) ? loaderData.folders : []
-  // const allFoldersParent = backendFolders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
-  // const childFolders = allFoldersParent ? backendFolders.filter(f => f.parentFolderId === allFoldersParent.id) : []
+  const getFolderIcon = (folderName: string, size: 'sm' | 'md' = 'sm') => {
 
-  // const visibleFiles = selectedFolder === 'All Folders'
-  //   ? files
-  //   : files.filter(r => r.folder === selectedFolder)
+    const iconProps = { className: size === 'sm' ? "w-4 h-4" : "w-5 h-5 text-blue-600" }
 
-  // const isAllFolders = selectedFolder === 'All Folders'
-  // const subfolders = folders[0]?.children ?? []
+    switch (folderName) {
+      case 'All Folders':
+        return <FolderOpen {...iconProps} />
+      case 'Starred':
+        return <Star {...iconProps} />
+      case 'Recent':
+        return <RotateCw {...iconProps} />
+      case 'Expiring':
+        return <ClockAlert {...iconProps} />
+      case 'Trash':
+        return <Trash2 {...iconProps} />
+      default:
+        return <FolderOpen {...iconProps} />
+    }
+  }
 
   // if there are no folders, set the array to an empty array
   let { folders } = loaderData
   if (!folders) folders = []
 
   useActionData<typeof action>()
+  const location = useLocation()
 
-  const [selectedFolder, setSelectedFolder] = useState('All Folders')
+  const [selectedFolder, setSelectedFolder] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
+
+  // Check if we're at the base dashboard route
+  const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
+
+  // Filter parent folders excluding Trash
+  const parentFolders = folders.filter(folder => folder.parentFolderId === null && folder.name !== 'Trash')
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -176,20 +168,22 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
         {/* Logo */}
-        <div className="px-4 lg:px-5 pb-5 pt-5 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-md flex items-center justify-center">
+        <div className="px-4 lg:px-6 py-3 lg:pt-5 lg:pb-4.5 border-b border-gray-200">
+          <div className="flex items-center justify-between h-[42px]">
+            <Link to=".." className="flex items-center gap-2">
+              <div className="w-10.5 h-10.5 rounded-md flex items-center justify-center">
                 <img src="/logo-croppy.png" alt="logo"/>
               </div>
-              <span className="text-xl font-bold text-gray-800">FileWise</span>
-            </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
+                FileWise
+              </span>
+            </Link>
             <button
               aria-label="Close sidebar"
-              className="lg:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               onClick={() => setSidebarOpen(false)}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
               </svg>
             </button>
@@ -202,7 +196,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             onClick={() => {
               setDisplayNewFolderForm(!displayNewFolderForm)
             }}
-            className="w-full flex items-center justify-center gap-2 px-3 lg:px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-sm font-medium text-gray-700"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -213,104 +207,36 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         <div className="flex-1 overflow-y-auto px-3 lg:px-4 py-4">
           <div className="space-y-1">
 
-            <div className="w-full flex items-center gap-2">
-              <div>
-                {/* Add Folder Form */}
-                <AddFolderForm
-                  displayNewFolderForm={displayNewFolderForm}
-                  actionData={actionData}
-                  setDisplayNewFolderForm={setDisplayNewFolderForm}
-                />
-                {/* Folder*/}
-                {folders.map((folder) => (
-                  <div key={folder.id}>
-                    <Link
-                      to={`./${folder.id}`}
-                      onClick={() => setSelectedFolder(folder.name)}
-                      className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        selectedFolder === folder.name
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'text-gray-700 hover:bg-gray-50 border border-transparent'
-                      }`}
-                    >
-                      <FolderOpen className="w-4 h-4"/>
-                      <span className="flex-1 text-left">{folder.name}</span>
-                      {/*{folders.length > 0 && (*/}
-                      {/*  <span className="text-xs text-gray-500">{folders.length}</span>*/}
-                      {/*)}*/}
-                    </Link>
-                    <AddFolderForm
-                      displayNewFolderForm={displayNewFolderForm}
-                      actionData={actionData}
-                      setDisplayNewFolderForm={setDisplayNewFolderForm}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Add Folder Form */}
+            <AddFolderForm
+              displayNewFolderForm={displayNewFolderForm}
+              actionData={actionData}
+              setDisplayNewFolderForm={setDisplayNewFolderForm}
+            />
 
-            {/*All Folders and Subfolders */}
-            {/*{(() => {*/}
-
-            {/*return (*/}
-            {/*{Folders.map(route => (*/}
-            {/*  <div key={folders.name} className="space-y-1">*/}
-            {/*    <div className="w-full flex items-center gap-2">*/}
-
-            {/*    </div>*/}
-
-            {/*{all.children && (*/}
-            {/*  <div className="space-y-1 pl-8">*/}
-            {/*    {all.children.map((child) => (*/}
-            {/*      <button*/}
-            {/*        key={child.name}*/}
-            {/*        onClick={() => setSelectedFolder(child.name)}*/}
-            {/*        className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
-            {/*          selectedFolder === child.name*/}
-            {/*            ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
-            {/*            : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
-            {/*        }`}*/}
-            {/*      >*/}
-            {/*        <child.icon className="w-4 h-4"/>*/}
-            {/*        <span className="flex-1 text-left">{child.name}</span>*/}
-            {/*        {typeof child.count === 'number' && child.count > 0 && (*/}
-            {/*          <span className="text-xs text-gray-500">{child.count}</span>*/}
-            {/*        )}*/}
-            {/*      </button>*/}
-            {/*    ))}*/}
-            {/*    <Outlet/>*/}
-            {/*  </div>*/}
-            {/*)}*/}
-            {/*    </div>*/}
-            {/*  ))}*/}
-            {/*)*/}
-            {/*})()}*/}
-
-            {/* Other folders (Starred, Recent, Expiring, Trash) */}
-            {/*{folders.slice(1).map((folder) => (*/}
-            {/*  <button*/}
-            {/*    key={folder.name}*/}
-            {/*    onClick={() => setSelectedFolder(folder.name)}*/}
-            {/*    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
-            {/*      selectedFolder === folder.name*/}
-            {/*        ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
-            {/*        : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
-            {/*    }`}*/}
-            {/*  >*/}
-            {/*    <folder.icon className="w-4 h-4"/>*/}
-            {/*    <span className="flex-1 text-left">{folder.name}</span>*/}
-            {/*    {folder.count > 0 && (*/}
-            {/*      <span className="text-xs text-gray-500">{folder.count}</span>*/}
-            {/*    )}*/}
-            {/*  </button>*/}
-            {/*))}*/}
+            {/* Folders */}
+            {folders.filter(folder => folder.parentFolderId === null).map((folder) => (
+              <Link
+                key={folder.id}
+                to={`./${folder.id}`}
+                onClick={() => setSelectedFolder(folder.name)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  selectedFolder === folder.name
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-100 border border-transparent'
+                }`}
+              >
+                {getFolderIcon(folder.name)}
+                <span className="flex-1 text-left">{folder.name}</span>
+              </Link>
+            ))}
           </div>
         </div>
 
         {/* Settings */}
-        <div className="p-4 border-t border-gray-200">
+        <div className="px-3 lg:px-4 py-4 border-t border-gray-200">
           <button
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-blue-50 focus:text-blue-700 focus:border-blue-200 focus:shadow-sm">
             <Settings className="w-4 h-4"/>
             <span className="flex-1 text-left">Settings</span>
           </button>
@@ -322,210 +248,99 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
 
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-3 lg:px-4 py-3 lg:py-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 lg:gap-4 flex-1 min-w-0">
+        <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-3">
+          <div className="flex items-center justify-between gap-3 lg:gap-4">
+            <div className="flex items-center gap-3 lg:gap-5 flex-1 min-w-0">
 
               {/* Mobile Menu Button */}
-              <button aria-label="Open sidebar"
-                      className="lg:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      onClick={() => setSidebarOpen(true)}>
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button
+                aria-label="Open sidebar"
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
               </button>
 
               {/* Search Bar */}
               <div className="flex-1 max-w-2xl relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
-                <input type="text" placeholder="Find file..."
-                       className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
+                <input
+                  type="text"
+                  placeholder="Search files and folders..."
+                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                />
               </div>
 
               {/* New File Button */}
-              <Link aria-label="Add new"
-                    to="/new-file-record"
-                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <Plus className="w-5 h-5 text-gray-600"/>
+              <Link
+                aria-label="Add new file"
+                to="/new-file-record"
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+              >
+                <Plus className="w-4 h-4"/>
+                <span className="hidden sm:inline">New File</span>
               </Link>
             </div>
 
-            {/* User Profile Dropdown */}
-            <div className="flex items-center gap-2 lg:gap-3">
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer"/>
-              </label>
-              <div className="hidden sm:flex items-center gap-2 lg:gap-3">
-                <div
-                  className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
-                  DR
-                </div>
+            {/* User Profile */}
+            <button className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:cursor-pointer">
+              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-xs lg:text-sm shadow-sm">
+                DR
               </div>
-            </div>
+            </button>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 flex overflow-hidden bg-gray-50">
+        <div className="flex-1 flex overflow-hidden">
 
           {/* Main Content */}
-          <div className="flex-1 overflow-y-auto bg-white">
+          <div className="flex-1 overflow-y-auto bg-gray-50">
+            <div className="h-full">
 
-            <Outlet/>
+              {/* Checks URL */}
+              {isBaseDashboard ? (
 
-            {/*{folders.map((folder) => (*/}
-            {/*  <div key={folder.id}>*/}
-            {/*    <Link*/}
-            {/*      to={`./${folder.id}`}*/}
-            {/*      onClick={() => setSelectedFolder(folder.name)}*/}
-            {/*      className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${*/}
-            {/*        selectedFolder === folder.name*/}
-            {/*          ? 'bg-blue-50 text-blue-700 border border-blue-200'*/}
-            {/*          : 'text-gray-700 hover:bg-gray-50 border border-transparent'*/}
-            {/*      }`}*/}
-            {/*    >*/}
-            {/*      <FolderOpen className="w-4 h-4"/>*/}
-            {/*      <span className="flex-1 text-left">{folder.name}</span>*/}
-            {/*      /!*{folders.length > 0 && (*!/*/}
-            {/*      /!*  <span className="text-xs text-gray-500">{folders.length}</span>*!/*/}
-            {/*      /!*)}*!/*/}
-            {/*      {folders.filter(folder => folder.parentFolderId === folder.id).length > 0 && (*/}
-            {/*        <span className="text-xs text-gray-500">*/}
-            {/*          {folder.name}*/}
-            {/*        </span>*/}
-            {/*      )}*/}
-            {/*    </Link>*/}
-            {/*  </div>*/}
-            {/*))}*/}
-            {/*<div className="p-3 lg:p-4">*/}
+                // Main Dashboard
+                <div className="p-4 lg:p-6">
+                  <div>
+                    <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">All Folders</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {parentFolders.map((folder) => (
+                        <Link
+                          key={folder.id}
+                          to={`./${folder.id}`}
+                          onClick={() => setSelectedFolder(folder.name)}
+                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="p-2.5 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+                              {getFolderIcon(folder.name, 'md')}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                                {folder.name}
+                              </h3>
+                              <p className="text-xs text-gray-500 mt-1">Folder</p>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
 
-            {/*  /!* Mobile: Show as cards *!/*/}
-            {/*  <div className="lg:hidden space-y-3">*/}
-
-            {/*    {isAllFolders ? (*/}
-            {/*      // Show subfolders as cards when "All Folders" is selected*/}
-            {/*      <div className="space-y-2">*/}
-            {/*        {subfolders.map((sf) => (*/}
-            {/*          <button*/}
-            {/*            key={sf.name}*/}
-            {/*            onClick={() => setSelectedFolder(sf.name)}*/}
-            {/*            className="w-full p-4 border rounded-md bg-white border-gray-200 hover:bg-gray-50 transition-colors text-left"*/}
-            {/*          >*/}
-            {/*            <div className="flex items-center justify-between">*/}
-            {/*              <div className="flex items-center gap-3">*/}
-            {/*                <sf.icon className="w-5 h-5 text-gray-600"/>*/}
-            {/*                <div>*/}
-            {/*                  <div className="font-medium text-gray-900">{sf.name}</div>*/}
-            {/*                  {typeof sf.count === 'number' && (*/}
-            {/*                    <div className="text-xs text-gray-500">{sf.count} items</div>*/}
-            {/*                  )}*/}
-            {/*                </div>*/}
-            {/*              </div>*/}
-            {/*              <ChevronDown className="w-4 h-4 text-gray-400"/>*/}
-            {/*            </div>*/}
-            {/*          </button>*/}
-            {/*        ))}*/}
-            {/*      </div>*/}
-            {/*    ) : (*/}
-
-            {/*      // Show only files for the selected subfolder*/}
-            {/*      <div className="space-y-3">*/}
-            {/*        {visibleFiles.map((file) => (*/}
-            {/*          <div*/}
-            {/*            key={file.id}*/}
-            {/*            className={`p-4 border rounded-md cursor-pointer transition-colors ${*/}
-            {/*              selectedReceipt?.id === file.id*/}
-            {/*                ? 'bg-blue-50 border-blue-200'*/}
-            {/*                : 'bg-white border-gray-200 hover:bg-gray-50'*/}
-            {/*            }`}*/}
-            {/*            onClick={() => {*/}
-            {/*              setSelectedReceipt(file)*/}
-            {/*              setPreviewOpen(true)*/}
-            {/*            }}*/}
-            {/*          >*/}
-            {/*            <div className="flex justify-between items-start mb-2">*/}
-            {/*              <h3 className="font-medium text-gray-900">{file.name}</h3>*/}
-            {/*              <ChevronDown className="w-4 h-4 text-gray-400"/>*/}
-            {/*            </div>*/}
-            {/*            <div className="flex justify-between text-sm text-gray-600">*/}
-            {/*              <span>{file.date}</span>*/}
-            {/*              <span className="px-2 py-1 bg-gray-100 rounded text-xs">{file.category}</span>*/}
-            {/*            </div>*/}
-            {/*          </div>*/}
-            {/*        ))}*/}
-            {/*      </div>*/}
-            {/*    )}*/}
-            {/*  </div>*/}
-
-            {/*  /!* Desktop *!/*/}
-            {/*  {isAllFolders ? (*/}
-
-            {/*    // Show the subfolder grid when "All Folders" is selected*/}
-            {/*    <div className="hidden lg:grid grid-cols-2 xl:grid-cols-3 gap-3">*/}
-            {/*      {subfolders.map((sf) => (*/}
-            {/*        <button*/}
-            {/*          key={sf.name}*/}
-            {/*          onClick={() => setSelectedFolder(sf.name)}*/}
-            {/*          className="p-4 bg-white rounded-md border border-gray-200 hover:bg-gray-50 text-left transition-colors"*/}
-            {/*        >*/}
-            {/*          <div className="flex items-center gap-3">*/}
-            {/*            <sf.icon className="w-5 h-5 text-gray-600"/>*/}
-            {/*            <div>*/}
-            {/*              <div className="text-sm font-medium text-gray-900">{sf.name}</div>*/}
-            {/*              {typeof sf.count === 'number' && (*/}
-            {/*                <div className="text-xs text-gray-500">{sf.count} items</div>*/}
-            {/*              )}*/}
-            {/*            </div>*/}
-            {/*          </div>*/}
-            {/*        </button>*/}
-            {/*      ))}*/}
-            {/*    </div>*/}
-            {/*  ) : (*/}
-
-            {/*    // Show a table of files for the selected subfolder*/}
-            {/*    <table className="hidden lg:table w-full text-sm">*/}
-            {/*      <thead>*/}
-            {/*      <tr className="border-b border-gray-200">*/}
-            {/*        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">*/}
-            {/*          <div className="flex items-center gap-2">*/}
-            {/*            <ChevronDown className="w-4 h-4"/>*/}
-            {/*            {selectedFolder}*/}
-            {/*          </div>*/}
-            {/*        </th>*/}
-            {/*        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>*/}
-            {/*        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>*/}
-            {/*        <th className="w-8"></th>*/}
-            {/*      </tr>*/}
-            {/*      </thead>*/}
-            {/*      <tbody>*/}
-            {/*      {visibleFiles.map((receipt) => (*/}
-            {/*        <tr*/}
-            {/*          key={receipt.id}*/}
-            {/*          className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedReceipt?.id === receipt.id ? 'bg-blue-50' : ''}`}*/}
-            {/*          onClick={() => {*/}
-            {/*            setSelectedReceipt(receipt)*/}
-            {/*            setPreviewOpen(true)*/}
-            {/*          }}*/}
-            {/*        >*/}
-            {/*          <td className="py-3 px-4 text-sm text-gray-900">{receipt.name}</td>*/}
-            {/*          <td className="py-3 px-4 text-sm text-gray-600">{receipt.date}</td>*/}
-            {/*          <td className="py-3 px-4 text-sm text-gray-600">{receipt.category}</td>*/}
-            {/*          <td className="py-3 px-4">*/}
-            {/*            <button aria-label="Row actions"*/}
-            {/*                    className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">*/}
-            {/*              <ChevronDown className="w-4 h-4"/>*/}
-            {/*            </button>*/}
-            {/*          </td>*/}
-            {/*        </tr>*/}
-            {/*      ))}*/}
-            {/*      </tbody>*/}
-            {/*    </table>*/}
-            {/*  )}*/}
-            {/*</div>*/}
+                // All Folders Dashboard
+                <Outlet/>
+              )}
+            </div>
           </div>
 
           {/* Receipt Preview - Desktop */}
-          <div className="hidden xl:block w-120 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto">
+          <div className="hidden xl:block w-96 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto">
             <div className="bg-white rounded-md shadow-sm p-4 lg:p-6 border border-gray-200">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-900">receipt</h3>
@@ -651,11 +466,10 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               <button
                 aria-label="Close preview"
                 onClick={() => setPreviewOpen(false)}
-                className="p-2 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="p-2 rounded-lg hover:cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"/>
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                 </svg>
               </button>
             </div>

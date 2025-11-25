@@ -9,7 +9,6 @@ import {
   Menu,
   X,
   ChevronRight,
-  Star,
   Zap,
   Lock
 } from 'lucide-react'
@@ -46,10 +45,11 @@ export default function FileWiseLanding () {
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
+
             {/* Logo */}
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => scrollToSection('home')}>
               <div className="relative group">
-                <div className="w-8 h-8 rounded-md flex items-center justify-center">
+                <div className="w-10.5 h-10.5 rounded-md flex items-center justify-center">
                   <img src="/logo-croppy.png" alt="logo"/>
                 </div>
               </div>

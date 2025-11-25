@@ -7,8 +7,8 @@ import { v7 as uuid } from 'uuid'
 import type { Route } from './+types/new-file-record'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
-import {Form, Link, useActionData} from 'react-router'
-import {StatusMessage} from "~/components/StatusMessage";
+import { Form, Link, redirect, useActionData } from 'react-router'
+import { StatusMessage } from '~/components/StatusMessage';
 
 
 const resolver = zodResolver(NewRecordSchema)
@@ -30,9 +30,6 @@ export async function loader ({ request }: Route.LoaderArgs) {
 }
 
 export async function action ({ request }: Route.ActionArgs) {
-
-  // get the form data from the request body
-  // const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<FileRecord>(request, resolver)
 
   // get the form data from the request body
   const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecord>(request, resolver)
@@ -101,15 +98,7 @@ export async function action ({ request }: Route.ActionArgs) {
     return { success: false, status: result }
   }
 
-  return {
-    success: true,
-    status: {
-      status: result.status,
-      data: result.data,
-      message: 'Record-File created successfully!'
-    }
-  }
-
+  return redirect('/dashboard', result)
 }
 
 export default function NewFileRecord ({ loaderData, actionData }: Route.ComponentProps) {
@@ -139,7 +128,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
 
   useActionData<typeof action>()
 
-console.log(errors)
+  console.log(errors)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -162,8 +151,8 @@ console.log(errors)
 
           {/* Card Body */}
           <Form onSubmit={handleSubmit} noValidate={true} method="POST">
-
             <div className="p-6">
+
               {/* Drag and Drop Area */}
               <div className="mb-8">
                 <label
@@ -204,7 +193,6 @@ console.log(errors)
                   <h3 className="text-base font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">
                     File Information
                   </h3>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                     {/* Document Type */}
@@ -218,9 +206,7 @@ console.log(errors)
                       <select
                         {...register('docType')}
                         id="doc-type"
-                        // value={docType}
-                        // onChange={(e) => setDocType(e.target.value)}
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       >
                         <option value="">Select type...</option>
                         <option value="Receipt/Invoice">Receipt/Invoice</option>
@@ -230,7 +216,7 @@ console.log(errors)
                         <option value="Other">Other</option>
                       </select>
                       {errors.docType && (
-                      <p className="text-sm text-red-500">{errors.docType.message} </p>
+                        <p className="text-sm text-red-500">{errors.docType.message} </p>
                       )}
                     </div>
 
@@ -246,10 +232,9 @@ console.log(errors)
                         {...register('purchaseDate')}
                         type="date"
                         id="purchaseDate"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                      />
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"/>
                       {errors.purchaseDate && (
-                      <p className="text-sm text-red-500">{errors.purchaseDate.message} </p>
+                        <p className="text-sm text-red-500">{errors.purchaseDate.message} </p>
                       )}
                     </div>
 
@@ -265,11 +250,11 @@ console.log(errors)
                         {...register('name')}
                         type="text"
                         id="name"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                         placeholder="Enter file name"
                       />
                       {errors.name && (
-                      <p className="text-sm text-red-500">{errors.name.message} </p>
+                        <p className="text-sm text-red-500">{errors.name.message} </p>
                       )}
                     </div>
 
@@ -284,7 +269,7 @@ console.log(errors)
                       <select
                         {...register('folderId')}
                         id="folderId"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       >
                         <option value="">Select folder...</option>
                         {folders.map((folder, index) => (
@@ -292,7 +277,7 @@ console.log(errors)
                         ))}
                       </select>
                       {errors.name && (
-                      <p className="text-sm text-red-500">{errors.name.message} </p>
+                        <p className="text-sm text-red-500">{errors.name.message} </p>
                       )}
                     </div>
 
@@ -309,10 +294,10 @@ console.log(errors)
                         type="text"
                         id="companyName"
                         placeholder="Enter Company Name"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       />
                       {errors.companyName && (
-                      <p className="text-sm text-red-500">{errors.companyName.message} </p>
+                        <p className="text-sm text-red-500">{errors.companyName.message} </p>
                       )}
                     </div>
                   </div>
@@ -337,11 +322,11 @@ console.log(errors)
                         type="number"
                         id="amount"
                         step="1.00"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full pl-8 p-2.5 placeholder-gray-400"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full pl-8 p-2.5 placeholder-gray-400"
                         placeholder="0.00"
                       />
                       {errors.amount && (
-                      <p className="text-sm text-red-500">{errors.amount.message} </p>
+                        <p className="text-sm text-red-500">{errors.amount.message} </p>
                       )}
                     </div>
                   </div>
@@ -357,12 +342,13 @@ console.log(errors)
                     <select
                       {...register('categoryId')}
                       id="categoryId"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
-                      {categories.map((category, index) => <option key={index} value={category.id}>{category.icon + ' ' + category.name}</option>)}
+                      {categories.map((category, index) => <option key={index}
+                                                                   value={category.id}>{category.icon + ' ' + category.name}</option>)}
                     </select>
                     {errors.name && (
-                    <p className="text-sm text-red-500">{errors.name.message} </p>
+                      <p className="text-sm text-red-500">{errors.name.message} </p>
                     )}
                   </div>
 
@@ -378,14 +364,14 @@ console.log(errors)
                       {...register('expDate')}
                       type="date"
                       id="expDate"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
                     {errors.expDate && (
-                    <p className="text-sm text-red-500">{errors.expDate.message} </p>
+                      <p className="text-sm text-red-500">{errors.expDate.message} </p>
                     )}
                   </div>
 
-                  {/* Product Id */}
+                  {/* Product ID */}
                   <div>
                     <label
                       htmlFor="productId"
@@ -398,10 +384,10 @@ console.log(errors)
                       type="text"
                       id="productId"
                       placeholder="Enter Product Id"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
                     {errors.productId && (
-                    <p className="text-sm text-red-500">{errors.productId.message} </p>
+                      <p className="text-sm text-red-500">{errors.productId.message} </p>
                     )}
                   </div>
 
@@ -418,15 +404,16 @@ console.log(errors)
                       type="text"
                       id="couponCode"
                       placeholder="Enter Coupon Code"
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     />
                     {errors.couponCode && (
-                    <p className="text-sm text-red-500">{errors.couponCode.message} </p>
+                      <p className="text-sm text-red-500">{errors.couponCode.message} </p>
                     )}
                   </div>
 
-                  {/* Starred */}
-                  <div>
+                  <div className="grid grid-cols-2">
+
+                    {/* Starred */}
                     <div>
                       <label
                         htmlFor="isStarred"
@@ -438,19 +425,20 @@ console.log(errors)
                         {...register('isStarred')}
                         type="checkbox"
                         id="isStarred"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:border-blue-500 block w-full p-2.5"
                       />
                       {errors.isStarred && (
-                      <p className="text-sm text-red-500">{errors.isStarred.message} </p>
+                        <p className="text-sm text-red-500">{errors.isStarred.message} </p>
                       )}
                     </div>
 
+                    {/* Notifications On */}
                     <div>
                       <label
                         htmlFor="notifyOn"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
-                        Notify On
+                        Notifications On
                       </label>
                       <input
                         {...register('notifyOn')}
@@ -459,10 +447,9 @@ console.log(errors)
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       />
                       {errors.notifyOn && (
-                      <p className="text-sm text-red-500">{errors.notifyOn.message} </p>
+                        <p className="text-sm text-red-500">{errors.notifyOn.message} </p>
                       )}
                     </div>
-
                   </div>
 
                   {/* Description */}
@@ -477,11 +464,11 @@ console.log(errors)
                       {...register('description')}
                       id="description"
                       rows={2}
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       placeholder="Description..."
                     />
                     {errors.description && (
-                    <p className="text-sm text-red-500">{errors.description.message} </p>
+                      <p className="text-sm text-red-500">{errors.description.message} </p>
                     )}
                   </div>
                 </div>
