@@ -89,27 +89,6 @@ export async function getRecordsByFolderId (folderId: string | null, authorizati
   return data
 }
 
-export async function getRecordById (id: string | null, authorization: string, cookie: string | null): Promise<Record> {
-
-  const response = await fetch(`${process.env.REST_API_URL}/record/id/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': authorization,
-      'Cookie': cookie ?? ''
-    },
-    body: null
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to get folder')
-  }
-
-  const { data } = await response.json()
-
-  return data
-}
-
 
 
 
