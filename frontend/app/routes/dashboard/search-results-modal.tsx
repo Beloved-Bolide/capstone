@@ -80,21 +80,36 @@ export function SearchResultsModal ({
 
 function LoadingState ({ query }: { query: string }) {
   return (
-    <div className="p-8">
+    <div className="p-8 space-y-6">
+      {/* Animated spinner */}
+      <div className="flex items-center justify-center gap-3 py-6">
+        <div className="relative w-5 h-5">
+          <Loader className="w-5 h-5 text-blue-600 animate-spin"/>
+        </div>
+        <span className="text-sm font-medium text-gray-700">Searching for "<span className="font-semibold text-gray-900">{query}</span>"...</span>
+      </div>
+
+      {/* Skeleton loaders */}
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="animate-pulse">
-            <div className="h-12 bg-gray-100 rounded-lg mb-2"></div>
-            <div className="space-y-2">
-              <div className="h-3 bg-gray-100 rounded w-2/3"></div>
-              <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+          <div key={i} className="space-y-3 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-start gap-4">
+              {/* Icon skeleton */}
+              <div className="w-10 h-10 bg-gray-200 rounded-lg flex-shrink-0 animate-pulse"></div>
+
+              {/* Content skeleton */}
+              <div className="flex-1 space-y-2 min-w-0">
+                <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                <div className="h-3 bg-gray-200 rounded w-full animate-pulse"></div>
+                <div className="h-3 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+              </div>
             </div>
           </div>
         ))}
       </div>
-      <div className="flex items-center justify-center gap-3 mt-8 pt-8 border-t border-gray-100">
-        <Loader className="w-5 h-5 text-blue-600 animate-spin"/>
-        <span className="text-sm text-gray-600">Searching for "{query}"...</span>
+
+      <div className="text-center text-xs text-gray-500 pt-4">
+        This usually takes less than a second...
       </div>
     </div>
   )

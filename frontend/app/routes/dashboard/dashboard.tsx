@@ -174,8 +174,11 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       return
     }
 
+    console.log('[Search] Query entered:', searchQuery)
+
     // Show loading state immediately
     setIsSearching(true)
+    setShowSearchResults(true)
 
     const timer = setTimeout(async () => {
       try {
@@ -183,26 +186,30 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         const session = loaderData
         const authorization = session?.authorization || ''
 
+        console.log('[Search] Searching for:', searchQuery)
+        console.log('[Search] Authorization available:', !!authorization)
+
         if (!authorization) {
-          console.error('No authorization token found')
+          console.error('[Search] No authorization token found')
           setSearchResults([])
           setIsSearching(false)
           return
         }
 
         const results = await searchRecords(searchQuery, authorization, cookie)
+        console.log('[Search] Results received:', results)
         setSearchResults(results || [])
-        setShowSearchResults(true)
       } catch (error) {
-        console.error('Search error:', error)
+        console.error('[Search] API Error:', error)
         setSearchResults([])
-        setShowSearchResults(true)
       } finally {
         setIsSearching(false)
       }
     }, 300)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+    }
   }, [searchQuery, loaderData])
 
   return (
