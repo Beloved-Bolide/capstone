@@ -34,11 +34,11 @@ export async function loader ({ request }: Route.LoaderArgs) {
   const authorization = session.get('authorization')
 
   if (!cookie || !user?.id || !authorization) {
-    return { folders: null }
+    return { folders: null, authorization: null }
   }
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
-  return { folders }
+  return { folders, authorization }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
