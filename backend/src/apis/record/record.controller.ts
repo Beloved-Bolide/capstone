@@ -355,16 +355,15 @@ export async function getRecordByNameController (request: Request, response: Res
 export async function searchRecordsController (request: Request, response: Response): Promise<void> {
   try {
 
-    // get the user from the session (set by isLoggedInController middleware)
-    const user = (request as any).user
-    if (!user?.id) {
-      response.status(401).json({
-        status: 401,
-        data: null,
-        message: 'Unauthorized: User not authenticated'
-      })
-      return
-    }
+    const user = request.session?.user
+     if (!user) {
+       response.json({
+         status: 403,
+         data: null,
+         message:'Please login first!'
+       })
+       return
+     }
 
     // validate the search query using zod
     const validatedRequestParams = z.object({
