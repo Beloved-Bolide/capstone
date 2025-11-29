@@ -246,6 +246,7 @@ export async function selectRecordByName (name: string): Promise<Record | null> 
   return RecordSchema.parse(rowList) ?? null
 }
 
+
 /** Search records (case-insensitive partial match)
  * @param searchTerm the search term to look for in records
  * @param userId the user id to filter records by

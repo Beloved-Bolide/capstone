@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { X, Loader } from 'lucide-react'
+import { X, Loader, Search, FileText, Building2, DollarSign, Calendar } from 'lucide-react'
 import type { Record } from '~/utils/models/record.model'
 
 interface SearchResultsModalProps {
@@ -25,99 +25,167 @@ export function SearchResultsModal ({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+        className="fixed inset-0 bg-black/40 z-40 transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 pointer-events-none">
-        <div className="w-full max-w-2xl mx-4 bg-white rounded-lg shadow-xl max-h-[600px] overflow-hidden flex flex-col pointer-events-auto">
+      <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 pointer-events-none px-4">
+        <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl max-h-[70vh] overflow-hidden flex flex-col pointer-events-auto border border-gray-100">
 
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {isLoading ? 'Searching...' : `Results for "${searchQuery}"`}
-            </h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <Search className="w-5 h-5 text-blue-600 flex-shrink-0"/>
+              <div className="min-w-0">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {isLoading ? 'Searching your files...' : 'Search Results'}
+                </h2>
+                {searchQuery && (
+                  <p className="text-xs text-gray-500 truncate">for "{searchQuery}"</p>
+                )}
+              </div>
+            </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0 ml-2"
               aria-label="Close search results"
             >
-              <X className="w-5 h-5 text-gray-500"/>
+              <X className="w-5 h-5 text-gray-400"/>
             </button>
           </div>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="flex items-center gap-3">
-                  <Loader className="w-5 h-5 text-blue-600 animate-spin"/>
-                  <span className="text-sm text-gray-600">Searching...</span>
-                </div>
-              </div>
+              <LoadingState query={searchQuery} />
             ) : results.length === 0 ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <p className="text-gray-600 text-sm">No results found for "{searchQuery}"</p>
-                  <p className="text-gray-500 text-xs mt-1">Try searching with different keywords</p>
-                </div>
-              </div>
+              <EmptyState query={searchQuery} />
             ) : (
-              <div className="divide-y divide-gray-200">
-                {results.map((record) => (
-                  <Link
-                    key={record.id}
-                    to={`/dashboard/${record.folderId}/record/${record.id}`}
-                    onClick={onClose}
-                    className="block px-6 py-4 hover:bg-gray-50 transition-colors group"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                          {record.name || 'Unnamed Record'}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
-                          {record.companyName && (
-                            <>
-                              <span>{record.companyName}</span>
-                              <span>•</span>
-                            </>
-                          )}
-                          {record.docType && (
-                            <>
-                              <span>{record.docType}</span>
-                              <span>•</span>
-                            </>
-                          )}
-                          {record.amount && (
-                            <span>${record.amount.toFixed(2)}</span>
-                          )}
-                        </div>
-                        {record.description && (
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                            {record.description}
-                          </p>
-                        )}
-                      </div>
-                      {record.isStarred && (
-                        <div className="text-yellow-400">★</div>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <ResultsList results={results} onClose={onClose} />
             )}
           </div>
 
           {/* Footer */}
           {!isLoading && results.length > 0 && (
-            <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
-              Showing {results.length} result{results.length !== 1 ? 's' : ''}
+            <div className="px-6 py-3 bg-gradient-to-r from-gray-50 to-white border-t border-gray-100 text-xs text-gray-600 font-medium">
+              {results.length} result{results.length !== 1 ? 's' : ''} found
             </div>
           )}
         </div>
       </div>
     </>
+  )
+}
+
+function LoadingState ({ query }: { query: string }) {
+  return (
+    <div className="p-8">
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="animate-pulse">
+            <div className="h-12 bg-gray-100 rounded-lg mb-2"></div>
+            <div className="space-y-2">
+              <div className="h-3 bg-gray-100 rounded w-2/3"></div>
+              <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-center gap-3 mt-8 pt-8 border-t border-gray-100">
+        <Loader className="w-5 h-5 text-blue-600 animate-spin"/>
+        <span className="text-sm text-gray-600">Searching for "{query}"...</span>
+      </div>
+    </div>
+  )
+}
+
+function EmptyState ({ query }: { query: string }) {
+  return (
+    <div className="flex items-center justify-center py-16 px-6">
+      <div className="text-center max-w-sm">
+        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Search className="w-8 h-8 text-gray-400"/>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">No results found</h3>
+        <p className="text-gray-600 text-sm mb-1">
+          We couldn't find any files matching "<span className="font-medium">{query}</span>"
+        </p>
+        <p className="text-gray-500 text-xs">
+          Try different keywords, check spelling, or browse your folders
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function ResultsList ({ results, onClose }: { results: Record[], onClose: () => void }) {
+  return (
+    <div className="divide-y divide-gray-100">
+      {results.map((record) => (
+        <Link
+          key={record.id}
+          to={`/dashboard/${record.folderId}/record/${record.id}`}
+          onClick={onClose}
+          className="block px-6 py-4 hover:bg-blue-50 transition-colors group border-l-4 border-transparent hover:border-blue-600"
+        >
+          <div className="flex items-start gap-4">
+            {/* Icon */}
+            <div className="mt-1 flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-100 transition-colors">
+                <FileText className="w-5 h-5 text-blue-600"/>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate text-base">
+                  {record.name || 'Unnamed Record'}
+                </h3>
+                {record.isStarred && (
+                  <span className="text-yellow-400 text-lg flex-shrink-0">★</span>
+                )}
+              </div>
+
+              {/* Metadata */}
+              <div className="flex flex-wrap gap-4 mt-2 text-xs text-gray-600">
+                {record.companyName && (
+                  <div className="flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-gray-400"/>
+                    <span className="truncate">{record.companyName}</span>
+                  </div>
+                )}
+                {record.docType && (
+                  <div className="flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-gray-400"/>
+                    <span>{record.docType}</span>
+                  </div>
+                )}
+                {record.amount && (
+                  <div className="flex items-center gap-1.5">
+                    <DollarSign className="w-3.5 h-3.5 text-gray-400"/>
+                    <span>${record.amount.toFixed(2)}</span>
+                  </div>
+                )}
+                {record.purchaseDate && (
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-gray-400"/>
+                    <span>{new Date(record.purchaseDate).toLocaleDateString()}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Description */}
+              {record.description && (
+                <p className="text-xs text-gray-500 mt-2 line-clamp-2">
+                  {record.description}
+                </p>
+              )}
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
   )
 }

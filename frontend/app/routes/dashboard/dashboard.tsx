@@ -174,18 +174,29 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       return
     }
 
+    // Show loading state immediately
+    setIsSearching(true)
+
     const timer = setTimeout(async () => {
-      setIsSearching(true)
       try {
         const cookie = document.cookie
         const session = loaderData
         const authorization = session?.authorization || ''
+
+        if (!authorization) {
+          console.error('No authorization token found')
+          setSearchResults([])
+          setIsSearching(false)
+          return
+        }
+
         const results = await searchRecords(searchQuery, authorization, cookie)
-        setSearchResults(results)
+        setSearchResults(results || [])
         setShowSearchResults(true)
       } catch (error) {
         console.error('Search error:', error)
         setSearchResults([])
+        setShowSearchResults(true)
       } finally {
         setIsSearching(false)
       }
