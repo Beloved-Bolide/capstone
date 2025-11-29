@@ -355,6 +355,17 @@ export async function getRecordByNameController (request: Request, response: Res
 export async function searchRecordsController (request: Request, response: Response): Promise<void> {
   try {
 
+    // get the user from the session (set by isLoggedInController middleware)
+    const user = (request as any).user
+    if (!user?.id) {
+      response.status(401).json({
+        status: 401,
+        data: null,
+        message: 'Unauthorized: User not authenticated'
+      })
+      return
+    }
+
     // validate the search query using zod
     const validatedRequestParams = z.object({
       q: z.string().min(1, 'Please enter a search term.')
@@ -372,8 +383,8 @@ export async function searchRecordsController (request: Request, response: Respo
     // limit query parameter to a maximum of 50 records
     const limit = request.query.limit ? parseInt(request.query.limit as string) : 50
 
-    // search for records that match the search query
-    const records: Record[] | null = await searchRecords(searchTerm, limit)
+    // search for records that match the search query, filtered by user
+    const records: Record[] | null = await searchRecords(searchTerm, user.id, limit)
 
     // if no records are found, return a 404 response
     if (!records) {

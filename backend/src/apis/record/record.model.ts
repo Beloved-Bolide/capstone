@@ -248,46 +248,49 @@ export async function selectRecordByName (name: string): Promise<Record | null> 
 
 /** Search records (case-insensitive partial match)
  * @param searchTerm the search term to look for in records
+ * @param userId the user id to filter records by
  * @param limit the maximum number of records to return (default 50)
  * @returns array of records or null if no records were found **/
-export async function searchRecords (searchTerm: string, limit: number = 50): Promise<Record[] | null> {
+export async function searchRecords (searchTerm: string, userId: string, limit: number = 50): Promise<Record[] | null> {
 
-  // query the database to select the records by search term
+  // query the database to select the records by search term filtered by user's folders
   const rowList = await sql `
     SELECT
-      id,
-      folder_id,
-      category_id,
-      amount,
-      company_name,
-      coupon_code,
-      description,
-      doc_type,
-      exp_date,
-      is_starred,
-      last_accessed_at,
-      name,
-      notify_on,
-      product_id,
-      purchase_date
-    FROM record
-    WHERE
-      CAST(id AS TEXT)               ILIKE ${`%${searchTerm}%`} OR
-      CAST(folder_id AS TEXT)        ILIKE ${`%${searchTerm}%`} OR
-      CAST(category_id AS TEXT)      ILIKE ${`%${searchTerm}%`} OR
-      CAST(amount AS TEXT)           ILIKE ${`%${searchTerm}%`} OR
-      company_name                   ILIKE ${`%${searchTerm}%`} OR
-      coupon_code                    ILIKE ${`%${searchTerm}%`} OR
-      description                    ILIKE ${`%${searchTerm}%`} OR
-      doc_type                       ILIKE ${`%${searchTerm}%`} OR
-      CAST(exp_date AS TEXT)         ILIKE ${`%${searchTerm}%`} OR
-      CAST(is_starred AS TEXT)       ILIKE ${`%${searchTerm}%`} OR
-      CAST(last_accessed_at AS TEXT) ILIKE ${`%${searchTerm}%`} OR
-      name                           ILIKE ${`%${searchTerm}%`} OR
-      CAST(notify_on AS TEXT)        ILIKE ${`%${searchTerm}%`} OR
-      CAST(product_id AS TEXT)       ILIKE ${`%${searchTerm}%`} OR
-      CAST(purchase_date AS TEXT)    ILIKE ${`%${searchTerm}%`}
-    ORDER BY last_accessed_at
+      r.id,
+      r.folder_id,
+      r.category_id,
+      r.amount,
+      r.company_name,
+      r.coupon_code,
+      r.description,
+      r.doc_type,
+      r.exp_date,
+      r.is_starred,
+      r.last_accessed_at,
+      r.name,
+      r.notify_on,
+      r.product_id,
+      r.purchase_date
+    FROM record r
+    INNER JOIN folder f ON r.folder_id = f.id
+    WHERE f.user_id = ${userId} AND (
+      CAST(r.id AS TEXT)               ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.folder_id AS TEXT)        ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.category_id AS TEXT)      ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.amount AS TEXT)           ILIKE ${`%${searchTerm}%`} OR
+      r.company_name                   ILIKE ${`%${searchTerm}%`} OR
+      r.coupon_code                    ILIKE ${`%${searchTerm}%`} OR
+      r.description                    ILIKE ${`%${searchTerm}%`} OR
+      r.doc_type                       ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.exp_date AS TEXT)         ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.is_starred AS TEXT)       ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.last_accessed_at AS TEXT) ILIKE ${`%${searchTerm}%`} OR
+      r.name                           ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.notify_on AS TEXT)        ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.product_id AS TEXT)       ILIKE ${`%${searchTerm}%`} OR
+      CAST(r.purchase_date AS TEXT)    ILIKE ${`%${searchTerm}%`}
+    )
+    ORDER BY r.last_accessed_at DESC
     LIMIT ${limit}`
 
   // return the result as an array of records, or null if no records were found
