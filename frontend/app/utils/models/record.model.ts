@@ -89,6 +89,27 @@ export async function getRecordsByFolderId (folderId: string | null, authorizati
   return data
 }
 
+export async function searchRecords (query: string, authorization: string, cookie: string | null, limit: number = 50): Promise<Record[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/search?q=${encodeURIComponent(query)}&limit=${limit}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to search records')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
 
 
 

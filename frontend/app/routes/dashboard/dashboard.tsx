@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, Outlet, useActionData, useLocation } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
@@ -8,9 +8,11 @@ import {
   getFoldersByUserId,
   postFolder
 } from '~/utils/models/folder.model'
+import { searchRecords, type Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
 import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
+import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
 import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -153,12 +155,44 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<Record[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
   // Check if we're at the base dashboard route
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
   // Filter parent folders excluding Trash
   const parentFolders = folders.filter(folder => folder.parentFolderId === null && folder.name !== 'Trash')
+
+  // Handle search with debounce
+  useEffect(() => {
+    if (searchQuery.trim().length === 0) {
+      setSearchResults([])
+      setShowSearchResults(false)
+      return
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true)
+      try {
+        const cookie = document.cookie
+        const session = loaderData
+        const authorization = session?.authorization || ''
+        const results = await searchRecords(searchQuery, authorization, cookie)
+        setSearchResults(results)
+        setShowSearchResults(true)
+      } catch (error) {
+        console.error('Search error:', error)
+        setSearchResults([])
+      } finally {
+        setIsSearching(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [searchQuery, loaderData])
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -269,6 +303,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 <input
                   type="text"
                   placeholder="Search files and folders..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => searchQuery && setShowSearchResults(true)}
                   className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
               </div>
@@ -453,6 +490,18 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
           </div>
         </div>
       </div>
+
+      {/* Search Results Modal */}
+      <SearchResultsModal
+        isOpen={showSearchResults}
+        onClose={() => {
+          setShowSearchResults(false)
+          setSearchQuery('')
+        }}
+        results={searchResults}
+        isLoading={isSearching}
+        searchQuery={searchQuery}
+      />
 
       {/* Mobile Receipt Preview Modal */}
       {previewOpen && (
