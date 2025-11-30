@@ -91,7 +91,12 @@ export async function getRecordsByFolderId (folderId: string | null, authorizati
 
 export async function searchRecords (query: string, authorization: string, cookie: string | null, limit: number = 50): Promise<Record[]> {
 
-  const url = `${process.env.REST_API_URL}/record/search?q=${encodeURIComponent(query)}&limit=${limit}`
+  // Get API URL - use window location as fallback for client-side code
+  const apiBaseUrl = typeof window !== 'undefined'
+    ? `${window.location.protocol}//${window.location.hostname}:8080/apis`
+    : (process.env.REST_API_URL || 'http://localhost:8080/apis')
+
+  const url = `${apiBaseUrl}/record/search?q=${encodeURIComponent(query)}&limit=${limit}`
 
   console.log('[SearchAPI] URL:', url)
   console.log('[SearchAPI] Authorization:', !!authorization)
