@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link, Outlet, useActionData, useLocation } from 'react-router'
+import React, { useState, useEffect } from 'react'
+import { Link, Outlet, useActionData, useLocation, useFetcher } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
   type Folder,
@@ -8,9 +8,11 @@ import {
   getFoldersByUserId,
   postFolder
 } from '~/utils/models/folder.model'
+import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
 import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
+import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
 import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,11 +34,11 @@ export async function loader ({ request }: Route.LoaderArgs) {
   const authorization = session.get('authorization')
 
   if (!cookie || !user?.id || !authorization) {
-    return { folders: null }
+    return { redirect: '/login' }
   }
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
-  return { folders }
+  return { folders, authorization }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
@@ -148,17 +150,41 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
   useActionData<typeof action>()
   const location = useLocation()
+  const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
 
   const [selectedFolder, setSelectedFolder] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
   // Check if we're at the base dashboard route
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
   // Filter parent folders excluding Trash
   const parentFolders = folders.filter(folder => folder.parentFolderId === null && folder.name !== 'Trash')
+
+  // Handle search with debounce
+  useEffect(() => {
+    if (searchQuery.trim().length === 0) {
+      setShowSearchResults(false)
+      return
+    }
+
+    console.log('[Search] Query entered:', searchQuery)
+    setShowSearchResults(true)
+
+    const timer = setTimeout(() => {
+      console.log('[Search] Searching for:', searchQuery)
+      // Use the fetcher to call the search resource route
+      searchFetcher.load(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`)
+    }, 300)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [searchQuery])
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -269,6 +295,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 <input
                   type="text"
                   placeholder="Search files and folders..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => searchQuery && setShowSearchResults(true)}
                   className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
               </div>
@@ -453,6 +482,18 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
           </div>
         </div>
       </div>
+
+      {/* Search Results Modal */}
+      <SearchResultsModal
+        isOpen={showSearchResults}
+        onClose={() => {
+          setShowSearchResults(false)
+          setSearchQuery('')
+        }}
+        results={(searchFetcher.data?.data as Record[]) || []}
+        isLoading={searchFetcher.state === 'loading'}
+        searchQuery={searchQuery}
+      />
 
       {/* Mobile Receipt Preview Modal */}
       {previewOpen && (
