@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Outlet, useActionData, useLocation } from 'react-router'
+import { Link, Outlet, useActionData, useLocation, useFetcher } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
   type Folder,
@@ -8,7 +8,7 @@ import {
   getFoldersByUserId,
   postFolder
 } from '~/utils/models/folder.model'
-import { searchRecords, type Record } from '~/utils/models/record.model'
+import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
 import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
@@ -150,14 +150,13 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
   useActionData<typeof action>()
   const location = useLocation()
+  const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
 
   const [selectedFolder, setSelectedFolder] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<Record[]>([])
-  const [isSearching, setIsSearching] = useState(false)
   const [showSearchResults, setShowSearchResults] = useState(false)
 
   // Check if we're at the base dashboard route
@@ -169,48 +168,23 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   // Handle search with debounce
   useEffect(() => {
     if (searchQuery.trim().length === 0) {
-      setSearchResults([])
       setShowSearchResults(false)
       return
     }
 
     console.log('[Search] Query entered:', searchQuery)
-
-    // Show loading state immediately
-    setIsSearching(true)
     setShowSearchResults(true)
 
-    const timer = setTimeout(async () => {
-      try {
-        const cookie = document.cookie
-        const session = loaderData
-        const authorization = session?.authorization || ''
-
-        console.log('[Search] Searching for:', searchQuery)
-        console.log('[Search] Authorization available:', !!authorization)
-
-        if (!authorization) {
-          console.error('[Search] No authorization token found')
-          setSearchResults([])
-          setIsSearching(false)
-          return
-        }
-
-        const results = await searchRecords(searchQuery, authorization, cookie)
-        console.log('[Search] Results received:', results)
-        setSearchResults(results || [])
-      } catch (error) {
-        console.error('[Search] API Error:', error)
-        setSearchResults([])
-      } finally {
-        setIsSearching(false)
-      }
+    const timer = setTimeout(() => {
+      console.log('[Search] Searching for:', searchQuery)
+      // Use the fetcher to call the search resource route
+      searchFetcher.load(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`)
     }, 300)
 
     return () => {
       clearTimeout(timer)
     }
-  }, [searchQuery, loaderData])
+  }, [searchQuery])
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -516,8 +490,8 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
           setShowSearchResults(false)
           setSearchQuery('')
         }}
-        results={searchResults}
-        isLoading={isSearching}
+        results={(searchFetcher.data?.data as Record[]) || []}
+        isLoading={searchFetcher.state === 'loading'}
         searchQuery={searchQuery}
       />
 
