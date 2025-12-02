@@ -1,11 +1,29 @@
-import {Search, Plus} from 'lucide-react';
-import {Link} from 'react-router';
+import {Search, Plus, LogOut} from 'lucide-react';
+import {Link, useLocation} from 'react-router';
+import { Form } from 'react-router';
 
 type NavbarProps = {
   onMenuClick: () => void;
+  userEmail: string | null;
 };
 
-export function Navbar({onMenuClick}: NavbarProps) {
+export function Navbar({onMenuClick, userEmail}: NavbarProps) {
+  const location = useLocation()
+  const currentPath = location.pathname
+
+  // Get initials from email
+  const getInitials = (email: string | null): string => {
+    if (!email) return 'U'
+    const username = email.split('@')[0]
+    const parts = username.split(/[._-]/)
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase()
+    }
+    return username.substring(0, 2).toUpperCase()
+  }
+
+  const userInitials = getInitials(userEmail)
+
   return (
   <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
     <div className="flex items-center justify-between gap-4">
@@ -53,33 +71,49 @@ export function Navbar({onMenuClick}: NavbarProps) {
         />
       </div>
 
-      {/* Right: Navigation Links + User Profile */}
+      {/* Right: Navigation Links + User Profile + Sign Out */}
       <div className="flex items-center gap-4 lg:gap-6">
         {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-4">
-          <Link
-          to="/"
-          className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
-          >
-            Home
-          </Link>
-          <Link
-          to="/dashboard"
-          className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
-          >
-            Dashboard
-          </Link>
+          {currentPath !== '/' && (
+            <Link
+            to="/"
+            className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+            >
+              Home
+            </Link>
+          )}
+          {currentPath !== '/dashboard' && !currentPath.startsWith('/dashboard/') && (
+            <Link
+            to="/dashboard"
+            className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+            >
+              Dashboard
+            </Link>
+          )}
         </div>
 
         {/* User Profile */}
         <div className="hidden sm:flex items-center gap-2 lg:gap-3">
           <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
-            DR
+            {userInitials}
           </div>
           <div className="hidden md:block text-sm">
-            <div className="font-medium text-gray-900">Denise Rose</div>
+            <div className="font-medium text-gray-900">{userEmail?.split('@')[0] || 'User'}</div>
           </div>
         </div>
+
+        {/* Sign Out Button */}
+        <Form method="post" action="/sign-out">
+          <button
+          type="submit"
+          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          title="Sign Out"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden lg:inline">Sign Out</span>
+          </button>
+        </Form>
       </div>
     </div>
   </div>
