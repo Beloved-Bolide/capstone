@@ -1,7 +1,7 @@
 import { Search, Plus, LogOut } from 'lucide-react'
 import { Link, useLocation } from 'react-router'
-import { fetchWithSession } from '../utils/api'
-import { API_URL } from '../config'
+import { fetchWithSession } from '~/utils/api'
+import { API_URL } from '~/config'
 import { useNavigate } from 'react-router'
 import { Form } from 'react-router'
 
@@ -25,7 +25,6 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
     return username.substring(0, 2).toUpperCase()
   }
 
-export function Navbar({onMenuClick}: NavbarProps) {
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
