@@ -48,6 +48,7 @@ export function Navbar({onMenuClick}: NavbarProps) {
     }
   }
   const userInitials = getInitials(userEmail)
+
   return (
   <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
     <div className="flex items-center justify-between gap-4">
@@ -126,18 +127,6 @@ export function Navbar({onMenuClick}: NavbarProps) {
             <div className="font-medium text-gray-900">{userEmail?.split('@')[0] || 'User'}</div>
           </div>
         </div>
-
-        {/* Sign Out Button */}
-        <Form method="post" action="/sign-out">
-          <button
-          type="submit"
-          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-          title="Sign Out"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden lg:inline">Sign Out</span>
-          </button>
-        </Form>
 
         {/* Sign Out Button */}
         <Form method="post" action="/sign-out">
