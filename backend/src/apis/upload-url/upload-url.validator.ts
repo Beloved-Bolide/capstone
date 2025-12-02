@@ -42,8 +42,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024
  * @property { string } fileType - MIME type (must be JPEG, PNG, GIF, or WebP)
  * @property { number } fileSize - Size in bytes (must be > 0 and <= 5MB) **/
 export const UploadUrlRequestSchema = z.object({
-  // @ts-ignore
-  fileType: z.enum(ALLOWED_MIME_TYPES, {
+  fileType: z.enum(['image/jpeg', 'image/png', 'image/gif', 'image/webp'], {
     errorMap: () => ({ message: 'Invalid file type. Allowed: JPEG, PNG, GIF, WebP' }),
   }),
   fileSize: z.number()

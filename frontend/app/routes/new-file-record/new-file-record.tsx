@@ -9,12 +9,11 @@ import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
 import { Form, Link, redirect, useActionData } from 'react-router'
 import { StatusMessage } from '~/components/StatusMessage'
-export { getUploadUrl } from '~/utils/models/upload.model'
-import { z } from 'zod/v4'
 import { postFile } from '~/utils/models/file.model'
 import { v7 as uuidv7 } from 'uuid'
 import { FieldError } from '~/components/FieldError'
 import type { FormActionResponse } from '~/utils/interfaces/FormActionResponse'
+import FileUpload from './drag-and-drop'
 
 
 const resolver = zodResolver(NewRecordSchema)
@@ -27,12 +26,12 @@ export async function loader ({ request }: Route.LoaderArgs) {
   const authorization = session.get('authorization')
 
   if (!cookie || !user?.id || !authorization) {
-    return { folders: null }
+    return { folders: null, categories: null, authorization: null, cookie: null }
   }
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
   const categories: Category[] = await getCategories()
-  return { folders, categories }
+  return { folders, categories, authorization, cookie }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
@@ -60,6 +59,21 @@ export async function action ({ request }: Route.ActionArgs) {
     }
   }
 
+  // Extract fileUrl from form data (not part of NewRecordSchema)
+  const formData = await request.clone().formData()
+  const fileUrl = formData.get('fileUrl')
+
+  if (!fileUrl || typeof fileUrl !== 'string') {
+    return {
+      success: false,
+      status: {
+        status: 400,
+        data: null,
+        message: 'Please upload a file before submitting'
+      }
+    }
+  }
+
   // create a new record object with the required attributes
   const record = {
     id: uuid(),
@@ -80,43 +94,64 @@ export async function action ({ request }: Route.ActionArgs) {
   }
 
   // create a new file object with the required attributes
-  // const file = {
-  //   id: uuid(),
-  //   recordId: record.id,
-  //   fileDate: new Date(),
-  //   fileUrl: data.fileUrl,
-  //   ocrData: data.ocrData
-  // }
-
-  // post the record and file to the API
-  const { result } = await postRecord(record, authorization, cookie)
-  // const fileResult = await postFile(file, authorization, cookie)
-
-  // Check if EITHER failed
-  //   if (recordResult.status !== 200 || fileResult.status !== 200) {
-  //     return {
-  //       success: false,
-  //       status: recordResult.status !== 200 ? recordResult : fileResult
-  //     }
-  //   }
-
-  if (result.status !== 200) {
-    return { success: false, status: result }
+  const file = {
+    id: uuidv7(),
+    recordId: record.id,
+    fileDate: new Date(),
+    fileUrl: fileUrl,
+    ocrData: null  // TODO: Add OCR functionality later
   }
 
-  return redirect('/dashboard', result)
+  try {
+    // post the record and file to the API
+    const { result: recordResult } = await postRecord(record, authorization, cookie)
+
+    if (recordResult.status !== 200) {
+      return { success: false, status: recordResult }
+    }
+
+    const { result: fileResult } = await postFile(file, authorization, cookie)
+
+    if (fileResult.status !== 200) {
+      return { success: false, status: fileResult }
+    }
+
+    return redirect('/dashboard')
+  } catch (error) {
+    console.error('Error creating record/file:', error)
+    return {
+      success: false,
+      status: {
+        status: 500,
+        data: null,
+        message: error instanceof Error ? error.message : 'Failed to create record and file'
+      }
+    }
+  }
 }
 
 export default function NewFileRecord ({ loaderData, actionData }: Route.ComponentProps) {
 
-  let { folders, categories } = loaderData
+  let { folders, categories, authorization, cookie } = loaderData
   if (!folders) folders = []
   if (!categories) categories = []
 
   const [docType, setdocType] = useState<string>('')
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   // Check if the amount field should be shown (only for Receipt/Invoice)
   const showAmountField = docType === 'Receipt/Invoice'
+
+  const handleUploadComplete = (publicUrl: string) => {
+    setUploadedFileUrl(publicUrl)
+    setUploadError(null)
+  }
+
+  const handleUploadError = (error: string) => {
+    setUploadError(error)
+    setUploadedFileUrl(null)
+  }
 
   // use the useRemixForm hook to handle form submission and validation
   const {
@@ -160,38 +195,28 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
             <div className="p-6">
 
               {/* Drag and Drop Area */}
-              <div className="mb-8">
-                <label
-                  htmlFor="dropzone-file"
-                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-blue-300 border-dashed rounded-md cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <svg
-                      className="w-10 h-10 mb-3 text-blue-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                    <p className="mb-2 text-sm text-gray-700">
-                      <span className="font-semibold">Drag and Drop File Here</span>
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      (automatically scanned)
-                    </p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      or click to browse
-                    </p>
-                  </div>
-                  <input id="dropzone-file" type="file" className="hidden"/>
-                </label>
-              </div>
+              {authorization && (
+                <FileUpload
+                  authorization={authorization}
+                  cookie={cookie}
+                  onUploadComplete={handleUploadComplete}
+                  onUploadError={handleUploadError}
+                />
+              )}
+
+              {/* Upload Error Message */}
+              {uploadError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-sm text-red-600">{uploadError}</p>
+                </div>
+              )}
+
+              {/* Upload Success Message */}
+              {uploadedFileUrl && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                  <p className="text-sm text-green-600">File uploaded successfully!</p>
+                </div>
+              )}
 
               {/* File Info Form */}
               <div className="space-y-6">
@@ -494,6 +519,11 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                 )}
               </div>
 
+              {/* Hidden field for uploaded file URL */}
+              {uploadedFileUrl && (
+                <input type="hidden" name="fileUrl" value={uploadedFileUrl} />
+              )}
+
               {/* Action Buttons */}
               <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
                 <Link to="/dashboard">
@@ -506,7 +536,12 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                 </Link>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-colors cursor-pointer"
+                  disabled={!uploadedFileUrl}
+                  className={`px-4 py-2 text-sm font-medium text-white rounded-md focus:ring-4 focus:outline-none transition-colors cursor-pointer ${
+                    uploadedFileUrl
+                      ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-300'
+                      : 'bg-gray-400 cursor-not-allowed'
+                  }`}
                 >
                   Upload File
                 </button>
