@@ -54,36 +54,58 @@ export async function getFolderById (id: string | null, authorization: string, c
     body: null
   })
 
-  const folder: Folder = await response.json()
-
-
   if (!response.ok) {
     throw new Error('Failed to get folder')
   }
 
-  return folder
+  const folder: Status = await response.json()
+
+  return folder.data
 }
 
 export async function getFolderByName (name: string, authorization: string, cookie: string | null): Promise<Folder | null> {
+  try {
+    const response = await fetch(`${process.env.REST_API_URL}/folder/name/${name}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorization,
+        'Cookie': cookie ?? ''
+      },
+      body: null
+    })
 
-  const response = await fetch(`${process.env.REST_API_URL}/folder/name/${name}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': authorization,
-      'Cookie': cookie ?? ''
-    },
-    body: null
-  })
+    if (!response.ok) {
+      console.error(`[getFolderByName] HTTP ${response.status} for folder: ${name}`)
+      return null
+    }
 
-  const folder: Folder = await response.json()
+    const responseData = await response.json()
+    console.log('[getFolderByName] Response structure:', {
+      hasData: 'data' in responseData,
+      hasMessage: 'message' in responseData,
+      dataType: typeof responseData.data
+    })
 
+    // Extract data property, handle both direct folder and wrapped response
+    const folder = responseData.data ?? responseData
 
-  if (!response.ok) {
-    throw new Error('Failed to get folder')
+    if (!folder) {
+      console.warn(`[getFolderByName] Folder "${name}" not found`)
+      return null
+    }
+
+    // Validate it has required folder properties
+    if (!folder.id || !folder.name) {
+      console.error('[getFolderByName] Invalid folder structure:', folder)
+      return null
+    }
+
+    return folder as Folder
+  } catch (error) {
+    console.error('[getFolderByName] Exception:', error)
+    return null
   }
-
-  return folder ?? null
 }
 
 export async function getFoldersByUserId (userId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
@@ -127,5 +149,68 @@ export async function getFoldersByParentFolderId(parentFolderId: string | null, 
     throw new Error(result.message || 'Failed to get folder')
   }
 
-  return result.data
+  const { data } = await response.json()
+
+  // Add validation
+  if (!Array.isArray(data)) {
+    console.error('[getFoldersByParentFolderId] Expected array, got:', typeof data)
+    return []
+  }
+
+  return data
+}
+
+export async function deleteFolder (folderId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/folder/id/${folderId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete folder')
+  }
+
+  const result = await response.json()
+  return { result }
+}
+
+export async function moveFolderToTrash (folder: Folder, trashFolderId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+  // Add at start of function
+  console.log('[moveFolderToTrash] Moving folder:', {
+    folderId: folder.id,
+    folderName: folder.name,
+    currentParent: folder.parentFolderId,
+    targetTrashId: trashFolderId
+  })
+
+  const response = await fetch(`${process.env.REST_API_URL}/folder/id/${folder.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: JSON.stringify({
+      name: folder.name,
+      parentFolderId: trashFolderId
+    })
+  })
+
+  // After fetch, before return
+  console.log('[moveFolderToTrash] Response status:', response.status)
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('[moveFolderToTrash] Failed:', errorText)
+    throw new Error(`Failed to move folder to trash: ${response.status} ${errorText}`)
+  }
+
+  const result = await response.json()
+  return { result }
 }

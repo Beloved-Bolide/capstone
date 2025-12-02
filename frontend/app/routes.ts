@@ -29,7 +29,10 @@ export default [
     route('expenses', 'routes/expenses/expenses.tsx'),
 
     // Search API at "/api/search"
-    route('api/search', 'routes/api/search.tsx')
+    route('api/search', 'routes/api/search.tsx'),
+
+    // Delete Item API at "/api/delete-item"
+    route('api/delete-item', 'routes/api/delete-item.tsx')
 
   ])
 
