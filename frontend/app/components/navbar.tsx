@@ -1,9 +1,12 @@
 import { Search, Plus, LogOut } from 'lucide-react'
-import { Link, useLocation } from 'react-router'
+import { Link, useLocation, useFetcher } from 'react-router'
 import { fetchWithSession } from '~/utils/api'
 import { API_URL } from '~/config'
 import { useNavigate } from 'react-router'
 import { Form } from 'react-router'
+import { useState, useEffect } from 'react'
+import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
+import type { Record } from '~/utils/models/record.model'
 
 type NavbarProps = {
   onMenuClick: () => void;
@@ -13,6 +16,28 @@ type NavbarProps = {
 export function Navbar({onMenuClick, userEmail}: NavbarProps) {
   const location = useLocation()
   const currentPath = location.pathname
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearchResults, setShowSearchResults] = useState(false)
+  const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
+
+  // Handle search with debounce
+  useEffect(() => {
+    if (searchQuery.trim().length === 0) {
+      setShowSearchResults(false)
+      return
+    }
+
+    setShowSearchResults(true)
+
+    const timer = setTimeout(() => {
+      // Use the fetcher to call the search resource route
+      searchFetcher.load(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`)
+    }, 300)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [searchQuery])
 
   // Get initials from email
   const getInitials = (email: string | null): string => {
@@ -49,6 +74,7 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
   const userInitials = getInitials(userEmail)
 
   return (
+  <>
   <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
     <div className="flex items-center justify-between gap-4">
       {/* Left: Mobile Menu + Logo */}
@@ -82,18 +108,28 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
         </div>
       </div>
 
-      {/* Center: Search Bar */}
+      {/* Search Bar */}
       <div className="flex-1 max-w-2xl relative">
-        <button className="hidden lg:block absolute left-0 p-2 hover:bg-gray-100 rounded-lg">
-          <Plus className="w-5 h-5 text-gray-600"/>
-        </button>
-        <Search className="absolute left-3 lg:left-14 top-1/2 transform -translate-y-1/2 w-4 lg:w-5 h-4 lg:h-5 text-gray-400"/>
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
         <input
         type="text"
-        placeholder="Find name or place..."
-        className="w-full pl-9 lg:pl-24 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="Search files and folders..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onFocus={() => searchQuery && setShowSearchResults(true)}
+        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
         />
       </div>
+
+      {/* New File Button */}
+      <Link
+      aria-label="Add new file"
+      to="/new-file-record"
+      className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+      >
+        <Plus className="w-4 h-4"/>
+        <span className="hidden sm:inline">New File</span>
+      </Link>
 
       {/* Right: Navigation Links + User Profile + Sign Out */}
       <div className="flex items-center gap-4 lg:gap-6">
@@ -141,5 +177,18 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
       </div>
     </div>
   </div>
+
+  {/* Search Results Modal */}
+  <SearchResultsModal
+    isOpen={showSearchResults}
+    onClose={() => {
+      setShowSearchResults(false)
+      setSearchQuery('')
+    }}
+    results={(searchFetcher.data?.data as Record[]) || []}
+    isLoading={searchFetcher.state === 'loading'}
+    searchQuery={searchQuery}
+  />
+  </>
   );
 }
