@@ -30,12 +30,14 @@ export async function postFile (data: File, authorization: string, cookie: strin
     body: JSON.stringify(data)
   })
 
+  const result = await response.json()
+
+
   if(!response.ok){
-    throw new Error('Failed to create new file')
+    throw new Error(result.message || 'Failed to create new file')
   }
 
   const headers = response.headers
-  const result = await response.json()
   return { headers, result}
 
 }

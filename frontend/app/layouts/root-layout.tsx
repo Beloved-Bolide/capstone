@@ -22,7 +22,7 @@ export default function RootLayout () {
 
   return (
   <>
-    <Navbar onMenuClick={handleMenuClick} userEmail={null} />
+    <Navbar onMenuClick={handleMenuClick} />
     <Outlet />
   </>
   )

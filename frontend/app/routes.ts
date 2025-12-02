@@ -14,6 +14,9 @@ export default [
     // Sign in at "/sign-in"
     route('sign-in', 'routes/sign-in/sign-in.tsx'),
 
+    // Sign out at "sign-out"
+    route('sign-out', 'routes/sign-out/sign-out.tsx'),
+
     // Dashboard at "/dashboard"
     route('dashboard', 'routes/dashboard/dashboard.tsx', [
       route('*', 'routes/dashboard/folder/folder.tsx')
