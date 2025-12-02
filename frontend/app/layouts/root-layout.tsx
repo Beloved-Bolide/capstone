@@ -17,7 +17,7 @@ export default function RootLayout () {
 
   // Enable inactivity timeout on protected pages
   useInactivityTimeout({
-    timeout: 1 * 60 * 1000, // 1 minute for testing
+    timeout: 15 * 60 * 1000, // 15 minutes for production
     enabled: !isAuthPage
   })
 
