@@ -89,6 +89,47 @@ export async function getRecordsByFolderId (folderId: string | null, authorizati
   return data
 }
 
+export async function searchRecords (query: string, authorization: string, cookie: string | null, limit: number = 50): Promise<Record[]> {
+
+  // Get API URL - use window location as fallback for client-side code
+  const apiBaseUrl = typeof window !== 'undefined'
+    ? `${window.location.protocol}//${window.location.hostname}:8080/apis`
+    : (process.env.REST_API_URL || 'http://localhost:8080/apis')
+
+  const url = `${apiBaseUrl}/record/search?q=${encodeURIComponent(query)}&limit=${limit}`
+
+  console.log('[SearchAPI] URL:', url)
+  console.log('[SearchAPI] Authorization:', !!authorization)
+  console.log('[SearchAPI] Cookie:', !!cookie)
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    credentials: 'include',
+    body: null
+  })
+
+  console.log('[SearchAPI] Response status:', response.status)
+  console.log('[SearchAPI] Response OK:', response.ok)
+
+  if (!response.ok) {
+    const errorData = await response.text()
+    console.error('[SearchAPI] Error response:', errorData)
+    throw new Error(`Failed to search records: ${response.status} ${errorData}`)
+  }
+
+  const responseData = await response.json()
+  console.log('[SearchAPI] Response data:', responseData)
+
+  const { data } = responseData
+
+  return data
+}
+
 
 
 
