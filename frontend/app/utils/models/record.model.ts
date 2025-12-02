@@ -130,8 +130,63 @@ export async function searchRecords (query: string, authorization: string, cooki
   return data
 }
 
+export async function deleteRecord (recordId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
 
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${recordId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
 
+  if (!response.ok) {
+    throw new Error('Failed to delete record')
+  }
+
+  const result = await response.json()
+  return { result }
+}
+
+export async function moveRecordToTrash (record: Record, trashFolderId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+
+  const updatedRecord = {
+    id: record.id,
+    folderId: trashFolderId,
+    categoryId: record.categoryId,
+    amount: record.amount,
+    companyName: record.companyName,
+    couponCode: record.couponCode,
+    description: record.description,
+    docType: record.docType,
+    expDate: record.expDate,
+    isStarred: record.isStarred,
+    lastAccessedAt: record.lastAccessedAt,
+    name: record.name,
+    notifyOn: record.notifyOn,
+    productId: record.productId,
+    purchaseDate: record.purchaseDate
+  }
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${record.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: JSON.stringify(updatedRecord)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to move record to trash')
+  }
+
+  const result = await response.json()
+  return { result }
+}
 
 
 
