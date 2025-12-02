@@ -3,7 +3,7 @@
  * Validates file upload requests to ensure:
  * - Only allowed image types are uploaded (JPEG, PNG, GIF, WebP)
  * - File sizes don't exceed the maximum limit (5MB)
- * This validation happens BEFORE generating pre-signed URLs to prevent
+ * This validatedRequest happens BEFORE generating pre-signed URLs to prevent
  * wasting resources on invalid upload attempts.
  * @module upload-url.validator **/
 
@@ -18,11 +18,11 @@ import { z } from 'zod'
  * - Storage costs: Prevents excessive storage usage
  * - Performance: Keeps page load times reasonable
  * Users should compress/resize images before uploading if they exceed this limit. **/
-const imageTypes = [
+const ALLOWED_MIME_TYPES = [
   'image/jpeg',
   'image/png',
   'image/gif',
-  'image/webp'
+  'image/webp',
 ] as const
 
 /** Maximum allowed file size in bytes
@@ -33,7 +33,7 @@ const imageTypes = [
  * - Storage costs: Prevents excessive storage usage
  * - Performance: Keeps page load times reasonable
  * Users should compress/resize images before uploading if they exceed this limit. **/
-const maxFileSize = 5 * 1024 * 1024
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 /** Zod schema for validating upload URL requests
  *
@@ -42,12 +42,13 @@ const maxFileSize = 5 * 1024 * 1024
  * @property { string } fileType - MIME type (must be JPEG, PNG, GIF, or WebP)
  * @property { number } fileSize - Size in bytes (must be > 0 and <= 5MB) **/
 export const UploadUrlRequestSchema = z.object({
-  fileType: z.enum(imageTypes, {
-    errorMap: () => ({ message: 'Invalid file type. Please upload a JPEG, PNG, GIF, or WebP' })
+  // @ts-ignore
+  fileType: z.enum(ALLOWED_MIME_TYPES, {
+    errorMap: () => ({ message: 'Invalid file type. Allowed: JPEG, PNG, GIF, WebP' }),
   }),
   fileSize: z.number()
   .positive('File size must be greater than 0')
-  .max(maxFileSize, 'File exceeds exceeds 5MB limit'),
+  .max(MAX_FILE_SIZE, 'File size exceeds 5MB limit'),
 })
 
 /** TypeScript type for validated upload URL requests

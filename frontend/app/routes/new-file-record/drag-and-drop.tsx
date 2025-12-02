@@ -1,28 +1,30 @@
-import { useState } from 'react';
+import React, { useState } from 'react'
+export { getUploadUrl } from '~/utils/models/upload.model'
+
 
 export default function FileUpload() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      setSelectedFile(e.target.files[0])
     }
-  };
+  }
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setSelectedFile(e.dataTransfer.files[0]);
+      setSelectedFile(e.dataTransfer.files[0])
     }
-  };
+  }
 
   const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-  };
+    e.preventDefault()
+  }
 
   const removeFile = () => {
-    setSelectedFile(null);
-  };
+    setSelectedFile(null)
+  }
 
   return (
   <div className="mb-8">
@@ -94,5 +96,5 @@ export default function FileUpload() {
       />
     </label>
   </div>
-  );
+  )
 }

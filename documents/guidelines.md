@@ -53,7 +53,7 @@ frontend/
 ### Form Handling & Validation
 
 - **React Hook Form 7.65.0** - Form state management
-- **Zod 4.1.12** - Schema validation
+- **Zod 4.1.12** - Schema validatedRequest
 
 ---
 
@@ -515,7 +515,7 @@ app/routes/feature-name/
 
 1. **Component colocation** - Keep components close to where they're used
 2. **Type safety** - Leverage React Router's generated types from `.react-router/types/`
-3. **Form validation** - Use Zod schemas with React Hook Form
+3. **Form validatedRequest** - Use Zod schemas with React Hook Form
 4. **Error handling** - Use ErrorBoundary in `root.tsx` for error display
 5. **Responsive design** - Use Tailwind's responsive utilities
 6. **Accessibility** - Follow WCAG guidelines, Flowbite components include a11y features

@@ -8,7 +8,13 @@ import type { Route } from './+types/new-file-record'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
 import { Form, Link, redirect, useActionData } from 'react-router'
-import { StatusMessage } from '~/components/StatusMessage';
+import { StatusMessage } from '~/components/StatusMessage'
+export { getUploadUrl } from '~/utils/models/upload.model'
+import { z } from 'zod/v4'
+import { postFile } from '~/utils/models/file.model'
+import { v7 as uuidv7 } from 'uuid'
+import { FieldError } from '~/components/FieldError'
+import type { FormActionResponse } from '~/utils/interfaces/FormActionResponse'
 
 
 const resolver = zodResolver(NewRecordSchema)

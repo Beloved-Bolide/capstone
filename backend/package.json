@@ -14,7 +14,9 @@
   "author": "George Kephart",
   "license": "Apache-2.0",
   "dependencies": {
-    "@swc/core": "^1.15.1",
+    "@aws-sdk/client-s3": "^3.940.0",
+    "@aws-sdk/s3-request-presigner": "^3.940.0",
+    "@swc/core": "^1.15.3",
     "@swc/helpers": "^0.5.17",
     "argon2": "^0.44.0",
     "axios": "^1.13.2",
