@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd.exe /c \"start \"\"\"\" \"\"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe\"\"\")",
+      "Bash(docker info:*)",
+      "Bash(/dev/null)",
+      "Bash(cmd.exe /c auto-apply-migration.bat)",
+      "Bash(__NEW_LINE__ for i in {1..20})",
+      "Bash(do)",
+      "Bash(if docker info)",
+      "Bash(then)",
+      "Bash(break)",
+      "Bash(else)",
+      "Bash(echo:*)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose ps:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker exec:*)",
+      "Bash(cmd.exe /c \"start \"\" \"C:Program FilesDockerDockerDocker Desktop.exe\"\")",
+      "Bash(timeout 30 bash:*)",
+      "Bash(cat:*)",
+      "Bash(npm run typecheck:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
