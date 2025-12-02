@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router'
 import { Navbar } from '~/components/navbar'
 import { useState } from 'react'
 import { useInactivityTimeout } from '~/hooks/useInactivityTimeout'
+import { Footer } from '~/components/footer'
 
 export default function RootLayout () {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -24,6 +25,7 @@ export default function RootLayout () {
   <>
     <Navbar onMenuClick={handleMenuClick} userEmail={null} />
     <Outlet />
+    <Footer />
   </>
   )
 }
