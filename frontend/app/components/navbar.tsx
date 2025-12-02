@@ -1,11 +1,37 @@
-import {Search, Plus} from 'lucide-react'
-import {Link} from 'react-router'
+import { Search, Plus, LogOut } from 'lucide-react'
+import { Link } from 'react-router'
+import { fetchWithSession } from '../utils/api'
+import { API_URL } from '../config'
+import { useNavigate } from 'react-router'
+import { Form } from 'react-router'
 
 type NavbarProps = {
   onMenuClick: () => void
 }
 
 export function Navbar({onMenuClick}: NavbarProps) {
+  const navigate = useNavigate()
+
+  const handleSignOut = async () => {
+    try {
+      const response = await fetchWithSession(`${API_URL}/sign-out`, {
+        method: 'POST'
+      })
+
+      if (response?.ok) {
+        // Clear the earl-grey cookie from the frontend
+        document.cookie = 'earl-grey=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+
+        // Now reload the page - without the cookie, the loader will redirect to sign-in
+        window.location.reload()
+      } else if (response) {
+        console.error('Sign out failed')
+      }
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
+
   return (
   <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
     <div className="flex items-center justify-between gap-4">
@@ -53,7 +79,7 @@ export function Navbar({onMenuClick}: NavbarProps) {
         />
       </div>
 
-      {/* Right: Navigation Links + User Profile */}
+      {/* Right: Navigation Links + User Profile + Sign Out */}
       <div className="flex items-center gap-4 lg:gap-6">
         {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-4">
@@ -80,6 +106,18 @@ export function Navbar({onMenuClick}: NavbarProps) {
             <div className="font-medium text-gray-900">Denise Rose</div>
           </div>
         </div>
+
+        {/* Sign Out Button */}
+        <Form method="post" action="/sign-out">
+          <button
+          type="submit"
+          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+          title="Sign Out"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden lg:inline">Sign Out</span>
+          </button>
+        </Form>
       </div>
     </div>
   </div>

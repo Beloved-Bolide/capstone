@@ -31,12 +31,14 @@ export async function postFolder (data: Folder, authorization: string, cookie: s
     body: JSON.stringify(data)
   })
 
+  const result = await response.json()
+
+
   if (!response.ok) {
-    throw new Error('Failed to create new folder')
+    throw new Error(result.message || 'Failed to create new folder')
   }
 
   const headers = response.headers
-  const result = await response.json()
   return { headers, result }
 }
 
@@ -52,11 +54,12 @@ export async function getFolderById (id: string | null, authorization: string, c
     body: null
   })
 
+  const folder: Folder = await response.json()
+
+
   if (!response.ok) {
     throw new Error('Failed to get folder')
   }
-
-  const folder: Folder = await response.json()
 
   return folder
 }
@@ -73,11 +76,12 @@ export async function getFolderByName (name: string, authorization: string, cook
     body: null
   })
 
+  const folder: Folder = await response.json()
+
+
   if (!response.ok) {
     throw new Error('Failed to get folder')
   }
-
-  const folder: Folder = await response.json()
 
   return folder ?? null
 }
@@ -94,13 +98,14 @@ export async function getFoldersByUserId (userId: string | null, authorization: 
     body: null
   })
 
+  const result = await response.json()
+
+
   if (!response.ok) {
-    throw new Error('Failed to get folder')
+    throw new Error(result.message || 'Failed to get folder')
   }
 
-  const { data } = await response.json()
-
-  return data
+  return result.data
 }
 
 export async function getFoldersByParentFolderId(parentFolderId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
@@ -115,11 +120,12 @@ export async function getFoldersByParentFolderId(parentFolderId: string | null, 
     body: null
   })
 
+  const result = await response.json()
+
+
   if (!response.ok) {
-    throw new Error('Failed to get folder')
+    throw new Error(result.message || 'Failed to get folder')
   }
 
-  const { data } = await response.json()
-
-  return data
+  return result.data
 }

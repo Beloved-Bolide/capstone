@@ -28,4 +28,17 @@ const { getSession, commitSession, destroySession } =
     }
   )
 
+export async function isLoggedIn(request: Request) {
+  const session = await getSession(request.headers.get("Cookie"))
+  const user = session.get("user")
+
+  console.log('isLoggedIn check - user:', user)
+
+  if (!user) {
+    return { status: 401, message: 'Not logged in', data: null }
+  }
+
+  return { status: 200, message: 'Logged in', data: user }
+}
+
 export { getSession, commitSession, destroySession }

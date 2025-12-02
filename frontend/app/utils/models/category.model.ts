@@ -33,12 +33,14 @@ export async function postCategory (data: Category, authorization: string, cooki
     body: JSON.stringify(data)
   })
 
+  const result = await response.json()
+
+
   if (!response.ok) {
-    throw new Error('Failed to create new category')
+    throw new Error(result.message || 'Failed to create new category')
   }
 
   const headers = response.headers
-  const result = await response.json()
   return { headers, result }
 }
 
@@ -54,11 +56,12 @@ export async function getCategories ():Promise<Category[]> {
     body: null
   })
 
+  const result = await response.json()
+
+
   if(!response.ok){
-    throw new Error('Failed to get categories')
+    throw new Error(result.message || 'Failed to get categories')
   }
 
-  const { data } = await response.json()
-
-  return data
+  return result.data
 }

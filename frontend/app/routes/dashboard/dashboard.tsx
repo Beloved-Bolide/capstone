@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, Outlet, useActionData, useLocation } from 'react-router'
+import {Link, Outlet, redirect, useActionData, useLocation} from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
   type Folder,
@@ -25,6 +25,17 @@ export function meta ({}: Route.MetaArgs) {
 const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
+  console.log('Dashboard loader running...')
+
+  // Check if user is logged in using session
+  const { isLoggedIn } = await import('~/utils/session.server')
+  const loginStatus = await isLoggedIn(request)  // FIX: define loginStatus before using it
+  console.log('Login status:', loginStatus)
+
+  // If not logged in, redirect to sign-in
+  if (loginStatus.status !== 200) {
+    throw redirect('/sign-in')
+  }
 
   const cookie = request.headers.get('cookie')
   const session = await getSession(cookie)

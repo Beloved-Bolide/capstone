@@ -59,12 +59,14 @@ export async function postRecord (data: Record, authorization: string, cookie: s
     body: JSON.stringify(data)
   })
 
+  const result = await response.json()
+
+
   if (!response.ok) {
-    throw new Error('Failed to create new record')
+    throw new Error(result.message || 'Failed to create new record')
   }
 
   const headers = response.headers
-  const result = await response.json()
   return { headers, result }
 }
 
@@ -80,31 +82,12 @@ export async function getRecordsByFolderId (folderId: string | null, authorizati
     body: null
   })
 
+  const result = await response.json()
+
+
   if (!response.ok) {
-    throw new Error('Failed to get folder')
+    throw new Error(result.message || 'Failed to get folder')
   }
 
-  const { data } = await response.json()
-
-  return data
+  return result.data
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

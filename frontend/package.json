@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@react-router/node": "^7.9.6",
     "@react-router/serve": "^7.9.6",
+    "cors": "^2.8.5",
     "express-session": "^1.18.2",
     "flowbite-react": "^0.12.10",
     "isbot": "^5.1.32",
