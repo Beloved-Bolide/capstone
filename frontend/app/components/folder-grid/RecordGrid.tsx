@@ -120,7 +120,8 @@ export function RecordGrid({
                       <span>${record.amount.toFixed(2)}</span>
                     </div>
                   )}
-                  {/* Show only purchase date in Recent folder */}
+
+                  {/* Show only purchase date in the Recent folder */}
                   {isRecentFolder ? (
                     record.purchaseDate && (
                       <div className="flex items-center gap-2 text-xs text-gray-600">
@@ -132,7 +133,8 @@ export function RecordGrid({
                     )
                   ) : (
                     <>
-                      {/* Show expiration date with color coding in other folders */}
+
+                      {/* Show the expiration date with color coding in other folders */}
                       {record.expDate && (
                         <div className={`flex items-center gap-2 text-xs font-medium ${
                           new Date(record.expDate) < new Date()
@@ -147,7 +149,8 @@ export function RecordGrid({
                           </span>
                         </div>
                       )}
-                      {/* Show purchase date as fallback */}
+
+                      {/* Show the purchase date as fallback */}
                       {record.purchaseDate && !record.expDate && (
                         <div className="flex items-center gap-2 text-xs text-gray-600">
                           <Calendar className="w-3.5 h-3.5" />
@@ -168,8 +171,10 @@ export function RecordGrid({
                 </div>
               </div>
             </Link>
+
             {/* Action buttons container */}
             <div className="absolute top-3 right-3 flex gap-2 z-10">
+
               {/* File icon - view details */}
               <Link
                 to={`./record/${record.id}`}
@@ -179,7 +184,8 @@ export function RecordGrid({
               >
                 <FileText className="w-4 h-4 text-green-600" />
               </Link>
-              {/* Edit button - show only if not in trash folder */}
+
+              {/* Edit button - show only if not in the trash folder */}
               {!isTrashFolder && (
                 <Link
                   to={`/new-file-record?recordId=${record.id}`}
@@ -190,7 +196,8 @@ export function RecordGrid({
                   <Pencil className="w-4 h-4 text-cyan-600" />
                 </Link>
               )}
-              {/* Restore button - show only in trash folder */}
+
+              {/* Restore button - show only in the trash folder */}
               {isTrashFolder && onRestoreRecord && (
                 <button
                   onClick={(e) => onRestoreRecord(record, e)}
@@ -209,6 +216,7 @@ export function RecordGrid({
                   />
                 </button>
               )}
+
               {/* Trash button */}
               {showTrashButton && onDeleteRecord && (
                 <button
