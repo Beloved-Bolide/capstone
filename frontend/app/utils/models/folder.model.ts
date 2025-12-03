@@ -144,12 +144,11 @@ export async function getFoldersByParentFolderId(parentFolderId: string | null, 
 
   const result = await response.json()
 
-
   if (!response.ok) {
     throw new Error(result.message || 'Failed to get folder')
   }
 
-  const { data } = await response.json()
+  const { data } = result
 
   // Add validation
   if (!Array.isArray(data)) {

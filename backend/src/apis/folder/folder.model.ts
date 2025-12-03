@@ -86,7 +86,7 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[] | nul
 /** selects the folder from the folder table by name
  * @param name the folder's name to search for in the folder table
  * @returns the folder or null if no folder was found **/
-export async function selectFolderByFolderName (name: string): Promise<Folder | null> {
+export async function selectFolderByFolderName (name: string, userId: string): Promise<Folder | null> {
 
   // query the database for the folder with the given name
   const rowList = await sql `
@@ -96,7 +96,7 @@ export async function selectFolderByFolderName (name: string): Promise<Folder | 
       user_id,
       name
     FROM folder
-    WHERE name = ${name}`
+    WHERE name = ${name} AND user_id = ${userId}`
 
   // enforce that the result is an array of one folder, or null
   const result = FolderSchema.array().max(1).parse(rowList)
