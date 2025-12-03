@@ -1,12 +1,3 @@
-/**
- * FolderGrid Component
- *
- * Displays a grid of folders with different actions based on context:
- * - Shows edit/delete buttons for user-created folders
- * - Shows restore button in Trash folder
- * - Supports empty state with optional action button (e.g., "Create Subfolder")
- */
-
 import { Link } from 'react-router'
 import { FolderOpen, Trash2, Pencil, RotateCcw } from 'lucide-react'
 import type { Folder } from '~/utils/models/folder.model'
@@ -14,31 +5,24 @@ import { FolderSkeleton } from '../loading/FolderSkeleton'
 import { ErrorDisplay } from '../error/ErrorDisplay'
 import { EmptyState } from './EmptyState'
 
-/**
- * Props interface for FolderGrid component
- */
 interface FolderGridProps {
-  folders: Folder[] | null                                          // Array of folder objects to display, or null if not loaded
-  isLoading: boolean                                                // Whether data is currently being fetched
-  error: { message: string } | null                                 // Error object if fetch failed
-  onRetry: () => void                                               // Callback to retry failed data fetch
-  emptyMessage?: string                                             // Custom message for empty state
-  showActionButtons?: boolean                                       // Whether to show action buttons on folder cards
-  onDeleteFolder?: (folder: Folder, event: React.MouseEvent) => void    // Handler for delete/trash action
-  onEditFolder?: (folder: Folder, event: React.MouseEvent) => void      // Handler for edit/rename action
-  onRestoreFolder?: (folder: Folder, event: React.MouseEvent) => void   // Handler for restore action (Trash folder only)
-  isTrashFolder?: boolean                                           // Whether we're viewing the Trash folder
-  isDeleting?: boolean                                              // Whether a delete/restore operation is in progress
-  emptyAction?: {                                                   // Optional action button for empty state
-    label: string                                                   // Button text (e.g., "Create Subfolder")
-    onClick: () => void                                             // Callback when button is clicked
+  folders: Folder[] | null
+  isLoading: boolean
+  error: { message: string } | null
+  onRetry: () => void
+  emptyMessage?: string
+  showActionButtons?: boolean
+  onDeleteFolder?: (folder: Folder, event: React.MouseEvent) => void
+  onEditFolder?: (folder: Folder, event: React.MouseEvent) => void
+  onRestoreFolder?: (folder: Folder, event: React.MouseEvent) => void
+  isTrashFolder?: boolean
+  isDeleting?: boolean
+  emptyAction?: {
+    label: string
+    onClick: () => void
   }
 }
 
-/**
- * FolderGrid Component
- * Main component that handles all display states and renders the folder grid
- */
 export function FolderGrid({
   folders,
   isLoading,
@@ -54,14 +38,11 @@ export function FolderGrid({
   emptyAction
 }: FolderGridProps) {
 
-
-  // ========== LOADING STATE ==========
-  // Show skeleton placeholders while data is being fetched
+  // Loading state
   if (isLoading) {
     return (
       <div className="mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {/* Render 4 skeleton cards as loading placeholders */}
           {[1, 2, 3, 4].map((i) => (
             <FolderSkeleton key={i} />
           ))}
@@ -70,8 +51,7 @@ export function FolderGrid({
     )
   }
 
-  // ========== ERROR STATE ==========
-  // Show error message with retry button if data fetch failed
+  // Error state
   if (error) {
     return (
       <div className="mb-8">
@@ -79,48 +59,34 @@ export function FolderGrid({
           title="Failed to Load Folders"
           message={error.message}
           type="error"
-          onRetry={onRetry}  // Allow user to retry the failed request
+          onRetry={onRetry}
         />
       </div>
     )
   }
 
-  // ========== EMPTY STATE ==========
-  // Show empty state message if no folders exist
-  // Optionally show an action button (e.g., "Create Subfolder")
+  // Empty state
   if (!folders || folders.length === 0) {
     return (
-
-      <EmptyState
-        icon={<FolderOpen className="w-16 h-16 text-gray-300" />}
-        title="No folders yet"
-        message={emptyMessage}
-        action={emptyAction}  // Optional button to create a subfolder
-      />
+      <></>
     )
   }
 
-  // ========== SUCCESS STATE ==========
-  // Render the grid of folder cards
+  // Success state with folders
   return (
     <div className="mb-8">
       <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Folders</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {/* Map through each folder and render a card */}
         {folders.map((folder) => (
           <div key={folder.id} className="relative">
-            {/* Main clickable card that links to folder contents */}
             <Link
               to={`./${folder.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block"
+              className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block"
             >
-
               <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
+                <div className="p-2.5 bg-cyan-50 rounded-md group-hover:bg-cyan-100 transition-colors">
                   <FolderOpen className="w-5 h-5 text-cyan-600" />
                 </div>
-
-                {/* Folder name and label */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
                     {folder.name}
@@ -130,20 +96,16 @@ export function FolderGrid({
               </div>
             </Link>
 
-
-            {/* ========== ACTION BUTTONS ========== */}
-            {/* Floating action buttons in top-right corner of card */}
-            {/* Only show if showActionButtons prop is true (user-created folders) */}
+            {/* Action buttons container */}
             {showActionButtons && (
               <div className="absolute top-3 right-3 flex gap-2 z-10">
 
-                {/* Edit/Rename Button (Blue) - Show only if NOT in Trash folder */}
-
+                {/* Edit button - show only if not in trash */}
                 {!isTrashFolder && onEditFolder && (
                   <button
                     onClick={(e) => onEditFolder(folder, e)}
-                    disabled={isDeleting}  // Disable during operations
-                    className={`p-2 rounded-lg transition-colors ${
+                    disabled={isDeleting}
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : 'bg-cyan-50 hover:bg-cyan-100'
@@ -158,13 +120,12 @@ export function FolderGrid({
                   </button>
                 )}
 
-
-                {/* Restore Button (Amber) - Show only IN Trash folder */}
+                {/* Restore button - show only in the trash folder */}
                 {isTrashFolder && onRestoreFolder && (
                   <button
                     onClick={(e) => onRestoreFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : 'bg-amber-50 hover:bg-amber-100'
@@ -179,29 +140,27 @@ export function FolderGrid({
                   </button>
                 )}
 
-
-                {/* Trash/Delete Button - Behavior changes based on context */}
-
+                {/* Delete button */}
                 {onDeleteFolder && (
                   <button
                     onClick={(e) => onDeleteFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : isTrashFolder
-                          ? 'bg-red-50 hover:bg-red-100'    // Red in Trash (permanent delete)
-                          : 'bg-gray-50 hover:bg-gray-100'  // Gray elsewhere (move to trash)
+                          ? 'bg-red-50 hover:bg-red-100'
+                          : 'bg-gray-50 hover:bg-gray-100'
                     }`}
                     title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Delete folder'}
                   >
                     <Trash2
-                      className={`w-4 h-4 ${
+                      className={`cursor-pointer w-4 h-4 ${
                         isDeleting
                           ? 'text-gray-400'
                           : isTrashFolder
-                            ? 'text-red-600'   // Red in Trash
-                            : 'text-gray-600'  // Gray elsewhere
+                            ? 'text-red-600'
+                            : 'text-gray-600'
                       }`}
                     />
                   </button>

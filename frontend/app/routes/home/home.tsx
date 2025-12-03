@@ -83,7 +83,7 @@ export default function FileWiseLanding () {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/sign-up"
-                  className="group px-8 py-4 bg-gradient-to-r from-cyan-600 to-cyan-700 text-white font-bold rounded-xl hover:from-cyan-700 hover:to-cyan-800 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center gap-2">
+                  className="group px-8 py-4 bg-gradient-to-r from-cyan-600 to-cyan-700 text-white font-bold rounded-lg hover:from-cyan-700 hover:to-cyan-800 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center gap-2">
                   Start Free Trial
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
                 </Link>
@@ -127,7 +127,7 @@ export default function FileWiseLanding () {
             <div
               className="group p-8 bg-gradient-to-br from-cyan-50 to-indigo-50 rounded-2xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
               <div
-                className="w-14 h-14 bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                className="w-14 h-14 bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <Search className="w-7 h-7 text-white"/>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Fast Search</h3>
@@ -141,7 +141,7 @@ export default function FileWiseLanding () {
             <div
               className="group p-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
               <div
-                className="w-14 h-14 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                className="w-14 h-14 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <FileText className="w-7 h-7 text-white"/>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Auto-Categorize</h3>
@@ -155,7 +155,7 @@ export default function FileWiseLanding () {
             <div
               className="group p-8 bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
               <div
-                className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <Shield className="w-7 h-7 text-white"/>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Secure Storage</h3>
@@ -169,7 +169,7 @@ export default function FileWiseLanding () {
             <div
               className="group p-8 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
               <div
-                className="w-14 h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                className="w-14 h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <Clock className="w-7 h-7 text-white"/>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Warranty Tracking</h3>
@@ -183,7 +183,7 @@ export default function FileWiseLanding () {
             <div
               className="group p-8 bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
               <div
-                className="w-14 h-14 bg-gradient-to-br from-pink-600 to-pink-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                className="w-14 h-14 bg-gradient-to-br from-pink-600 to-pink-700 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <TrendingUp className="w-7 h-7 text-white"/>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Expense Analytics</h3>
@@ -197,7 +197,7 @@ export default function FileWiseLanding () {
             <div
               className="group p-8 bg-gradient-to-br from-cyan-50 to-cyan-50 rounded-2xl hover:shadow-2xl transition-all transform hover:-translate-y-2">
               <div
-                className="w-14 h-14 bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                className="w-14 h-14 bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
                 <Lock className="w-7 h-7 text-white"/>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Coupon Keeper</h3>
@@ -251,10 +251,10 @@ export default function FileWiseLanding () {
             {/* Right Content - Image/Visual */}
             <div className="relative">
               <div className="bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-2xl p-8 shadow-2xl">
-                <div className="bg-white rounded-xl p-6 space-y-4">
+                <div className="bg-white rounded-lg p-6 space-y-4">
                   <div className="flex items-center gap-4">
                     <div
-                      className="w-16 h-16 bg-gradient-to-br from-cyan-600 to-cyan-800 rounded-xl flex items-center justify-center shadow-lg">
+                      className="w-16 h-16 bg-gradient-to-br from-cyan-600 to-cyan-800 rounded-lg flex items-center justify-center shadow-lg">
                       <svg viewBox="0 0 24 24" className="w-10 h-10 text-white" fill="currentColor">
                         <path
                           d="M12 2C10 2 8 3 8 5v2H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-2V5c0-2-2-3-4-3zm0 2c1 0 2 .5 2 1v2h-4V5c0-.5 1-1 2-1z"/>
@@ -304,7 +304,7 @@ export default function FileWiseLanding () {
             Start your free trial today. No credit card required.
           </p>
           <button
-            className="px-10 py-4 bg-white text-cyan-600 font-bold rounded-xl hover:bg-gray-50 transition-all transform hover:scale-105 shadow-2xl text-lg">
+            className="px-10 py-4 bg-white text-cyan-600 font-bold rounded-lg hover:bg-gray-50 transition-all transform hover:scale-105 shadow-2xl text-lg">
             Start Free Trial
           </button>
           <p className="text-cyan-100 mt-4">14-day free trial • Cancel anytime • No credit card needed</p>

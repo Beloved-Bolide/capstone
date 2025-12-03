@@ -28,7 +28,7 @@ export default function FileUpload() {
   <div className="mb-8">
     <label
     htmlFor="dropzone-file"
-    className="flex flex-col items-center justify-center w-full h-48 border-2 border-cyan-300 border-dashed rounded-lg cursor-pointer bg-cyan-50 hover:bg-cyan-100 transition-colors"
+    className="flex flex-col items-center justify-center w-full h-48 border-2 border-cyan-300 border-dashed rounded-md cursor-pointer bg-cyan-50 hover:bg-cyan-100 transition-colors"
     onDrop={handleDrop}
     onDragOver={handleDragOver}
     >
