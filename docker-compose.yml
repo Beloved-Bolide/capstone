@@ -20,6 +20,8 @@ services:
     user: 'node'
     volumes:
       - ./backend/src:/home/node/app/src
+      - ./backend/migrations:/home/node/app/migrations
+      - ./backend/package.json:/home/node/app/package.json
 volumes:
   capstone-sql:
     driver: local

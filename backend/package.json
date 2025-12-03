@@ -8,7 +8,10 @@
     "dev": "npx nodemon --delay 1.25 -e ts  --exec \"node --loader ts-node/esm --no-warnings --loader ./resolve-extensions-loader.mjs  ./src/index.ts\"",
     "test": "echo \\\"Error: no src/test specified\\\" && exit 1",
     "clean": "ts-standard --fix",
-    "lint": "ts-standard"
+    "lint": "ts-standard",
+    "seed:categories": "node --loader ts-node/esm --no-warnings --loader ./resolve-extensions-loader.mjs ./migrations/seed-categories.ts",
+    "seed:records": "node --loader ts-node/esm --no-warnings --loader ./resolve-extensions-loader.mjs ./migrations/seed-records.ts",
+    "get:user-id": "node --loader ts-node/esm --no-warnings --loader ./resolve-extensions-loader.mjs ./migrations/get-user-id.ts"
   },
   "keywords": [],
   "author": "George Kephart",
