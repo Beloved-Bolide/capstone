@@ -171,12 +171,14 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
                   Dashboard
                 </Link>
               )}
-              <Link
-                to="/expenses"
-                className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
-              >
-                Expenses
-              </Link>
+              {currentPath !== '/expenses' && (
+                <Link
+                  to="/expenses"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+                >
+                  Expenses
+                </Link>
+              )}
             </div>
 
             {/* Desktop Sign Out Button */}
@@ -199,27 +201,33 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
     {!isPublicPage && showMobileMenu && (
       <div className="lg:hidden mt-4 pt-4 border-t border-gray-200 space-y-2">
         {/* Navigation Links */}
-        <Link
-          to="/"
-          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          onClick={() => setShowMobileMenu(false)}
-        >
-          Home
-        </Link>
-        <Link
-          to="/dashboard"
-          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          onClick={() => setShowMobileMenu(false)}
-        >
-          Dashboard
-        </Link>
-        <Link
-          to="/expenses"
-          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          onClick={() => setShowMobileMenu(false)}
-        >
-          Expenses
-        </Link>
+        {currentPath !== '/' && (
+          <Link
+            to="/"
+            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            onClick={() => setShowMobileMenu(false)}
+          >
+            Home
+          </Link>
+        )}
+        {currentPath !== '/dashboard' && !currentPath.startsWith('/dashboard/') && (
+          <Link
+            to="/dashboard"
+            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            onClick={() => setShowMobileMenu(false)}
+          >
+            Dashboard
+          </Link>
+        )}
+        {currentPath !== '/expenses' && (
+          <Link
+            to="/expenses"
+            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            onClick={() => setShowMobileMenu(false)}
+          >
+            Expenses
+          </Link>
+        )}
 
         {/* Divider */}
         <div className="my-2 border-t border-gray-200"></div>
