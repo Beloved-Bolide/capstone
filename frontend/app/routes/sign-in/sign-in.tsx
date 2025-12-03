@@ -133,12 +133,12 @@ export default function SignInPage () {
           <div className="w-10 h-10 rounded-md flex items-center justify-center">
             <img src="/logo-croppy.png" alt="FileWise logo"/>
           </div>
-          <span className="text-2xl font-bold text-gray-800">FileWise</span>
+          <span className="text-2xl font-bold text-cyan-700">FileWise</span>
         </div>
 
         {/* Card */}
         <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
+          <h2 className="text-2xl font-bold text-cyan-700 text-center mb-6">
             Sign In
           </h2>
 

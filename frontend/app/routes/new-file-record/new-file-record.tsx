@@ -180,7 +180,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+
       <div className="bg-cyan-600 border-b border-cyan-700">
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <h1 className="text-xl font-semibold text-white">
@@ -261,7 +263,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       <select
                         {...register('docType')}
                         id="doc-type"
+
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                       >
                         <option value="">Select type...</option>
                         <option value="Receipt/Invoice">Receipt/Invoice</option>
@@ -287,7 +291,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         {...register('purchaseDate')}
                         type="date"
                         id="purchaseDate"
+
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"/>
+
                       {errors.purchaseDate && (
                         <p className="text-sm text-red-500">{errors.purchaseDate.message} </p>
                       )}
@@ -305,7 +311,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         {...register('name')}
                         type="text"
                         id="name"
+
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                         placeholder="Enter file name"
                       />
                       {errors.name && (
@@ -324,7 +332,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       <select
                         {...register('folderId')}
                         id="folderId"
+
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                       >
                         <option value="">Select folder...</option>
                         {folders.map((folder, index) => (
@@ -349,7 +359,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         type="text"
                         id="companyName"
                         placeholder="Enter Company Name"
+
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                       />
                       {errors.companyName && (
                         <p className="text-sm text-red-500">{errors.companyName.message} </p>
@@ -377,7 +389,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                         type="number"
                         id="amount"
                         step="1.00"
+
                         className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full pl-8 p-2.5 placeholder-gray-400"
+
                         placeholder="0.00"
                       />
                       {errors.amount && (
@@ -397,7 +411,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                     <select
                       {...register('categoryId')}
                       id="categoryId"
+
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                     >
                       {categories.map((category, index) => <option key={index}
                                                                    value={category.id}>{category.icon + ' ' + category.name}</option>)}
@@ -419,7 +435,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       {...register('expDate')}
                       type="date"
                       id="expDate"
+
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                     />
                     {errors.expDate && (
                       <p className="text-sm text-red-500">{errors.expDate.message} </p>
@@ -439,7 +457,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       type="text"
                       id="productId"
                       placeholder="Enter Product Id"
+
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                     />
                     {errors.productId && (
                       <p className="text-sm text-red-500">{errors.productId.message} </p>
@@ -459,7 +479,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       type="text"
                       id="couponCode"
                       placeholder="Enter Coupon Code"
+
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                     />
                     {errors.couponCode && (
                       <p className="text-sm text-red-500">{errors.couponCode.message} </p>
@@ -552,7 +574,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                       {...register('description')}
                       id="description"
                       rows={2}
+
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+
                       placeholder="Description..."
                     />
                     {errors.description && (
@@ -567,7 +591,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                     <p className="text-sm text-gray-700">
                       <span className="font-medium text-gray-900">Selected Type:</span> {docType}
                       {showAmountField ? (
+
                         <span className="text-cyan-600 ml-2">(Financial details available)</span>
+
                       ) : (
                         <span className="text-gray-500 ml-2">(Standard document)</span>
                       )}
@@ -588,7 +614,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                 </Link>
                 <button
                   type="submit"
+
                   className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-md hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 transition-colors cursor-pointer"
+
                 >
                   {isEditing ? 'Save Changes' : 'Upload File'}
                 </button>
