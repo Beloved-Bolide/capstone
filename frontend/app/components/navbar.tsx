@@ -98,7 +98,7 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onFocus={() => searchQuery && setShowSearchResults(true)}
-        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-cyan-700 focus:border-cyan-700 transition-all"
         />
       </div>
 
@@ -131,7 +131,7 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
           {currentPath !== '/' && (
             <Link
             to="/"
-            className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+            className="text-sm font-medium text-gray-700 hover:text-cyan-700 transition-colors"
             >
               Home
             </Link>
@@ -139,14 +139,14 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
           {currentPath !== '/dashboard' && !currentPath.startsWith('/dashboard/') && (
             <Link
             to="/dashboard"
-            className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+            className="text-sm font-medium text-gray-700 hover:text-cyan-700 transition-colors"
             >
               Dashboard
             </Link>
           )}
           <Link
             to="/expenses"
-            className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+            className="text-sm font-medium text-gray-700 hover:text-cyan-700 transition-colors"
           >
             Expenses
           </Link>

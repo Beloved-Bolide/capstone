@@ -41,7 +41,7 @@ export default function FileWiseLanding () {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
 
       {/* Hero Section */}
-      <section id="home" className="pt-32 pb-20 px-6">
+      <section id="home" className="pt-8 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
@@ -97,7 +97,7 @@ export default function FileWiseLanding () {
             <div className="relative h-108">
               <div className="relative z-10 bg-white rounded-sm shadow-2xl overflow-hidden transform hover:scale-105 transition-transform duration-300 h-full w-full">
                 <img
-                  src="/lp.png"
+                  src="/db.png"
                   alt="FileWise Dashboard Preview"
                   className="w-full h-full object-cover object-left"
                 />
@@ -311,21 +311,7 @@ export default function FileWiseLanding () {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-200 text-gray-700 py-12 px-6">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="relative group">
-              <div className="w-10.5 h-10.5 rounded-md flex items-center justify-center">
-                <img src="/logo-croppy.png" alt="logo"/>
-              </div>
-            </div>
-            <span className="text-2xl font-bold text-cyan-600">FileWise</span>
-          </div>
-          <p className="text-black-700 mb-2">© 2025 FileWise. All rights reserved.</p>
-          <p className="text-sm text-black-500">Making financial organization simple and secure.</p>
-        </div>
-      </footer>
+
 
       <style>{`
         @keyframes float {

@@ -221,7 +221,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             onClick={() => {
               setDisplayNewFolderForm(!displayNewFolderForm)
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-800 transition-colors focus:outline-none text-sm font-medium"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -247,7 +247,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 onClick={() => setSelectedFolder(folder.name)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   selectedFolder === folder.name
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                    ? 'bg-blue-50 text-cyan-700 border border-blue-200 shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
               >
@@ -261,7 +261,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         {/* Settings */}
         <div className="px-3 lg:px-4 py-4 border-t border-gray-200">
           <button
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-blue-50 focus:text-blue-700 focus:border-blue-200 focus:shadow-sm">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-blue-50 focus:text-cyan-700 focus:border-blue-200 focus:shadow-sm">
             <Settings className="w-4 h-4"/>
             <span className="flex-1 text-left">Settings</span>
           </button>
@@ -289,7 +289,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     onClick={() => {
                       setDisplayNewFolderForm(!displayNewFolderForm)
                     }}
-                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
                   >
                     <Plus className="w-4 h-4"/>
                     <span>New Folder</span>
