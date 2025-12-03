@@ -46,18 +46,20 @@ export async function selectFolderByFolderId (id: string): Promise<Folder | null
 
 /** Selects all folders by parent folder if
  * @param parentFolderId - the parent folder's ID (can be null for root folders)
+ * @param userId - the user's ID to filter by (prevents cross-user data leakage)
  * @returns Array of folders **/
-export async function selectFoldersByParentFolderId(parentFolderId: string): Promise<Folder[] | null> {
+export async function selectFoldersByParentFolderId(parentFolderId: string, userId: string): Promise<Folder[] | null> {
 
-  // get subfolders of a specific parent
+  // get subfolders of a specific parent, filtered by user for security
   const rowList = await sql `
-    SELECT 
+    SELECT
       id,
       parent_folder_id,
-      user_id, 
+      user_id,
       name
-    FROM folder 
-    WHERE parent_folder_id = ${parentFolderId}`
+    FROM folder
+    WHERE parent_folder_id = ${parentFolderId}
+    AND user_id = ${userId}`
 
   // return the folders or null if no folders were found
   const result = FolderSchema.array().parse(rowList)
@@ -179,11 +181,12 @@ export async function isDescendant(potentialDescendantId: string, ancestorId: st
 
 /** Checks if a folder has any child folders
  * @param id the folder's id to check for child folders
+ * @param userId the user's id to filter by (prevents cross-user data leakage)
  * @returns { Promise<boolean> } true if the folder has child folders, false otherwise **/
-export async function hasChildFolders (id: string): Promise<boolean> {
+export async function hasChildFolders (id: string, userId: string): Promise<boolean> {
 
-  // get the child folders of the given folder
-  const childFolders = await selectFoldersByParentFolderId(id)
+  // get the child folders of the given folder, filtered by user
+  const childFolders = await selectFoldersByParentFolderId(id, userId)
 
   // return true if there are child folders, false otherwise
   return childFolders ? childFolders.length > 0 : false
@@ -208,9 +211,50 @@ export async function deleteFolder (id: string): Promise<string> {
 
   // delete the folder from the database
   await sql `
-    DELETE FROM folder 
+    DELETE FROM folder
     WHERE id = ${id}`
 
   // return a success message
   return 'Folder successfully deleted!'
+}
+
+/** Recursively deletes a folder and all its contents (subfolders and records)
+ * @param id the folder's id to delete
+ * @param userId the user's id (for security filtering)
+ * @returns { Promise<{ foldersDeleted: number, recordsDeleted: number }> } counts of deleted items **/
+export async function deleteFolderRecursive (id: string, userId: string): Promise<{ foldersDeleted: number, recordsDeleted: number }> {
+  let foldersDeleted = 0
+  let recordsDeleted = 0
+
+  // Import deleteRecord to avoid circular dependency issues
+  const { selectRecordsByFolderId, deleteRecord } = await import('../record/record.model.ts')
+
+  // 1. Get all child folders (filtered by user for security)
+  const childFolders = await selectFoldersByParentFolderId(id, userId)
+
+  // 2. Recursively delete all child folders
+  if (childFolders && childFolders.length > 0) {
+    for (const childFolder of childFolders) {
+      const childResult = await deleteFolderRecursive(childFolder.id, userId)
+      foldersDeleted += childResult.foldersDeleted
+      recordsDeleted += childResult.recordsDeleted
+    }
+  }
+
+  // 3. Get all records in this folder
+  const records = await selectRecordsByFolderId(id)
+
+  // 4. Delete all records in this folder
+  if (records && records.length > 0) {
+    for (const record of records) {
+      await deleteRecord(record.id)
+      recordsDeleted++
+    }
+  }
+
+  // 5. Finally delete the folder itself
+  await deleteFolder(id)
+  foldersDeleted++
+
+  return { foldersDeleted, recordsDeleted }
 }

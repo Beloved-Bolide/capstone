@@ -148,11 +148,11 @@ export async function action ({ request }: ActionFunctionArgs) {
           })
         }
 
-        await deleteFolder(itemId, authorization, cookie)
+        const result = await deleteFolder(itemId, authorization, cookie)
 
         return new Response(JSON.stringify({
           success: true,
-          message: `Folder "${folder.name}" permanently deleted`
+          message: result.result.message || `Folder "${folder.name}" permanently deleted`
         }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }

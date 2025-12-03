@@ -17,6 +17,26 @@ export type File = z.infer<typeof FileSchema>
 export const NewFileSchema = FileSchema
 export type NewFile = z.infer<typeof NewFileSchema>
 
+export async function getFilesByRecordId (recordId: string, authorization: string, cookie: string | null): Promise<File[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/file/recordId/${recordId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get files')
+  }
+
+  const result = await response.json()
+  return result.data || []
+}
+
 export async function postFile (data: File, authorization: string, cookie: string | null): Promise<{ result: Status, headers: Headers}> {
 
   const response = await fetch(`${process.env.REST_API_URL}/file`,{

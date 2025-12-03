@@ -24,7 +24,7 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
   // Check if we're on a public (unauthenticated) page
   const isPublicPage = currentPath === '/' || currentPath === '/sign-in' || currentPath === '/sign-up'
 
-  // Handle search with debounce
+  // Handle search with debouncing
   useEffect(() => {
     if (searchQuery.trim().length === 0) {
       setShowSearchResults(false)

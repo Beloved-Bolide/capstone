@@ -6,10 +6,8 @@ import {
   FolderSchema,
   insertFolder,
   updateFolder,
-  deleteFolder,
+  deleteFolderRecursive,
   isDescendant,
-  hasChildFolders,
-  hasRecords,
   selectFolderByFolderId,
   selectFoldersByParentFolderId,
   selectFoldersByUserId,
@@ -36,7 +34,7 @@ export async function getFolderByFolderIdController (request: Request, response:
 
     // if the folder is not found, return a preformatted response to the client
     if (!folder) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get folder failed: Folder not found!'
@@ -76,7 +74,7 @@ export async function getFoldersByParentFolderIdController (request: Request, re
     // get the parent folder id from the parameters and check if it exists
     const { parentFolderId } = validatedRequestParams.data
     if (!parentFolderId) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get folder failed: Parent folder id not found!'
@@ -87,7 +85,7 @@ export async function getFoldersByParentFolderIdController (request: Request, re
     // verify the parent folder exists and belongs to the session user
     const parentFolder = await selectFolderByFolderId(parentFolderId)
     if (!parentFolder) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get folder failed: Parent folder not found!'
@@ -98,22 +96,17 @@ export async function getFoldersByParentFolderIdController (request: Request, re
     // verify the session user owns the parent folder
     if (!(await validateSessionUser(request, response, parentFolder.userId))) return
 
-    // now safely query child folders
-    const folders: Folder[] | null = await selectFoldersByParentFolderId(parentFolderId)
-    if (!folders) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'Get folder failed: No child folders found under this parent folder!'
-      })
-      return
-    }
+    // now safely query child folders - filter by user to prevent data leakage
+    const folders: Folder[] | null = await selectFoldersByParentFolderId(parentFolderId, parentFolder.userId)
+
+    // Return empty array if no folders found (not an error condition)
+    const folderData = folders || []
 
     // return the child folders to the client
     response.json({
       status: 200,
-      data: folders,
-      message: folders.length + ' folder(s) found under this parent folder.'
+      data: folderData,
+      message: folderData.length + ' folder(s) found under this parent folder.'
     })
 
   } catch (error: any) {
@@ -141,21 +134,14 @@ export async function getFoldersByUserIdController (request: Request, response: 
     // fetch folders for the authorized user
     const folders: Folder[] | null = await selectFoldersByUserId(userId)
 
-    // if no folders are found for the user, return a 404 response
-    if (!folders) {
-      response.json({
-        status: 404,
-        data: null,
-        message: 'Get folders failed: No folders found for this user.'
-      })
-      return
-    }
+    // Return empty array if no folders found (not an error condition)
+    const folderData = folders || []
 
     // return the folders to the client
     response.json({
       status: 200,
-      data: folders,
-      message: 'Folders successfully found!'
+      data: folderData,
+      message: folderData.length > 0 ? 'Folders successfully found!' : 'No folders found for this user.'
     })
 
   } catch (error: any) {
@@ -178,8 +164,8 @@ export async function getFolderByFolderNameController (request: Request, respons
 
     const userId = request.session?.user?.id
     if (!userId) {
-        response.json({
-        status: 404,
+        response.status(401).json({
+        status: 401,
         data: null,
         message: 'Get folder failed: Please login to continue!'
         })
@@ -191,7 +177,7 @@ export async function getFolderByFolderNameController (request: Request, respons
 
     // if the folder is not found, return a preformatted response to the client
     if (!folder) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get folder failed: Folder not found!'
@@ -237,7 +223,7 @@ export async function postFolderController (request: Request, response: Response
 
     // if the folder data is missing, return a 400 response
     if (!newFolder) {
-      response.json({
+      response.status(400).json({
         status: 400,
         data: null,
         message: 'Post folder failed: Folder data is missing.'
@@ -251,7 +237,7 @@ export async function postFolderController (request: Request, response: Response
     // check if a folder with the same name already exists
     const existingFolder = await selectFolderByFolderName(newFolder.name, newFolder.userId)
     if (existingFolder) {
-      response.json({
+      response.status(409).json({
         status: 409,
         data: null,
         message: 'Post folder failed: A folder with this name already exists.'
@@ -291,7 +277,7 @@ export async function putFolderController (request: Request, response: Response)
     const { id } = validatedRequestParams.data
     const thisFolder = await selectFolderByFolderId(id)
     if (!thisFolder) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Put folder failed: Folder not found.'
@@ -322,7 +308,7 @@ export async function putFolderController (request: Request, response: Response)
 
       // prevent circular references
       if (!parentFolderId) {
-        response.json({
+        response.status(400).json({
           status: 400,
           data: null,
           message: 'Put folder failed: Cannot move folder to root folder.'
@@ -333,7 +319,7 @@ export async function putFolderController (request: Request, response: Response)
       // verify the parent folder exists
       const parentFolder = await selectFolderByFolderId(parentFolderId)
       if (!parentFolder) {
-        response.json({
+        response.status(404).json({
           status: 404,
           data: null,
           message: 'Put folder failed: Parent folder not found.'
@@ -343,7 +329,7 @@ export async function putFolderController (request: Request, response: Response)
 
       // verify the user owns the parent folder
       if (parentFolder.userId !== thisFolder.userId) {
-        response.json({
+        response.status(403).json({
           status: 403,
           data: null,
           message: 'Put folder failed: Forbidden: You cannot move a folder into another user\'s folder.'
@@ -353,7 +339,7 @@ export async function putFolderController (request: Request, response: Response)
 
       // check if the new parent is a descendant
       if (await isDescendant(parentFolderId, id)) {
-        response.json({
+        response.status(400).json({
           status: 400,
           data: null,
           message: 'Put folder failed: Cannot move folder into its own descendant folder.'
@@ -421,26 +407,14 @@ export async function deleteFolderController (request: Request, response: Respon
       return
     }
 
-    // check if the folder has any child folders or files
-    const hasChildren = await hasChildFolders(id)
-    const hasItems = await hasRecords(id)
-    if (hasChildren || hasItems) {
-      response.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Delete folder failed: Folder has child folders or files. Delete them first.'
-      })
-      return
-    }
+    // Recursively delete the folder and all its contents
+    const { foldersDeleted, recordsDeleted } = await deleteFolderRecursive(id, userId)
 
-    // delete the folder
-    const message = await deleteFolder(id)
-
-    // return a success response
+    // return a success response with counts
     response.json({
       status: 200,
-      data: null,
-      message: message
+      data: { foldersDeleted, recordsDeleted },
+      message: `Successfully deleted ${foldersDeleted} folder(s) and ${recordsDeleted} file(s).`
     })
 
   } catch (error: any) {

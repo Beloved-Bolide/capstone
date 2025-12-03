@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Outlet, redirect, useActionData, useLocation, useFetcher } from 'react-router'
+import { Link, Outlet, redirect, useActionData, useLocation, useFetcher, useNavigate, useRevalidator } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
   type Folder,
@@ -10,9 +10,11 @@ import {
 } from '~/utils/models/folder.model'
 import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
-import { Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
+import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
 import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
+import { ErrorDisplay } from '~/components/error/ErrorDisplay'
+import { FolderGrid } from '~/components/folder-grid/FolderGrid'
 import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,27 +29,40 @@ export function meta ({}: Route.MetaArgs) {
 const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
+  try {
+    // Check if the user is logged in using session
+    const { isLoggedIn } = await import('~/utils/session.server')
+    const loginStatus = await isLoggedIn(request)
 
-  // Check if user is logged in using session
-  const { isLoggedIn } = await import('~/utils/session.server')
-  const loginStatus = await isLoggedIn(request)  // FIX: define loginStatus before using it
+    // If not logged in, redirect to sign-in
+    if (loginStatus.status !== 200) {
+      throw redirect('/sign-in')
+    }
 
-  // If not logged in, redirect to sign-in
-  if (loginStatus.status !== 200) {
-    throw redirect('/sign-in')
+    const cookie = request.headers.get('cookie')
+    const session = await getSession(cookie)
+    const user = session.get('user')
+    const authorization = session.get('authorization')
+
+    if (!cookie || !user?.id || !authorization) {
+      throw redirect('/sign-in')
+    }
+
+    const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
+    return { folders, authorization, error: null }
+  } catch (error) {
+    // If it's a redirect, rethrow it
+    if (error instanceof Response) throw error
+
+    // Otherwise, return error state
+    return {
+      folders: null,
+      authorization: null,
+      error: {
+        message: error instanceof Error ? error.message : 'Failed to load folders'
+      }
+    }
   }
-
-  const cookie = request.headers.get('cookie')
-  const session = await getSession(cookie)
-  const user = session.get('user')
-  const authorization = session.get('authorization')
-
-  if (!cookie || !user?.id || !authorization) {
-    throw redirect('/sign-in')
-  }
-
-  const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
-  return { folders, authorization }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
@@ -153,13 +168,15 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     }
   }
 
-  // if there are no folders, set the array to an empty array
-  let { folders } = loaderData
+  // Get data from loader
+  let { folders, error } = loaderData
   if (!folders) folders = []
 
   useActionData<typeof action>()
   const location = useLocation()
   const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
+  const revalidator = useRevalidator()
+  const navigate = useNavigate()
 
   const [selectedFolder, setSelectedFolder] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -168,11 +185,26 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
 
+  const isLoading = revalidator.state === 'loading'
+
   // Check if we're at the base dashboard route
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
   // Filter parent folders excluding Trash
   const parentFolders = folders.filter(folder => folder.parentFolderId === null && folder.name !== 'Trash')
+
+  // Handle retry
+  const handleRetry = () => {
+    revalidator.revalidate()
+  }
+
+  // Auto-redirect on auth errors
+  useEffect(() => {
+    if (error && (error.message.includes('Unauthorized') || error.message.includes('sign in'))) {
+      const timer = setTimeout(() => navigate('/sign-in'), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, navigate])
 
   // Handle search with debounce
   useEffect(() => {
@@ -304,31 +336,31 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     />
                   </div>
 
-                  <div>
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">All Folders</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {parentFolders.map((folder) => (
-                        <Link
-                          key={folder.id}
-                          to={`./${folder.id}`}
-                          onClick={() => setSelectedFolder(folder.name)}
-                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
-                              {getFolderIcon(folder.name, 'md')}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                                {folder.name}
-                              </h3>
-                              <p className="text-xs text-gray-500 mt-1">Folder</p>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
+                  {/* Error display with auto-redirect */}
+                  {error && (
+                    <div className="mb-4">
+                      <ErrorDisplay
+                        title="Failed to Load Folders"
+                        message={error.message}
+                        type="error"
+                        onRetry={handleRetry}
+                        autoRedirect={
+                          error.message.includes('Unauthorized') || error.message.includes('sign in')
+                            ? { path: '/sign-in', delay: 3000 }
+                            : undefined
+                        }
+                      />
                     </div>
-                  </div>
+                  )}
+
+                  <FolderGrid
+                    folders={parentFolders}
+                    isLoading={isLoading && !folders}
+                    error={null}
+                    onRetry={handleRetry}
+                    emptyMessage="No folders yet. Create a new folder to get started."
+                    showTrashButton={false}
+                  />
                 </div>
               ) : (
 

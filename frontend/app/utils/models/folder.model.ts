@@ -108,6 +108,7 @@ export async function getFolderByName (name: string, authorization: string, cook
 }
 
 export async function getFoldersByUserId (userId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
+  console.log('[getFoldersByUserId] Fetching folders for userId:', userId)
 
   const response = await fetch(`${process.env.REST_API_URL}/folder/userId/${userId}`, {
     method: 'GET',
@@ -119,14 +120,24 @@ export async function getFoldersByUserId (userId: string | null, authorization: 
     body: null
   })
 
+  console.log('[getFoldersByUserId] Response status:', response.status)
   const result = await response.json()
-
+  console.log('[getFoldersByUserId] Result:', { status: result.status, dataType: typeof result.data, dataLength: Array.isArray(result.data) ? result.data.length : 'N/A' })
 
   if (!response.ok) {
-    throw new Error(result.message || 'Failed to get folder')
+    throw new Error(result.message || 'Failed to get folders')
   }
 
-  return result.data
+  const { data } = result
+
+  // Add validation - handle null/undefined data
+  if (!Array.isArray(data)) {
+    console.error('[getFoldersByUserId] Expected array, got:', typeof data, 'Value:', data)
+    return []
+  }
+
+  console.log('[getFoldersByUserId] Returning', data.length, 'folders')
+  return data
 }
 
 export async function getFoldersByParentFolderId(parentFolderId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
