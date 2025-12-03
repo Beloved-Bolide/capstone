@@ -18,7 +18,7 @@
 
 import type { Route } from './+types/folder'
 import { useLoaderData, useNavigate, useRevalidator, useFetcher, redirect } from 'react-router'
-import { getFoldersByParentFolderId, getFolderById, postFolder } from '~/utils/models/folder.model'
+import { getFoldersByParentFolderId, getFolderById, postFolder, updateFolder } from '~/utils/models/folder.model'
 import React, { useEffect, useState } from 'react'
 import { getSession } from '~/utils/session.server'
 import type { Folder } from '~/utils/models/folder.model'
@@ -56,8 +56,9 @@ export async function action ({ request }: Route.ActionArgs) {
       throw redirect('/sign-in')
     }
 
-    // Extract folder name and parent folder ID from form submission
+    // Extract form data
     const formData = await request.formData()
+    const folderId = formData.get('folderId') as string | null
     const folderName = formData.get('folderName') as string
     const parentFolderId = formData.get('parentFolderId') as string | null
 
@@ -71,30 +72,43 @@ export async function action ({ request }: Route.ActionArgs) {
       return { success: false, error: 'Folder name must be 64 characters or less' }
     }
 
-    // Create a new folder object with generated UUID
-    const folder: Folder = {
-      id: uuid(),                       // Generate unique ID using UUID v7
-      parentFolderId: parentFolderId || null,  // Set parent folder (null = root level)
-      userId: user.id,                  // Associate with current user
-      name: folderName.trim()           // Clean up folder name
+    // Check if this is an update (has folderId) or create (no folderId)
+    if (folderId) {
+      // UPDATE existing folder
+      const folder: Folder = {
+        id: folderId,
+        parentFolderId: parentFolderId || null,
+        userId: user.id,
+        name: folderName.trim()
+      }
+
+      await updateFolder(folder, authorization, cookie)
+      return { success: true, message: 'Folder updated successfully' }
+    } else {
+      // CREATE new folder
+      const folder: Folder = {
+        id: uuid(),                       // Generate unique ID using UUID v7
+        parentFolderId: parentFolderId || null,  // Set parent folder (null = root level)
+        userId: user.id,                  // Associate with current user
+        name: folderName.trim()           // Clean up folder name
+      }
+
+      // Send POST request to create folder in database
+      const { result } = await postFolder(folder, authorization, cookie)
+
+      // Check if creation was successful (status 200)
+      if (result.status !== 200) {
+        return { success: false, error: result.message || 'Failed to create folder' }
+      }
+
+      return { success: true, message: 'Folder created successfully' }
     }
-
-    // Send POST request to create folder in database
-    const { result } = await postFolder(folder, authorization, cookie)
-
-    // Check if creation was successful (status 200)
-    if (result.status !== 200) {
-      return { success: false, error: result.message || 'Failed to create folder' }
-    }
-
-    // Return success response
-    return { success: true, message: 'Folder created successfully' }
   } catch (error) {
     // Re-throw redirect responses (used for authentication)
     if (error instanceof Response) throw error
 
     // Handle and return other errors
-    return { success: false, error: error instanceof Error ? error.message : 'Failed to create folder' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update folder' }
   }
 }
 
@@ -157,7 +171,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
     ])
 
     // Return successful data load
-    return { childFolders, records, currentFolder, error: null }
+    return { childFolders, records, currentFolder, authorization, error: null }
   } catch (error) {
     // If it's a redirect, rethrow it
     if (error instanceof Response) throw error
@@ -167,6 +181,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
       childFolders: null,
       records: null,
       currentFolder: null,
+      authorization: null,
       error: {
         message: error instanceof Error ? error.message : 'Failed to load folder contents'
       }
@@ -181,7 +196,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
   const revalidator = useRevalidator()
   const navigate = useNavigate()
 
-  const { childFolders, records, currentFolder, error } = loaderData
+  const { childFolders, records, currentFolder, authorization, error } = loaderData
   const isDeleting = fetcher.state !== 'idle'
   const isLoading = revalidator.state === 'loading'
 
@@ -197,6 +212,11 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
   const createFolderFetcher = useFetcher()
+
+  // State for edit folder modal
+  const [editingFolder, setEditingFolder] = useState<Folder | null>(null)
+  const [editFolderName, setEditFolderName] = useState('')
+  const editFolderFetcher = useFetcher()
 
   // Handle retry
   const handleRetry = () => {
@@ -216,12 +236,47 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
     setShowCreateFolderModal(false)
   }
 
+  // Handle edit folder
+  const handleEditFolder = (folder: Folder, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setEditingFolder(folder)
+    setEditFolderName(folder.name)
+  }
+
+  // Handle save folder name
+  const handleSaveFolderName = () => {
+    if (!editingFolder) return
+
+    const formData = new FormData()
+    formData.append('folderId', editingFolder.id)
+    formData.append('folderName', editFolderName.trim())
+    formData.append('parentFolderId', editingFolder.parentFolderId || '')
+
+    editFolderFetcher.submit(formData, { method: 'post' })
+  }
+
+  // Handle cancel edit
+  const handleCancelEdit = () => {
+    setEditingFolder(null)
+    setEditFolderName('')
+  }
+
   // Close modal on successful folder creation
   useEffect(() => {
     if (createFolderFetcher.data?.success) {
       revalidator.revalidate()
     }
   }, [createFolderFetcher.data, revalidator])
+
+  // Close modal on successful folder update
+  useEffect(() => {
+    if (editFolderFetcher.data?.success) {
+      setEditingFolder(null)
+      setEditFolderName('')
+      revalidator.revalidate()
+    }
+  }, [editFolderFetcher.data, revalidator])
 
   // Auto-redirect on auth errors
   useEffect(() => {
@@ -378,8 +433,8 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
           error={null}
           onRetry={handleRetry}
           emptyMessage="This folder has no subfolders. Add files or create subfolders to get started."
-          showActionButtons={isTrashFolder}
-          showTrashButton={true}
+          showActionButtons={true}
+          onEditFolder={handleEditFolder}
           onDeleteFolder={handleFolderDelete}
           onRestoreFolder={handleRestoreFolder}
           isTrashFolder={isTrashFolder}
@@ -472,6 +527,51 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
                 className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 {createFolderFetcher.state !== 'idle' ? 'Creating...' : 'Create'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Folder Modal */}
+      {editingFolder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Rename Folder</h2>
+            <div className="mb-6">
+              <label htmlFor="edit-folder-name" className="block text-sm font-medium text-gray-700 mb-2">
+                Folder Name
+              </label>
+              <input
+                id="edit-folder-name"
+                type="text"
+                value={editFolderName}
+                onChange={(e) => setEditFolderName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveFolderName()
+                  } else if (e.key === 'Escape') {
+                    handleCancelEdit()
+                  }
+                }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                placeholder="Enter folder name"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={handleCancelEdit}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveFolderName}
+                disabled={!editFolderName.trim()}
+                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-md transition-colors font-medium"
+              >
+                Save
               </button>
             </div>
           </div>
