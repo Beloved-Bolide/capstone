@@ -15,6 +15,7 @@ import { recordRoute } from './apis/record/record.route.ts'
 import {userRoute} from "./apis/user/user.route.ts"
 import { healthRoute } from './apis/health/health.route.ts'
 import { fileRoute } from './apis/file/file.route.ts'
+import { uploadRoute } from './apis/upload/upload.route.ts'
 
 // app class that extends the express application
 export class App {
@@ -83,6 +84,7 @@ export class App {
     this.app.use(recordRoute.basePath, recordRoute.router)
     this.app.use(userRoute.basePath, userRoute.router)
     this.app.use(fileRoute.basePath, fileRoute.router)
+    this.app.use(uploadRoute.basePath, uploadRoute.router)
   }
 
   // starts the server and tells the terminal to post a message that the server is running and on what port

@@ -27,6 +27,12 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
     // Get the splat parameter (everything after /dashboard/)
     const splat = params['*' as keyof typeof params] as string | undefined
 
+    // If the URL contains '/record/', this is a record detail page, not a folder page
+    // Return empty data to avoid trying to load folder contents
+    if (splat && splat.includes('/record/')) {
+      return { childFolders: [], records: [], currentFolder: null, error: null }
+    }
+
     // Get the last segment as the current folder ID
     const segments = splat ? splat.split('/').filter(Boolean) : []
     const folderId = segments.length > 0 ? segments[segments.length - 1] : null
