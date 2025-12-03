@@ -47,25 +47,25 @@ export function ErrorDisplay({
   const bgColor = {
     error: 'bg-red-50',
     warning: 'bg-yellow-50',
-    info: 'bg-blue-50'
+    info: 'bg-cyan-50'
   }[type]
 
   const borderColor = {
     error: 'border-red-200',
     warning: 'border-yellow-200',
-    info: 'border-blue-200'
+    info: 'border-cyan-200'
   }[type]
 
   const textColor = {
     error: 'text-red-800',
     warning: 'text-yellow-800',
-    info: 'text-blue-800'
+    info: 'text-cyan-800'
   }[type]
 
   const iconColor = {
     error: 'text-red-600',
     warning: 'text-yellow-600',
-    info: 'text-blue-600'
+    info: 'text-cyan-600'
   }[type]
 
   return (

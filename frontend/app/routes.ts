@@ -22,6 +22,9 @@ export default [
       route('*', 'routes/dashboard/folder/folder.tsx')
     ]),
 
+    // Record detail at "/record/:recordId"
+    route('record/:recordId', 'routes/dashboard/record/record.tsx'),
+
     // New file at "/new-file-record"
     route('new-file-record', 'routes/new-file-record/new-file-record.tsx'),
 

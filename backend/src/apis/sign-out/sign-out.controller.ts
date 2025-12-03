@@ -1,19 +1,22 @@
 import type { Request, Response } from 'express'
-import { signOutAction } from './sign-out-model'
+import { signOutAction } from './sign-out.model.ts'
 
 export async function signOutController(request: Request, response: Response): Promise<void> {
   try {
     const result = await signOutAction(request)
 
-    // Clear the earl-grey cookie
-    response.clearCookie('earl-grey', {
+    // Clear the backend session cookie (connect.sid)
+    // Match the cookie options from the session configuration for reliable clearing
+    response.clearCookie('connect.sid', {
       path: '/',
-      domain: 'localhost'
+      httpOnly: true,
+      secure: false, // Should match session config
+      sameSite: 'lax'
     })
 
-    response.json(result)
+    response.status(result.status).json(result)
   } catch (error) {
-    response.json({
+    response.status(500).json({
       status: 500,
       message: 'Error signing out. Please try again.',
       data: null

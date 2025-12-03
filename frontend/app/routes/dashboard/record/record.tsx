@@ -21,7 +21,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
   }
 
   // Get the record ID from params
-  const recordId = params
+  const recordId = params.recordId
 
   if (!recordId) {
     return { record: null, files: [] }
@@ -29,14 +29,16 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
 
   // Fetch the record and its files
   const record = await getRecordById(recordId, authorization, cookie)
-  const files = record ? await getFilesByRecordId(recordId, authorization, cookie) : []
+  const filesData = record ? await getFilesByRecordId(recordId, authorization, cookie) : []
+  const files = Array.isArray(filesData) ? filesData : []
 
   return { record, files }
 }
 
 export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
 
-  const { record, files } = loaderData
+  const { record, files: loadedFiles } = loaderData
+  const files = Array.isArray(loadedFiles) ? loadedFiles : []
   const navigate = useNavigate()
   const [selectedFileIndex, setSelectedFileIndex] = useState(0)
 
