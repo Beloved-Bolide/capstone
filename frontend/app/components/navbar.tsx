@@ -126,7 +126,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
               {currentPath !== '/' && (
                 <Link
                 to="/"
-                className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+                className="text-sm font-medium text-gray-700 hover:text-cyan-700 transition-colors"
                 >
                   Home
                 </Link>
@@ -134,7 +134,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
               {currentPath !== '/dashboard' && !currentPath.startsWith('/dashboard/') && (
                 <Link
                 to="/dashboard"
-                className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+                className="text-sm font-medium text-gray-700 hover:text-cyan-700 transition-colors"
                 >
                   Dashboard
                 </Link>
@@ -142,7 +142,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
               {currentPath !== '/expenses' && (
                 <Link
                   to="/expenses"
-                  className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+                  className="text-sm font-medium text-gray-700 hover:text-cyan-700 transition-colors"
                 >
                   Expenses
                 </Link>

@@ -93,7 +93,7 @@ export default function RecordDetail ({ loaderData }: Route.ComponentProps) {
 
           <Link
             to={`/new-file-record?recordId=${record.id}`}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
           >
             <Pencil className="w-4 h-4" />
             <span>Edit</span>
@@ -103,7 +103,7 @@ export default function RecordDetail ({ loaderData }: Route.ComponentProps) {
         {/* Record Card */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b border-gray-200">
+          <div className="bg-gradient-to-r from-green-50 to-cyan-50 px-6 py-4 border-b border-gray-200">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-green-100 rounded-lg">
@@ -206,7 +206,7 @@ export default function RecordDetail ({ loaderData }: Route.ComponentProps) {
             {/* Notification Status */}
             {record.notifyOn && (
               <div className="border-t border-gray-200 pt-6">
-                <div className="flex items-center gap-2 text-blue-600">
+                <div className="flex items-center gap-2 text-cyan-600">
                   <Bell className="w-5 h-5" />
                   <span className="text-sm font-medium">Notifications enabled for this item</span>
                 </div>

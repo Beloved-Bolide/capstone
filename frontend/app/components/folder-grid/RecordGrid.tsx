@@ -184,10 +184,10 @@ export function RecordGrid({
                 <Link
                   to={`/new-file-record?recordId=${record.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="p-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                  className="p-2 bg-cyan-50 hover:bg-cyan-100 rounded-lg transition-colors"
                   title="Edit record"
                 >
-                  <Pencil className="w-4 h-4 text-blue-600" />
+                  <Pencil className="w-4 h-4 text-cyan-600" />
                 </Link>
               )}
               {/* Restore button - show only in trash folder */}

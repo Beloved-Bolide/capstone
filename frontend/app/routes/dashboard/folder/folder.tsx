@@ -378,7 +378,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <FolderPlus className="w-5 h-5 text-blue-600" />
+                <FolderPlus className="w-5 h-5 text-cyan-600" />
                 <h2 className="text-xl font-semibold text-gray-900">Create Subfolder</h2>
               </div>
               <button
@@ -406,7 +406,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
                   }
                 }}
                 placeholder="Enter subfolder name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 autoFocus
               />
             </div>
@@ -427,7 +427,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
               <button
                 onClick={handleCreateSubfolder}
                 disabled={!newFolderName.trim() || createFolderFetcher.state !== 'idle'}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+                className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 {createFolderFetcher.state !== 'idle' ? 'Creating...' : 'Create'}
               </button>

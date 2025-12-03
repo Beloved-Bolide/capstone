@@ -350,7 +350,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               onClick={() => setSelectedFolder('All Folders')}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isBaseDashboard
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                  ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
                   : 'text-gray-700 hover:bg-gray-100 border border-transparent'
               }`}
             >
@@ -456,14 +456,14 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                           key={folder.id}
                           to={`./${folder.id}`}
                           onClick={() => setSelectedFolder(folder.name)}
-                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
                         >
                           <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+                            <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
                               {getFolderIcon(folder.name, 'md')}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                              <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
                                 {folder.name}
                               </h3>
                               <p className="text-xs text-gray-500 mt-1">System Folder</p>
@@ -648,7 +648,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     handleCancelEdit()
                   }
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 placeholder="Enter folder name"
                 autoFocus
               />
@@ -663,7 +663,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               <button
                 onClick={handleSaveFolderName}
                 disabled={!editFolderName.trim()}
-                className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
               >
                 Save
               </button>

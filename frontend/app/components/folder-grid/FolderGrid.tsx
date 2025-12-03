@@ -112,13 +112,13 @@ export function FolderGrid({
                     className={`p-2 rounded-lg transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
-                        : 'bg-blue-50 hover:bg-blue-100'
+                        : 'bg-cyan-50 hover:bg-cyan-100'
                     }`}
                     title={isDeleting ? 'Processing...' : 'Rename folder'}
                   >
                     <Pencil
                       className={`w-4 h-4 ${
-                        isDeleting ? 'text-gray-400' : 'text-blue-600'
+                        isDeleting ? 'text-gray-400' : 'text-cyan-600'
                       }`}
                     />
                   </button>
