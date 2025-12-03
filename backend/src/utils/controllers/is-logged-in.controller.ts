@@ -45,5 +45,6 @@ export function isLoggedInController (request: Request, response: Response, next
   } catch (error: unknown) {
     // if an error occurs, return the status
     response.json(status)
+    return
   }
 }
