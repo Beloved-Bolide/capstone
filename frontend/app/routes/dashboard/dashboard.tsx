@@ -43,7 +43,7 @@ export async function loader ({ request }: Route.LoaderArgs) {
   const authorization = session.get('authorization')
 
   if (!cookie || !user?.id || !authorization) {
-    return { redirect: '/login' }
+    throw redirect('/sign-in')
   }
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
