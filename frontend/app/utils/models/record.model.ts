@@ -142,11 +142,12 @@ export async function deleteRecord (recordId: string, authorization: string, coo
     body: null
   })
 
+  const result = await response.json()
+
   if (!response.ok) {
-    throw new Error('Failed to delete record')
+    throw new Error(result.message || 'Failed to delete record')
   }
 
-  const result = await response.json()
   return { result }
 }
 

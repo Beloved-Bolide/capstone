@@ -547,7 +547,7 @@ export async function deleteRecordController (request: Request, response: Respon
     // get the user from the current session and check if they are signed in
     const user = request.session?.user
     if (!user) {
-      response.json({
+      response.status(401).json({
         status: 401,
         data: null,
         message: 'Delete record failed: Unauthorized: Please sign in to perform this action.'
@@ -558,7 +558,7 @@ export async function deleteRecordController (request: Request, response: Respon
     // get the record by id and check if it exists
     const record = await selectRecordByRecordId(id)
     if (!record) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Delete record failed: Record not found.'

@@ -1,6 +1,5 @@
 import { z } from 'zod/v4'
 import type { Status } from '~/utils/interfaces/Status'
-import { ClockAlert, FolderOpen, RotateCw, Star, Trash2 } from 'lucide-react'
 
 
 export const FolderSchema = z.object({
@@ -171,11 +170,12 @@ export async function deleteFolder (folderId: string, authorization: string, coo
     body: null
   })
 
+  const result = await response.json()
+
   if (!response.ok) {
-    throw new Error('Failed to delete folder')
+    throw new Error(result.message || 'Failed to delete folder')
   }
 
-  const result = await response.json()
   return { result }
 }
 

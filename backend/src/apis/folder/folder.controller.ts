@@ -398,7 +398,7 @@ export async function deleteFolderController (request: Request, response: Respon
     // get the folder from the database and check if it exists
     const folder = await selectFolderByFolderId(id)
     if (!folder) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Delete folder failed: Folder not found.'
@@ -413,7 +413,7 @@ export async function deleteFolderController (request: Request, response: Respon
     // check if the folder is a parent folder
     const parentFolderId = folder.parentFolderId
     if (!parentFolderId) {
-      response.json({
+      response.status(400).json({
         status: 400,
         data: null,
         message: 'Delete folder failed: Cannot delete a root folder.'
@@ -425,7 +425,7 @@ export async function deleteFolderController (request: Request, response: Respon
     const hasChildren = await hasChildFolders(id)
     const hasItems = await hasRecords(id)
     if (hasChildren || hasItems) {
-      response.json({
+      response.status(400).json({
         status: 400,
         data: null,
         message: 'Delete folder failed: Folder has child folders or files. Delete them first.'
