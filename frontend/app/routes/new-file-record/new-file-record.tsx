@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { type NewRecord, NewRecordSchema, postRecord } from '~/utils/models/record.model'
+import { type NewRecord, type Record, NewRecordSchema, postRecord, getRecordById, updateRecord } from '~/utils/models/record.model'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getSession } from '~/utils/session.server'
@@ -22,12 +22,23 @@ export async function loader ({ request }: Route.LoaderArgs) {
   const authorization = session.get('authorization')
 
   if (!cookie || !user?.id || !authorization) {
-    return { folders: null }
+    return { folders: null, categories: null, existingRecord: null }
   }
+
+  // Check if we're editing an existing record
+  const url = new URL(request.url)
+  const recordId = url.searchParams.get('recordId')
 
   const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
   const categories: Category[] = await getCategories()
-  return { folders, categories }
+
+  // Fetch existing record if recordId is provided
+  let existingRecord: Record | null = null
+  if (recordId) {
+    existingRecord = await getRecordById(recordId, authorization, cookie)
+  }
+
+  return { folders, categories, existingRecord }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
@@ -55,45 +66,55 @@ export async function action ({ request }: Route.ActionArgs) {
     }
   }
 
-  // create a new record object with the required attributes
-  const record = {
-    id: uuid(),
-    folderId: data.folderId,
-    categoryId: data.categoryId,
-    amount: data.amount,
-    companyName: data.companyName,
-    couponCode: data.couponCode,
-    description: data.description,
-    docType: data.docType,
-    expDate: data.expDate,
-    isStarred: data.isStarred ?? false,
-    lastAccessedAt: new Date(),
-    name: data.name,
-    notifyOn: data.notifyOn ?? false,
-    productId: data.productId,
-    purchaseDate: data.purchaseDate
+  // Check if we're updating an existing record
+  const formData = await request.formData()
+  const existingRecordId = formData.get('existingRecordId') as string | null
+
+  let result
+
+  if (existingRecordId) {
+    // Update existing record
+    const record = {
+      id: existingRecordId,
+      folderId: data.folderId,
+      categoryId: data.categoryId,
+      amount: data.amount,
+      companyName: data.companyName,
+      couponCode: data.couponCode,
+      description: data.description,
+      docType: data.docType,
+      expDate: data.expDate,
+      isStarred: data.isStarred ?? false,
+      lastAccessedAt: new Date(),
+      name: data.name,
+      notifyOn: data.notifyOn ?? false,
+      productId: data.productId,
+      purchaseDate: data.purchaseDate
+    }
+    const response = await updateRecord(record, authorization, cookie)
+    result = response.result
+  } else {
+    // Create new record
+    const record = {
+      id: uuid(),
+      folderId: data.folderId,
+      categoryId: data.categoryId,
+      amount: data.amount,
+      companyName: data.companyName,
+      couponCode: data.couponCode,
+      description: data.description,
+      docType: data.docType,
+      expDate: data.expDate,
+      isStarred: data.isStarred ?? false,
+      lastAccessedAt: new Date(),
+      name: data.name,
+      notifyOn: data.notifyOn ?? false,
+      productId: data.productId,
+      purchaseDate: data.purchaseDate
+    }
+    const response = await postRecord(record, authorization, cookie)
+    result = response.result
   }
-
-  // create a new file object with the required attributes
-  // const file = {
-  //   id: uuid(),
-  //   recordId: record.id,
-  //   fileDate: new Date(),
-  //   fileUrl: data.fileUrl,
-  //   ocrData: data.ocrData
-  // }
-
-  // post the record and file to the API
-  const { result } = await postRecord(record, authorization, cookie)
-  // const fileResult = await postFile(file, authorization, cookie)
-
-  // Check if EITHER failed
-  //   if (recordResult.status !== 200 || fileResult.status !== 200) {
-  //     return {
-  //       success: false,
-  //       status: recordResult.status !== 200 ? recordResult : fileResult
-  //     }
-  //   }
 
   if (result.status !== 200) {
     return { success: false, status: result }
@@ -105,16 +126,39 @@ export async function action ({ request }: Route.ActionArgs) {
 
 export default function NewFileRecord ({ loaderData, actionData }: Route.ComponentProps) {
 
-  let { folders, categories } = loaderData
+  let { folders, categories, existingRecord } = loaderData
   if (!folders) folders = []
   if (!categories) categories = []
 
-  const [docType, setDocType] = useState<string>('')
-  const [isStarred, setIsStarred] = useState(false)
-  const [notifyOn, setNotifyOn] = useState(false)
+  // Check if we're editing an existing record
+  const isEditing = !!existingRecord
+
+  const [docType, setDocType] = useState<string>(existingRecord?.docType || '')
+  const [isStarred, setIsStarred] = useState(existingRecord?.isStarred || false)
+  const [notifyOn, setNotifyOn] = useState(existingRecord?.notifyOn || false)
 
   // Check if the amount field should be shown (only for Receipt/Invoice)
   const showAmountField = docType === 'Receipt/Invoice'
+
+  // Prepare default values for the form
+  const defaultValues = existingRecord ? {
+    folderId: existingRecord.folderId,
+    categoryId: existingRecord.categoryId,
+    amount: existingRecord.amount,
+    companyName: existingRecord.companyName,
+    couponCode: existingRecord.couponCode,
+    description: existingRecord.description,
+    docType: existingRecord.docType,
+    expDate: existingRecord.expDate,
+    isStarred: existingRecord.isStarred,
+    name: existingRecord.name,
+    notifyOn: existingRecord.notifyOn,
+    productId: existingRecord.productId,
+    purchaseDate: existingRecord.purchaseDate
+  } : {
+    isStarred: false,
+    notifyOn: false
+  }
 
   // use the useRemixForm hook to handle form submission and validation
   const {
@@ -125,10 +169,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
   } = useRemixForm<NewRecord>({
     mode: 'onSubmit',
     resolver,
-    defaultValues: {
-      isStarred: false,
-      notifyOn: false
-    }
+    defaultValues
   })
 
   useActionData<typeof action>()
@@ -141,7 +182,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
       <div className="bg-blue-600 border-b border-blue-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-xl font-semibold text-white">New File Upload</h1>
+            <h1 className="text-xl font-semibold text-white">
+              {isEditing ? 'Edit File' : 'New File Upload'}
+            </h1>
           </div>
         </div>
       </div>
@@ -151,11 +194,17 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
         <div className="bg-white rounded-md shadow-xl">
           {/* Card Header */}
           <div className="bg-blue-50 px-6 py-4 rounded-t-lg border-b border-blue-100">
-            <h2 className="text-lg font-medium text-blue-900">Upload Document</h2>
+            <h2 className="text-lg font-medium text-blue-900">
+              {isEditing ? 'Edit Document' : 'Upload Document'}
+            </h2>
           </div>
 
           {/* Card Body */}
           <Form onSubmit={handleSubmit} noValidate={true} method="POST">
+            {/* Hidden field for existing record ID */}
+            {isEditing && existingRecord && (
+              <input type="hidden" name="existingRecordId" value={existingRecord.id} />
+            )}
             <div className="p-6">
 
               {/* Drag and Drop Area */}

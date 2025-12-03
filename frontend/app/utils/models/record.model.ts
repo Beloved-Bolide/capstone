@@ -171,6 +171,26 @@ export async function deleteRecord (recordId: string, authorization: string, coo
   return { result }
 }
 
+export async function updateRecord (record: Record, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${record.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: JSON.stringify(record)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update record')
+  }
+
+  const result = await response.json()
+  return { result }
+}
+
 export async function moveRecordToTrash (record: Record, trashFolderId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
 
   const updatedRecord = {

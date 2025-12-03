@@ -19,6 +19,7 @@ export default [
 
     // Dashboard at "/dashboard"
     route('dashboard', 'routes/dashboard/dashboard.tsx', [
+      route(':folderId/record/:recordId', 'routes/dashboard/folder/record/record-detail.tsx'),
       route('*', 'routes/dashboard/folder/folder.tsx')
     ]),
 

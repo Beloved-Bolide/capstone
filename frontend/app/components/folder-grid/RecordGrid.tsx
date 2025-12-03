@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { FileText, Star, Calendar, DollarSign, Building2, Trash2 } from 'lucide-react'
+import { FileText, Star, Calendar, DollarSign, Building2, Trash2, Pencil } from 'lucide-react'
 import type { Record } from '~/utils/models/record.model'
 import { RecordSkeleton } from '../loading/RecordSkeleton'
 import { ErrorDisplay } from '../error/ErrorDisplay'
@@ -87,14 +87,11 @@ export function RecordGrid({
           <div key={record.id} className="relative">
             <Link
               to={`./record/${record.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200 block"
+              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200 block min-h-[200px]"
             >
               <div className="flex flex-col h-full">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="p-2.5 bg-green-50 rounded-lg group-hover:bg-green-100 transition-colors">
-                    <FileText className="w-5 h-5 text-green-600" />
-                  </div>
+                {/* Header - add padding to prevent icon overlap */}
+                <div className="flex items-start justify-between mb-3 pt-8">
                   {record.isStarred && !isTrashFolder && (
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   )}
@@ -137,30 +134,54 @@ export function RecordGrid({
                 </div>
               </div>
             </Link>
-            {showTrashButton && onDeleteRecord && (
-              <button
-                onClick={(e) => onDeleteRecord(record, e)}
-                disabled={isDeleting}
-                className={`absolute top-3 right-3 p-2 rounded-lg transition-colors z-10 ${
-                  isDeleting
-                    ? 'bg-gray-200 cursor-not-allowed'
-                    : isTrashFolder
-                      ? 'bg-red-50 hover:bg-red-100'
-                      : 'bg-gray-50 hover:bg-gray-100'
-                }`}
-                title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Move to trash'}
+            {/* Action buttons container */}
+            <div className="absolute top-3 right-3 flex gap-2 z-10">
+              {/* File icon - view details */}
+              <Link
+                to={`./record/${record.id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="p-2 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                title="View details"
               >
-                <Trash2
-                  className={`w-4 h-4 ${
+                <FileText className="w-4 h-4 text-green-600" />
+              </Link>
+              {/* Edit button - show only if not in trash folder */}
+              {!isTrashFolder && (
+                <Link
+                  to={`/new-file-record?recordId=${record.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="p-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                  title="Edit record"
+                >
+                  <Pencil className="w-4 h-4 text-blue-600" />
+                </Link>
+              )}
+              {/* Trash button */}
+              {showTrashButton && onDeleteRecord && (
+                <button
+                  onClick={(e) => onDeleteRecord(record, e)}
+                  disabled={isDeleting}
+                  className={`p-2 rounded-lg transition-colors ${
                     isDeleting
-                      ? 'text-gray-400'
+                      ? 'bg-gray-200 cursor-not-allowed'
                       : isTrashFolder
-                        ? 'text-red-600'
-                        : 'text-gray-600'
+                        ? 'bg-red-50 hover:bg-red-100'
+                        : 'bg-gray-50 hover:bg-gray-100'
                   }`}
-                />
-              </button>
-            )}
+                  title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Move to trash'}
+                >
+                  <Trash2
+                    className={`w-4 h-4 ${
+                      isDeleting
+                        ? 'text-gray-400'
+                        : isTrashFolder
+                          ? 'text-red-600'
+                          : 'text-gray-600'
+                    }`}
+                  />
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
