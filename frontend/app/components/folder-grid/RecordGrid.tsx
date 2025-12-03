@@ -87,7 +87,7 @@ export function RecordGrid({
           <div key={record.id} className="relative">
             <Link
               to={`./record/${record.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200 block min-h-[200px]"
+              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200  min-h-[200px]"
             >
               <div className="flex flex-col h-full">
                 {/* Header - add padding to prevent icon overlap */}
@@ -98,7 +98,7 @@ export function RecordGrid({
                 </div>
 
                 {/* Title */}
-                <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-cyan-600 transition-colors">
                   {record.name || 'Untitled Document'}
                 </h3>
 

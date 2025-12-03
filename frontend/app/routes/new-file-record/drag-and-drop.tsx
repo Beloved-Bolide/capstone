@@ -28,14 +28,14 @@ export default function FileUpload() {
   <div className="mb-8">
     <label
     htmlFor="dropzone-file"
-    className="flex flex-col items-center justify-center w-full h-48 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors"
+    className="flex flex-col items-center justify-center w-full h-48 border-2 border-cyan-300 border-dashed rounded-lg cursor-pointer bg-cyan-50 hover:bg-cyan-100 transition-colors"
     onDrop={handleDrop}
     onDragOver={handleDragOver}
     >
       {!selectedFile ? (
       <div className="flex flex-col items-center justify-center pt-5 pb-6">
         <svg
-        className="w-10 h-10 mb-3 text-blue-400"
+        className="w-10 h-10 mb-3 text-cyan-400"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

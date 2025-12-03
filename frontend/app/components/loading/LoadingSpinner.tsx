@@ -15,7 +15,7 @@ export function LoadingSpinner({ size = 'md', message }: LoadingSpinnerProps) {
   return (
     <div className="flex items-center justify-center gap-3 py-6">
       <div className={`relative ${sizeClasses[size]}`}>
-        <Loader className={`${sizeClasses[size]} text-blue-600 animate-spin`} />
+        <Loader className={`${sizeClasses[size]} text-cyan-600 animate-spin`} />
       </div>
       {message && (
         <span className="text-sm font-medium text-gray-700">

@@ -20,12 +20,12 @@ export function Footer() {
             <h3 className="font-bold text-gray-800 mb-3">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-sm text-gray-600 hover:text-blue-600">
+                <Link to="/" className="text-sm text-gray-600 hover:text-cyan-600">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="text-sm text-gray-600 hover:text-blue-600">
+                <Link to="/dashboard" className="text-sm text-gray-600 hover:text-cyan-600">
                   Dashboard
                 </Link>
               </li>
@@ -37,12 +37,12 @@ export function Footer() {
             <h3 className="font-bold text-gray-800 mb-3">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/privacy" className="text-sm text-gray-600 hover:text-blue-600">
+                <Link to="/privacy" className="text-sm text-gray-600 hover:text-cyan-600">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-sm text-gray-600 hover:text-blue-600">
+                <Link to="/terms" className="text-sm text-gray-600 hover:text-cyan-600">
                   Terms of Service
                 </Link>
               </li>

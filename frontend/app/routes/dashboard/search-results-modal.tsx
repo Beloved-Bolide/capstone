@@ -34,9 +34,9 @@ export function SearchResultsModal ({
         <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl max-h-[70vh] overflow-hidden flex flex-col pointer-events-auto border border-gray-100">
 
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-cyan-50 to-white">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <Search className="w-5 h-5 text-blue-600 flex-shrink-0"/>
+              <Search className="w-5 h-5 text-cyan-600 flex-shrink-0"/>
               <div className="min-w-0">
                 <h2 className="text-lg font-semibold text-gray-900">
                   {isLoading ? 'Searching your files...' : 'Search Results'}
@@ -84,7 +84,7 @@ function LoadingState ({ query }: { query: string }) {
       {/* Animated spinner */}
       <div className="flex items-center justify-center gap-3 py-6">
         <div className="relative w-5 h-5">
-          <Loader className="w-5 h-5 text-blue-600 animate-spin"/>
+          <Loader className="w-5 h-5 text-cyan-600 animate-spin"/>
         </div>
         <span className="text-sm font-medium text-gray-700">Searching for "<span className="font-semibold text-gray-900">{query}</span>"...</span>
       </div>
@@ -142,20 +142,20 @@ function ResultsList ({ results, onClose }: { results: Record[], onClose: () => 
           key={record.id}
           to={`/dashboard/${record.folderId}/record/${record.id}`}
           onClick={onClose}
-          className="block px-6 py-4 hover:bg-blue-50 transition-colors group border-l-4 border-transparent hover:border-blue-600"
+          className="block px-6 py-4 hover:bg-cyan-50 transition-colors group border-l-4 border-transparent hover:border-cyan-600"
         >
           <div className="flex items-start gap-4">
             {/* Icon */}
             <div className="mt-1 flex-shrink-0">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-100 transition-colors">
-                <FileText className="w-5 h-5 text-blue-600"/>
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-100 to-cyan-50 flex items-center justify-center group-hover:from-cyan-200 group-hover:to-cyan-100 transition-colors">
+                <FileText className="w-5 h-5 text-cyan-600"/>
               </div>
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2 mb-1">
-                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate text-base">
+                <h3 className="font-semibold text-gray-900 group-hover:text-cyan-600 transition-colors truncate text-base">
                   {record.name || 'Unnamed Record'}
                 </h3>
                 {record.isStarred && (

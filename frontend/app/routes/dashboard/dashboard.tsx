@@ -11,7 +11,7 @@ import {
 import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
 import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
-import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
+import { AddFolderForm } from '~/routes/dashboard/add-folder-form'
 import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
 import { ErrorDisplay } from '~/components/error/ErrorDisplay'
 import { FolderGrid } from '~/components/folder-grid/FolderGrid'
@@ -30,6 +30,7 @@ const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
   try {
+
     // Check if the user is logged in using session
     const { isLoggedIn } = await import('~/utils/session.server')
     const loginStatus = await isLoggedIn(request)
@@ -54,7 +55,7 @@ export async function loader ({ request }: Route.LoaderArgs) {
     // If it's a redirect, rethrow it
     if (error instanceof Response) throw error
 
-    // Otherwise, return error state
+    // Otherwise, return the error state
     return {
       folders: null,
       authorization: null,
@@ -139,7 +140,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
   const getFolderIcon = (folderName: string, size: 'sm' | 'md' = 'sm') => {
 
-    const iconProps = { className: size === 'sm' ? "w-4 h-4" : "w-5 h-5 text-blue-600" }
+    const iconProps = { className: size === 'sm' ? "w-4 h-4" : "w-5 h-5 text-cyan-600" }
 
     switch (folderName) {
       case 'All Folders':
@@ -157,7 +158,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     }
   }
 
-  // Get data from loader
+  // Get data from the loader
   let { folders, error } = loaderData
   if (!folders) folders = []
 
@@ -208,7 +209,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     }
   }, [error, navigate])
 
-  // Handle search with debounce
+  // Handle search with debouncing
   useEffect(() => {
     if (searchQuery.trim().length === 0) {
       setShowSearchResults(false)
@@ -240,7 +241,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         <div className="lg:hidden px-4 py-3 border-b border-gray-200">
           <button
             aria-label="Close sidebar"
-            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors"
             onClick={() => setSidebarOpen(false)}
           >
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +256,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             onClick={() => {
               setDisplayNewFolderForm(!displayNewFolderForm)
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -281,7 +282,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 onClick={() => setSelectedFolder(folder.name)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   selectedFolder === folder.name
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                    ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
               >
@@ -295,7 +296,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         {/* Settings */}
         <div className="px-3 lg:px-4 py-4 border-t border-gray-200">
           <button
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-blue-50 focus:text-blue-700 focus:border-blue-200 focus:shadow-sm">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-cyan-50 focus:text-cyan-700 focus:border-cyan-200 focus:shadow-sm">
             <Settings className="w-4 h-4"/>
             <span className="flex-1 text-left">Settings</span>
           </button>
@@ -318,12 +319,13 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
                 // Main Dashboard
                 <div className="p-4 lg:p-6">
+
                   {/* New Folder Button - Mobile Only */}
                   <button
                     onClick={() => {
                       setDisplayNewFolderForm(!displayNewFolderForm)
                     }}
-                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
                   >
                     <Plus className="w-4 h-4"/>
                     <span>New Folder</span>
@@ -508,9 +510,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                   <div>
                     <div className="font-semibold mb-1">A Subtitle</div>
                     <div>
-                      A paragraph of text with an <span className="text-blue-600 underline">unsupported link</span>.
-                      A second row of text with a <span className="text-blue-600 underline">web link</span>.
-                      An icon of a <span className="text-blue-600">profile</span> with info.
+                      A paragraph of text with an <span className="text-cyan-600 underline">unsupported link</span>.
+                      A second row of text with a <span className="text-cyan-600 underline">web link</span>.
+                      An icon of a <span className="text-cyan-600">profile</span> with info.
                     </div>
                   </div>
                 </div>
@@ -655,9 +657,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     <div>
                       <div className="font-semibold mb-1">A Subtitle</div>
                       <div>
-                        A paragraph of text with an <span className="text-blue-600 underline">unsupported link</span>.
-                        A second row of text with a <span className="text-blue-600 underline">web link</span>.
-                        An icon of a <span className="text-blue-600">profile</span> with info.
+                        A paragraph of text with an <span className="text-cyan-600 underline">unsupported link</span>.
+                        A second row of text with a <span className="text-cyan-600 underline">web link</span>.
+                        An icon of a <span className="text-cyan-600">profile</span> with info.
                       </div>
                     </div>
                   </div>

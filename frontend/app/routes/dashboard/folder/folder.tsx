@@ -1,10 +1,10 @@
 import type { Route } from './+types/folder'
 import { useLoaderData, useNavigate, useRevalidator, useFetcher, redirect } from 'react-router'
-import { getFoldersByParentFolderId, getFolderById, moveFolderToTrash } from '~/utils/models/folder.model'
+import { getFoldersByParentFolderId, getFolderById } from '~/utils/models/folder.model'
 import React, { useEffect } from 'react'
 import { getSession } from '~/utils/session.server'
 import type { Folder } from '~/utils/models/folder.model'
-import { getRecordsByFolderId, moveRecordToTrash, type Record } from '~/utils/models/record.model'
+import { getRecordsByFolderId, type Record } from '~/utils/models/record.model'
 import { FolderGrid } from '~/components/folder-grid/FolderGrid'
 import { RecordGrid } from '~/components/folder-grid/RecordGrid'
 import { ErrorDisplay } from '~/components/error/ErrorDisplay'
@@ -44,7 +44,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
     // If it's a redirect, rethrow it
     if (error instanceof Response) throw error
 
-    // Otherwise, return error state
+    // Otherwise, return the error state
     return {
       childFolders: null,
       records: null,
@@ -163,6 +163,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="p-4 lg:p-4">
+
       {/* Fetcher status messages */}
       {fetcher.data?.error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -191,36 +192,6 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
             }
           />
         </div>
-      )}
-
-      {/* Folders Grid */}
-      {(childFolders || isLoading) && (
-        <FolderGrid
-          folders={childFolders}
-          isLoading={isLoading && !childFolders}
-          error={null}
-          onRetry={handleRetry}
-          emptyMessage="This folder has no subfolders. Add files or create subfolders to get started."
-          showTrashButton={true}
-          onDeleteFolder={handleFolderDelete}
-          isTrashFolder={isTrashFolder}
-          isDeleting={isDeleting}
-        />
-      )}
-
-      {/* Records Grid */}
-      {(records || isLoading) && (
-        <RecordGrid
-          records={records}
-          isLoading={isLoading && !records}
-          error={null}
-          onRetry={handleRetry}
-          emptyMessage="No files in this folder yet."
-          showTrashButton={true}
-          onDeleteRecord={handleRecordDelete}
-          isTrashFolder={isTrashFolder}
-          isDeleting={isDeleting}
-        />
       )}
 
       {/* Empty state when no folders and no records */}

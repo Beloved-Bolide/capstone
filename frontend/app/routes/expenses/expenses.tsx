@@ -74,7 +74,7 @@ export default function ExpensesPage () {
                 }}
                 className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                   selectedPeriod === 'This Month'
-                    ? 'text-blue-700 border-b-2 border-blue-700 bg-blue-50'
+                    ? 'text-cyan-700 border-b-2 border-cyan-700 bg-cyan-50'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
@@ -87,7 +87,7 @@ export default function ExpensesPage () {
                 }}
                 className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                   selectedPeriod === 'Last Month'
-                    ? 'text-blue-700 border-b-2 border-blue-700 bg-blue-50'
+                    ? 'text-cyan-700 border-b-2 border-cyan-700 bg-cyan-50'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
@@ -98,7 +98,7 @@ export default function ExpensesPage () {
                   onClick={() => setCustomDropdownOpen(!customDropdownOpen)}
                   className={`w-full px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                     !['This Month', 'Last Month'].includes(selectedPeriod)
-                      ? 'text-blue-700 border-b-2 border-blue-700 bg-blue-50'
+                      ? 'text-cyan-700 border-b-2 border-cyan-700 bg-cyan-50'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
@@ -134,7 +134,7 @@ export default function ExpensesPage () {
                                   key={period}
                                   onClick={() => handlePeriodSelect(period)}
                                   className={`w-full px-6 py-2 text-left text-sm hover:bg-gray-100 ${
-                                    selectedPeriod === period ? 'text-blue-700 font-medium' : 'text-gray-700'
+                                    selectedPeriod === period ? 'text-cyan-700 font-medium' : 'text-gray-700'
                                   }`}
                                 >
                                   {period}

@@ -65,7 +65,7 @@ frontend/
 
 - `bg-gray-50` - App shell
 - `bg-white` - Cards, content
-- `bg-blue-50` - Selected/active emphasis
+- `bg-cyan-50` - Selected/active emphasis
 
 #### Text
 
@@ -81,9 +81,9 @@ frontend/
 
 #### Accent
 
-- `text-blue-700` - Emphasized text
-- `focus:ring-blue-500` - Focus rings
-- `border-blue-200` - Selected states
+- `text-cyan-700` - Emphasized text
+- `focus:ring-cyan-500` - Focus rings
+- `border-cyan-200` - Selected states
 
 ### Spacing Scale
 
@@ -136,8 +136,8 @@ Mostly use `px-3`/`px-4` and `py-2` for compact density
 ## Interaction and States
 
 - **Hover** - Light background emphasis like `hover:bg-gray-50`
-- **Active/selected** - `bg-blue-50`, `text-blue-700`, and if bordered, `border-blue-200`
-- **Focus** - Always show a visible ring: `focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`
+- **Active/selected** - `bg-cyan-50`, `text-cyan-700`, and if bordered, `border-cyan-200`
+- **Focus** - Always show a visible ring: `focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent`
 - **Transitions** - `transition-colors` on interactive elements; optional `duration-300 ease-in-out` for slide/transform effects (e.g., mobile sidebar)
 
 ---
@@ -199,7 +199,7 @@ Use lucide-react icons sized to text density
 
 - **Small controls** - `w-4 h-4`
 - **Header/top-level** - `w-5 h-5`
-- **Colors** - `text-gray-400` for secondary, `text-gray-600` for default, `text-blue-700` for emphasized
+- **Colors** - `text-gray-400` for secondary, `text-gray-600` for default, `text-cyan-700` for emphasized
 
 ---
 
@@ -224,7 +224,7 @@ Use lucide-react icons sized to text density
 ### Primary Selected Button/State
 
 ```jsx
-<button className="px-3 py-2 text-sm font-medium rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+<button className="px-3 py-2 text-sm font-medium rounded-md bg-cyan-50 text-cyan-700 border border-cyan-200">
   Selected
 </button>
 ```
@@ -237,7 +237,7 @@ Use lucide-react icons sized to text density
   <input
     type="text"
     placeholder="Find name or place..."
-    className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    className="w-full pl-9 lg:pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
   />
 </div>
 ```
@@ -297,7 +297,7 @@ Use lucide-react icons sized to text density
 ## Lists, Groups, and Section Headings
 
 - Use vertical rhythm with `space-y-1` for dense lists
-- **Group labels** - `text-sm font-semibold text-blue-700` with an icon `w-4 h-4` when appropriate
+- **Group labels** - `text-sm font-semibold text-cyan-700` with an icon `w-4 h-4` when appropriate
 - **Category chips** - `px-2 py-1 bg-gray-100 rounded text-xs text-gray-600`
 
 ---
@@ -323,7 +323,7 @@ Keep responsive variants adjacent to their base class (e.g., `p-3 lg:p-6`)
 
 ## Accessibility
 
-- Always ensure focus visibility using `focus:ring-2 focus:ring-blue-500`
+- Always ensure focus visibility using `focus:ring-2 focus:ring-cyan-500`
 - Hide purely decorative inputs using `sr-only` when needed
 - Icon-only buttons must include accessible names (e.g., `aria-label` on the button)
 
@@ -336,7 +336,7 @@ Keep responsive variants adjacent to their base class (e.g., `p-3 lg:p-6`)
 ```jsx
 <button
   className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-    selected ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+    selected ? 'bg-cyan-50 text-cyan-700 border border-cyan-200' : 'text-gray-700 hover:bg-gray-50 border border-transparent'
   }`}
 >
   Label
@@ -352,7 +352,7 @@ Mix accent colors arbitrarily or use heavy shadow without purpose. Prefer border
 ## Tables Specifics
 
 - **Header row** - `border-b border-gray-200`, label with `text-sm font-semibold text-gray-700`
-- **Body rows** - `border-b border-gray-100`, hover with `hover:bg-gray-50`, selection with `bg-blue-50`
+- **Body rows** - `border-b border-gray-100`, hover with `hover:bg-gray-50`, selection with `bg-cyan-50`
 - **Cell padding** - `py-3 px-4`
 
 ---
@@ -375,7 +375,7 @@ Mix accent colors arbitrarily or use heavy shadow without purpose. Prefer border
 
 ## Dark Mode (if/when enabled)
 
-Current codebase doesn't apply dark variants; if introduced, mirror grays and accents with `dark:bg-gray-900`, `dark:text-gray-100`, and `dark:border-gray-700` while keeping `focus:ring-blue-500`
+Current codebase doesn't apply dark variants; if introduced, mirror grays and accents with `dark:bg-gray-900`, `dark:text-gray-100`, and `dark:border-gray-700` while keeping `focus:ring-cyan-500`
 
 ---
 
