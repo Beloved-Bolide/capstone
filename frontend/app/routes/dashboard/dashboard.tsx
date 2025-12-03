@@ -197,10 +197,12 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     .map(name => folders.find(f => f.name === name && f.parentFolderId === null))
     .filter((f): f is Folder => f !== undefined)
 
-  // Get user-created folders (not default system folders) including subfolders and sort alphabetically
+  // Get user-created folders (not default system folders)
+  // On base dashboard, only show parent folders (parentFolderId === null)
   const userCreatedFolders = folders
     .filter(folder =>
-      !['All Folders', 'Recent', 'Starred', 'Expiring', 'Trash'].includes(folder.name)
+      !['All Folders', 'Recent', 'Starred', 'Expiring', 'Trash'].includes(folder.name) &&
+      folder.parentFolderId === null
     )
     .sort((a, b) => a.name.localeCompare(b.name))
 

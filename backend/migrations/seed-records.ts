@@ -80,132 +80,205 @@ async function seedRecords(userId: string): Promise<void> {
 
   // Get all categories
   console.log('📂 Fetching categories...')
-  const categories = await sql`SELECT id FROM category`
+  const categoriesResult = await sql`SELECT id FROM category`
+  const categories = Array.from(categoriesResult) as Array<{ id: string }>
   if (categories.length === 0) {
     console.error('❌ No categories found. Please run seed-categories.ts first!')
     return
   }
   console.log(`✅ Found ${categories.length} categories`)
 
-  // Get all folders for the user
-  console.log('📁 Fetching folders for user...')
-  const folders = await sql`SELECT id, name FROM folder WHERE user_id = ${userId}`
-  if (folders.length === 0) {
-    console.error('❌ No folders found for this user. Please create some folders first!')
-    console.error(`   User ID provided: ${userId}`)
-    return
+  // Create folder structure: 10 parent folders, some with child folders
+  console.log('📁 Creating folder structure...')
+  const parentFolderNames = [
+    'Personal Documents',
+    'Work Files',
+    'Financial Records',
+    'Health & Medical',
+    'Home & Property',
+    'Education',
+    'Travel',
+    'Shopping',
+    'Subscriptions',
+    'Legal Documents'
+  ]
+
+  const folders: Array<{ id: string; name: string }> = []
+
+  // Create parent folders
+  for (const folderName of parentFolderNames) {
+    const folderId = uuid()
+    await sql`
+      INSERT INTO folder (id, user_id, name, parent_folder_id)
+      VALUES (${folderId}, ${userId}, ${folderName}, ${null})
+    `
+    folders.push({ id: folderId, name: folderName })
   }
-  console.log(`✅ Found ${folders.length} folders`)
 
-  // Generate 50 test records
-  console.log('📝 Generating 50 test records...')
+  // Create child folders for some parents (40% chance each parent gets 1-3 children)
+  const childFolderTemplates = [
+    { parent: 'Work Files', children: ['Projects', 'Meetings', 'Reports'] },
+    { parent: 'Financial Records', children: ['Taxes', 'Investments'] },
+    { parent: 'Shopping', children: ['Electronics', 'Clothing'] },
+    { parent: 'Health & Medical', children: ['Insurance', 'Prescriptions'] }
+  ]
 
-  for (let i = 0; i < 50; i++) {
-    // Randomly distribute across folders
-    const folder = randomItem(folders)
-    const category = randomItem(categories)
-
-    // Generate varied purchase dates (1 week to 2 years ago)
-    const purchaseDate = randomDate(730, 7) // 2 years to 1 week ago
-
-    // 40% chance of having an expiration date
-    let expDate = null
-    if (Math.random() < 0.4) {
-      // Some expired, some in the future
-      if (Math.random() < 0.3) {
-        // Expired (1 to 90 days ago)
-        expDate = randomDate(90, 1)
-      } else {
-        // Future (30 to 365 days from now)
-        expDate = futureDate(Math.floor(Math.random() * 335 + 30))
+  for (const template of childFolderTemplates) {
+    const parentFolder = folders.find(f => f.name === template.parent)
+    if (parentFolder) {
+      for (const childName of template.children) {
+        const childId = uuid()
+        await sql`
+          INSERT INTO folder (id, user_id, name, parent_folder_id)
+          VALUES (${childId}, ${userId}, ${childName}, ${parentFolder.id})
+        `
+        folders.push({ id: childId, name: childName })
       }
     }
+  }
 
-    // 20% chance of being starred
-    const isStarred = Math.random() < 0.2
+  console.log(`✅ Created ${parentFolderNames.length} parent folders and ${folders.length - parentFolderNames.length} child folders`)
 
-    // 30% chance of having notifications enabled
-    const notifyOn = Math.random() < 0.3
+  // Identify parent folders that have children
+  const parentFoldersWithChildren = folders.filter(f =>
+    folders.some(child => folders.find(p => p.name === f.name && folders.some(c => childFolderTemplates.some(t => t.parent === f.name))))
+  )
+  const parentsWithChildrenNames = childFolderTemplates.map(t => t.parent)
+  const guaranteedParentFolders = folders.filter(f => parentsWithChildrenNames.includes(f.name))
 
-    // 70% chance of having a company name
-    const companyName = Math.random() < 0.7 ? randomItem(companyNames) : null
+  // Generate 24 test records
+  console.log('📝 Generating 24 test records...')
 
-    // Random amount between $10 and $5000
-    const amount = Math.random() < 0.8 ? randomAmount(10, 5000) : null
+  let recordsCreated = 0
 
-    // 30% chance of having a coupon code
-    const couponCode = Math.random() < 0.3 ? generateCouponCode() : null
-
-    // 40% chance of having a product ID
-    const productId = Math.random() < 0.4 ? generateProductId() : null
-
-    // 60% chance of having a description
-    const description = Math.random() < 0.6 ? randomItem(descriptions) : null
-
-    // Random document type
-    const docType = randomItem(docTypes)
-
-    // Random record name
-    const name = randomItem(recordNames)
-
-    // Last accessed between purchase date and now
-    const lastAccessedAt = randomDate(
-      Math.floor((new Date().getTime() - purchaseDate.getTime()) / (24 * 60 * 60 * 1000)),
-      0
-    )
-
-    // Insert the record
-    await sql`
-      INSERT INTO record (
-        id,
-        folder_id,
-        category_id,
-        amount,
-        company_name,
-        coupon_code,
-        description,
-        doc_type,
-        exp_date,
-        is_starred,
-        last_accessed_at,
-        name,
-        notify_on,
-        product_id,
-        purchase_date
-      )
-      VALUES (
-        ${uuid()},
-        ${folder.id},
-        ${category.id},
-        ${amount},
-        ${companyName},
-        ${couponCode},
-        ${description},
-        ${docType},
-        ${expDate},
-        ${isStarred},
-        ${lastAccessedAt},
-        ${name},
-        ${notifyOn},
-        ${productId},
-        ${purchaseDate}
-      )
-    `
-
-    // Progress indicator
-    if ((i + 1) % 10 === 0) {
-      console.log(`   ✓ Created ${i + 1}/50 records`)
+  // First, ensure each parent folder with children gets 2 records (8 records total: 4 parents × 2)
+  console.log('   ✓ Allocating records to parent folders with children...')
+  for (const parentFolder of guaranteedParentFolders) {
+    for (let j = 0; j < 2; j++) {
+      await createRecord(folders, categories, parentFolder)
+      recordsCreated++
     }
   }
 
-  console.log('✅ Successfully seeded 50 test records!')
+  // Distribute the remaining 16 records randomly across all folders
+  console.log('   ✓ Distributing remaining records across all folders...')
+  for (let i = recordsCreated; i < 24; i++) {
+    const folder = randomItem(folders)
+    await createRecord(folders, categories, folder)
+    recordsCreated++
+
+    if (recordsCreated % 6 === 0) {
+      console.log(`   ✓ Created ${recordsCreated}/24 records`)
+    }
+  }
+
+  console.log('✅ Successfully seeded 24 test records!')
   console.log('\n📊 Summary:')
-  console.log(`   • Records distributed across ${folders.length} folders`)
+  console.log(`   • 10 parent folders with nested structure`)
+  console.log(`   • ${folders.length} total folders (including child folders)`)
+  console.log(`   • 4 parent folders guaranteed to contain both child folders AND records`)
+  console.log(`   • Remaining records distributed randomly across all folders`)
   console.log(`   • Using ${categories.length} different categories`)
   console.log(`   • ~20% starred records`)
   console.log(`   • ~30% with notifications enabled`)
   console.log(`   • ~40% with expiration dates (mix of expired and future)`)
   console.log(`   • Varied amounts, dates, and document types`)
+}
+
+// Helper function to create a record
+async function createRecord(
+  folders: Array<{ id: string; name: string }>,
+  categories: Array<{ id: string }>,
+  folder: { id: string; name: string }
+): Promise<void> {
+  const category = randomItem(categories)
+
+  // Generate varied purchase dates (1 week to 2 years ago)
+  const purchaseDate = randomDate(730, 7) // 2 years to 1 week ago
+
+  // 40% chance of having an expiration date
+  let expDate = null
+  if (Math.random() < 0.4) {
+    // Some expired, some in the future
+    if (Math.random() < 0.3) {
+      // Expired (1 to 90 days ago)
+      expDate = randomDate(90, 1)
+    } else {
+      // Future (30 to 365 days from now)
+      expDate = futureDate(Math.floor(Math.random() * 335 + 30))
+    }
+  }
+
+  // 20% chance of being starred
+  const isStarred = Math.random() < 0.2
+
+  // 30% chance of having notifications enabled
+  const notifyOn = Math.random() < 0.3
+
+  // 70% chance of having a company name
+  const companyName = Math.random() < 0.7 ? randomItem(companyNames) : null
+
+  // Random amount between $10 and $5000
+  const amount = Math.random() < 0.8 ? randomAmount(10, 5000) : null
+
+  // 30% chance of having a coupon code
+  const couponCode = Math.random() < 0.3 ? generateCouponCode() : null
+
+  // 40% chance of having a product ID
+  const productId = Math.random() < 0.4 ? generateProductId() : null
+
+  // 60% chance of having a description
+  const description = Math.random() < 0.6 ? randomItem(descriptions) : null
+
+  // Random document type
+  const docType = randomItem(docTypes)
+
+  // Random record name
+  const name = randomItem(recordNames)
+
+  // Last accessed between purchase date and now
+  const lastAccessedAt = randomDate(
+    Math.floor((new Date().getTime() - purchaseDate.getTime()) / (24 * 60 * 60 * 1000)),
+    0
+  )
+
+  // Insert the record
+  await sql`
+    INSERT INTO record (
+      id,
+      folder_id,
+      category_id,
+      amount,
+      company_name,
+      coupon_code,
+      description,
+      doc_type,
+      exp_date,
+      is_starred,
+      last_accessed_at,
+      name,
+      notify_on,
+      product_id,
+      purchase_date
+    )
+    VALUES (
+      ${uuid()},
+      ${folder.id},
+      ${category.id},
+      ${amount},
+      ${companyName},
+      ${couponCode},
+      ${description},
+      ${docType},
+      ${expDate},
+      ${isStarred},
+      ${lastAccessedAt},
+      ${name},
+      ${notifyOn},
+      ${productId},
+      ${purchaseDate}
+    )
+  `
 }
 
 // Get user ID from command the line argument or environment variable
