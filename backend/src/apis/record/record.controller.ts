@@ -12,6 +12,9 @@ import {
   deleteRecord,
   selectRecordByRecordId,
   selectRecordsByFolderId,
+  selectStarredRecordsByUserId,
+  selectExpiringRecordsByUserId,
+  selectRecentRecordsByUserId,
   selectRecordsByCategoryId,
   selectRecordsByCompanyName,
   selectRecordsByLastAccessedAt,
@@ -103,6 +106,96 @@ export async function getRecordsByFolderIdController (request: Request, response
       status: 200,
       data: recordData,
       message: recordData.length > 0 ? "Records by folder id successfully got!" : "No records found in this folder."
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting starred records by userId
+ * @endpoint GET /apis/record/starred/:userId **/
+export async function getStarredRecordsByUserIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // get the user id from the request parameters
+    const userId = request.params.userId as string
+
+    // verify ownership
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // select the starred records for the user
+    const records: Record[] | null = await selectStarredRecordsByUserId(userId)
+
+    // Return empty array if no records found (not an error condition)
+    const recordData = records || []
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: recordData,
+      message: recordData.length > 0 ? "Starred records successfully retrieved!" : "No starred records found."
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting expiring records by userId
+ * @endpoint GET /apis/record/expiring/:userId **/
+export async function getExpiringRecordsByUserIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // get the user id from the request parameters
+    const userId = request.params.userId as string
+
+    // verify ownership
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // select the expiring records for the user
+    const records: Record[] | null = await selectExpiringRecordsByUserId(userId)
+
+    // Return empty array if no records found (not an error condition)
+    const recordData = records || []
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: recordData,
+      message: recordData.length > 0 ? "Expiring records successfully retrieved!" : "No expiring records found."
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting recent records by userId
+ * @endpoint GET /apis/record/recent/:userId **/
+export async function getRecentRecordsByUserIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // get the user id from the request parameters
+    const userId = request.params.userId as string
+
+    // verify ownership
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // select the recent records for the user
+    const records: Record[] | null = await selectRecentRecordsByUserId(userId)
+
+    // Return empty array if no records found (not an error condition)
+    const recordData = records || []
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: recordData,
+      message: recordData.length > 0 ? "Recent records successfully retrieved!" : "No recent records found."
     })
 
   } catch (error: any) {

@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { FileText, Star, Calendar, DollarSign, Building2, Trash2, Pencil } from 'lucide-react'
+import { FileText, Star, Calendar, DollarSign, Building2, Trash2, Pencil, RotateCcw } from 'lucide-react'
 import type { Record } from '~/utils/models/record.model'
 import { RecordSkeleton } from '../loading/RecordSkeleton'
 import { ErrorDisplay } from '../error/ErrorDisplay'
@@ -13,8 +13,10 @@ interface RecordGridProps {
   emptyMessage?: string
   showTrashButton?: boolean
   onDeleteRecord?: (record: Record, event: React.MouseEvent) => void
+  onRestoreRecord?: (record: Record, event: React.MouseEvent) => void
   isTrashFolder?: boolean
   isDeleting?: boolean
+  isRecentFolder?: boolean
 }
 
 export function RecordGrid({
@@ -25,8 +27,10 @@ export function RecordGrid({
   emptyMessage = 'No files yet',
   showTrashButton = false,
   onDeleteRecord,
+  onRestoreRecord,
   isTrashFolder = false,
-  isDeleting = false
+  isDeleting = false,
+  isRecentFolder = false
 }: RecordGridProps) {
   // Helper function to format dates
   const formatDate = (dateString: string | null) => {
@@ -116,13 +120,43 @@ export function RecordGrid({
                       <span>${record.amount.toFixed(2)}</span>
                     </div>
                   )}
-                  {(record.purchaseDate || record.expDate) && (
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span className="truncate">
-                        {formatDate(record.purchaseDate || record.expDate)}
-                      </span>
-                    </div>
+                  {/* Show only purchase date in Recent folder */}
+                  {isRecentFolder ? (
+                    record.purchaseDate && (
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span className="truncate">
+                          Purchased: {formatDate(record.purchaseDate)}
+                        </span>
+                      </div>
+                    )
+                  ) : (
+                    <>
+                      {/* Show expiration date with color coding in other folders */}
+                      {record.expDate && (
+                        <div className={`flex items-center gap-2 text-xs font-medium ${
+                          new Date(record.expDate) < new Date()
+                            ? 'text-red-600'
+                            : new Date(record.expDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                              ? 'text-amber-600'
+                              : 'text-gray-600'
+                        }`}>
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span className="truncate">
+                            Expires: {formatDate(record.expDate)}
+                          </span>
+                        </div>
+                      )}
+                      {/* Show purchase date as fallback */}
+                      {record.purchaseDate && !record.expDate && (
+                        <div className="flex items-center gap-2 text-xs text-gray-600">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span className="truncate">
+                            {formatDate(record.purchaseDate)}
+                          </span>
+                        </div>
+                      )}
+                    </>
                   )}
                   {record.docType && (
                     <div className="mt-2">
@@ -155,6 +189,25 @@ export function RecordGrid({
                 >
                   <Pencil className="w-4 h-4 text-blue-600" />
                 </Link>
+              )}
+              {/* Restore button - show only in trash folder */}
+              {isTrashFolder && onRestoreRecord && (
+                <button
+                  onClick={(e) => onRestoreRecord(record, e)}
+                  disabled={isDeleting}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isDeleting
+                      ? 'bg-gray-200 cursor-not-allowed'
+                      : 'bg-amber-50 hover:bg-amber-100'
+                  }`}
+                  title={isDeleting ? 'Processing...' : 'Restore file'}
+                >
+                  <RotateCcw
+                    className={`w-4 h-4 ${
+                      isDeleting ? 'text-gray-400' : 'text-amber-600'
+                    }`}
+                  />
+                </button>
               )}
               {/* Trash button */}
               {showTrashButton && onDeleteRecord && (

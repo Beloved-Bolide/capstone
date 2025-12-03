@@ -133,6 +133,78 @@ export async function action ({ request }: ActionFunctionArgs) {
       }
     }
 
+    // Handle restore action
+    if (actionType === 'restore') {
+      if (itemType === 'folder') {
+        const folder = await getFolderById(itemId, authorization, cookie)
+
+        if (!folder) {
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Folder not found'
+          }), {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        }
+
+        // Import updateFolder for restore
+        const { updateFolder } = await import('~/utils/models/folder.model')
+
+        // Restore folder to root level (parentFolderId = null)
+        const restoredFolder = {
+          ...folder,
+          parentFolderId: null
+        }
+
+        await updateFolder(restoredFolder, authorization, cookie)
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: `Folder "${folder.name}" restored`
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        })
+
+      } else if (itemType === 'record') {
+        // Get the Recent folder to restore records to
+        const recentFolder = await getFolderByName('Recent', authorization, cookie)
+
+        if (!recentFolder || !recentFolder.id) {
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Recent folder not found'
+          }), {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        }
+
+        const recordData = formData.get('record') as string
+        const record = JSON.parse(recordData)
+
+        // Import updateRecord for restore
+        const { updateRecord } = await import('~/utils/models/record.model')
+
+        // Restore record to Recent folder
+        const restoredRecord = {
+          ...record,
+          folderId: recentFolder.id
+        }
+
+        await updateRecord(restoredRecord, authorization, cookie)
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'File restored to Recent folder'
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        })
+      }
+    }
+
     // Handle permanentDelete action
     if (actionType === 'permanentDelete') {
       if (itemType === 'folder') {

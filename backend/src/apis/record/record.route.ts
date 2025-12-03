@@ -4,6 +4,9 @@ import {
   postRecordController,
   putRecordController,
   getRecordsByFolderIdController,
+  getStarredRecordsByUserIdController,
+  getExpiringRecordsByUserIdController,
+  getRecentRecordsByUserIdController,
   getRecordByRecordIdController,
   getRecordsByCategoryIdController,
   getRecordsByCompanyNameController,
@@ -27,6 +30,15 @@ router.route('/id/:id')
 
 router.route('/folderId/:folderId')
   .get(isLoggedInController, getRecordsByFolderIdController)
+
+router.route('/starred/:userId')
+  .get(isLoggedInController, getStarredRecordsByUserIdController)
+
+router.route('/expiring/:userId')
+  .get(isLoggedInController, getExpiringRecordsByUserIdController)
+
+router.route('/recent/:userId')
+  .get(isLoggedInController, getRecentRecordsByUserIdController)
 
 router.route('/categoryId/:categoryId')
   .get(isLoggedInController, getRecordsByCategoryIdController)

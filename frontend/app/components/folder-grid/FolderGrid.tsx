@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { FolderOpen, Trash2 } from 'lucide-react'
+import { FolderOpen, Trash2, Pencil, RotateCcw } from 'lucide-react'
 import type { Folder } from '~/utils/models/folder.model'
 import { FolderSkeleton } from '../loading/FolderSkeleton'
 import { ErrorDisplay } from '../error/ErrorDisplay'
@@ -11,10 +11,16 @@ interface FolderGridProps {
   error: { message: string } | null
   onRetry: () => void
   emptyMessage?: string
-  showTrashButton?: boolean
+  showActionButtons?: boolean
   onDeleteFolder?: (folder: Folder, event: React.MouseEvent) => void
+  onEditFolder?: (folder: Folder, event: React.MouseEvent) => void
+  onRestoreFolder?: (folder: Folder, event: React.MouseEvent) => void
   isTrashFolder?: boolean
   isDeleting?: boolean
+  emptyAction?: {
+    label: string
+    onClick: () => void
+  }
 }
 
 export function FolderGrid({
@@ -23,10 +29,13 @@ export function FolderGrid({
   error,
   onRetry,
   emptyMessage = 'No folders yet',
-  showTrashButton = false,
+  showActionButtons = false,
   onDeleteFolder,
+  onEditFolder,
+  onRestoreFolder,
   isTrashFolder = false,
-  isDeleting = false
+  isDeleting = false,
+  emptyAction
 }: FolderGridProps) {
   // Loading state
   if (isLoading) {
@@ -64,6 +73,7 @@ export function FolderGrid({
         icon={<FolderOpen className="w-16 h-16 text-gray-300" />}
         title="No folders yet"
         message={emptyMessage}
+        action={emptyAction}
       />
     )
   }
@@ -77,9 +87,9 @@ export function FolderGrid({
           <div key={folder.id} className="relative">
             <Link
               to={`./${folder.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200 block"
+              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200 block min-h-[120px]"
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 pt-8">
                 <div className="p-2.5 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
                   <FolderOpen className="w-5 h-5 text-blue-600" />
                 </div>
@@ -91,29 +101,73 @@ export function FolderGrid({
                 </div>
               </div>
             </Link>
-            {showTrashButton && onDeleteFolder && (
-              <button
-                onClick={(e) => onDeleteFolder(folder, e)}
-                disabled={isDeleting}
-                className={`absolute top-3 right-3 p-2 rounded-lg transition-colors z-10 ${
-                  isDeleting
-                    ? 'bg-gray-200 cursor-not-allowed'
-                    : isTrashFolder
-                      ? 'bg-red-50 hover:bg-red-100'
-                      : 'bg-gray-50 hover:bg-gray-100'
-                }`}
-                title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Move to trash'}
-              >
-                <Trash2
-                  className={`w-4 h-4 ${
-                    isDeleting
-                      ? 'text-gray-400'
-                      : isTrashFolder
-                        ? 'text-red-600'
-                        : 'text-gray-600'
-                  }`}
-                />
-              </button>
+            {/* Action buttons container */}
+            {showActionButtons && (
+              <div className="absolute top-3 right-3 flex gap-2 z-10">
+                {/* Edit button - show only if not in trash */}
+                {!isTrashFolder && onEditFolder && (
+                  <button
+                    onClick={(e) => onEditFolder(folder, e)}
+                    disabled={isDeleting}
+                    className={`p-2 rounded-lg transition-colors ${
+                      isDeleting
+                        ? 'bg-gray-200 cursor-not-allowed'
+                        : 'bg-blue-50 hover:bg-blue-100'
+                    }`}
+                    title={isDeleting ? 'Processing...' : 'Rename folder'}
+                  >
+                    <Pencil
+                      className={`w-4 h-4 ${
+                        isDeleting ? 'text-gray-400' : 'text-blue-600'
+                      }`}
+                    />
+                  </button>
+                )}
+                {/* Restore button - show only in trash folder */}
+                {isTrashFolder && onRestoreFolder && (
+                  <button
+                    onClick={(e) => onRestoreFolder(folder, e)}
+                    disabled={isDeleting}
+                    className={`p-2 rounded-lg transition-colors ${
+                      isDeleting
+                        ? 'bg-gray-200 cursor-not-allowed'
+                        : 'bg-amber-50 hover:bg-amber-100'
+                    }`}
+                    title={isDeleting ? 'Processing...' : 'Restore folder'}
+                  >
+                    <RotateCcw
+                      className={`w-4 h-4 ${
+                        isDeleting ? 'text-gray-400' : 'text-amber-600'
+                      }`}
+                    />
+                  </button>
+                )}
+                {/* Delete button */}
+                {onDeleteFolder && (
+                  <button
+                    onClick={(e) => onDeleteFolder(folder, e)}
+                    disabled={isDeleting}
+                    className={`p-2 rounded-lg transition-colors ${
+                      isDeleting
+                        ? 'bg-gray-200 cursor-not-allowed'
+                        : isTrashFolder
+                          ? 'bg-red-50 hover:bg-red-100'
+                          : 'bg-gray-50 hover:bg-gray-100'
+                    }`}
+                    title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Delete folder'}
+                  >
+                    <Trash2
+                      className={`w-4 h-4 ${
+                        isDeleting
+                          ? 'text-gray-400'
+                          : isTrashFolder
+                            ? 'text-red-600'
+                            : 'text-gray-600'
+                      }`}
+                    />
+                  </button>
+                )}
+              </div>
             )}
           </div>
         ))}
