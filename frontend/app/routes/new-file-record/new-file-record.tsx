@@ -177,8 +177,6 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
 
   useActionData<typeof action>()
 
-  console.log(errors)
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -592,7 +590,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                   type="submit"
                   className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-md hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 transition-colors cursor-pointer"
                 >
-                  Upload File
+                  {isEditing ? 'Save Changes' : 'Upload File'}
                 </button>
               </div>
             </div>

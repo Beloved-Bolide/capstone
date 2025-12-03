@@ -1,3 +1,21 @@
+/**
+ * Folder Route Component
+ *
+ * This route handles displaying the contents of a folder (subfolders and records).
+ * It supports special folder types (Starred, Recent, Expiring, Trash) with custom logic.
+ *
+ * Key Features:
+ * - Loads folder data via loader function (server-side)
+ * - Creates subfolders via action function
+ * - Handles moving items to trash and restoring them
+ * - Shows different data based on folder type:
+ *   - Starred: Only starred records
+ *   - Expiring: Records expiring within 2 weeks
+ *   - Recent: 12 most recently purchased records
+ *   - Trash: Deleted items with restore/permanent delete options
+ *   - Regular folders: Child folders and records
+ */
+
 import type { Route } from './+types/folder'
 import { useLoaderData, useNavigate, useRevalidator, useFetcher, redirect } from 'react-router'
 import { getFoldersByParentFolderId, getFolderById, postFolder } from '~/utils/models/folder.model'
@@ -16,103 +34,129 @@ import { ErrorDisplay } from '~/components/error/ErrorDisplay'
 import { FolderOpen, FolderPlus, X } from 'lucide-react'
 import { v7 as uuid } from 'uuid'
 
+/**
+ * ACTION FUNCTION
+ *
+ * Handles form submissions to create new subfolders
+ * This runs on the server when a user submits the "Create Subfolder" form
+ *
+ * @param request - Contains the form data with folderName and parentFolderId
+ * @returns Success object with message, or error object with error message
+ */
 export async function action ({ request }: Route.ActionArgs) {
   try {
-    // Get session data
+    // Extract authentication data from session cookie
     const cookie = request.headers.get('cookie')
     const session = await getSession(cookie)
     const user = session.get('user')
     const authorization = session.get('authorization')
 
-    // Check authentication
+    // Verify user is authenticated, redirect to sign-in if not
     if (!cookie || !user?.id || !authorization) {
       throw redirect('/sign-in')
     }
 
-    // Get form data
+    // Extract folder name and parent folder ID from form submission
     const formData = await request.formData()
     const folderName = formData.get('folderName') as string
     const parentFolderId = formData.get('parentFolderId') as string | null
 
-    // Validate folder name
+    // Validate folder name is provided
     if (!folderName || folderName.trim().length === 0) {
       return { success: false, error: 'Folder name is required' }
     }
 
+    // Validate folder name length (max 64 characters)
     if (folderName.trim().length > 64) {
       return { success: false, error: 'Folder name must be 64 characters or less' }
     }
 
-    // Create folder object
+    // Create a new folder object with generated UUID
     const folder: Folder = {
-      id: uuid(),
-      parentFolderId: parentFolderId || null,
-      userId: user.id,
-      name: folderName.trim()
+      id: uuid(),                       // Generate unique ID using UUID v7
+      parentFolderId: parentFolderId || null,  // Set parent folder (null = root level)
+      userId: user.id,                  // Associate with current user
+      name: folderName.trim()           // Clean up folder name
     }
 
-    // Create the folder
+    // Send POST request to create folder in database
     const { result } = await postFolder(folder, authorization, cookie)
 
-    // Check if creation was successful
+    // Check if creation was successful (status 200)
     if (result.status !== 200) {
       return { success: false, error: result.message || 'Failed to create folder' }
     }
 
-    // Return success
+    // Return success response
     return { success: true, message: 'Folder created successfully' }
   } catch (error) {
-    // Handle redirect
+    // Re-throw redirect responses (used for authentication)
     if (error instanceof Response) throw error
 
-    // Handle other errors
+    // Handle and return other errors
     return { success: false, error: error instanceof Error ? error.message : 'Failed to create folder' }
   }
 }
 
+/**
+ * LOADER FUNCTION
+ *
+ * Fetches folder and record data before rendering the component (server-side)
+ * Determines folder type and loads appropriate data:
+ * - Regular folders: Load child folders and records by folder ID
+ * - Special folders: Load specific filtered records from across all folders
+ *
+ * @param request - HTTP request with authentication cookie
+ * @param params - URL parameters containing folder ID path
+ * @returns Object with childFolders, records, currentFolder, and error state
+ */
 export async function loader ({ request, params }: Route.LoaderArgs) {
   try {
-    // get the cookie, session, user, and authorization
+    // Extract authentication data from session cookie
     const cookie = request.headers.get('cookie')
     const session = await getSession(cookie)
     const user = session.get('user')
     const authorization = session.get('authorization')
 
-    // if the cookie, user, or authorization is not found, redirect to sign-in
+    // Verify user is authenticated, redirect to sign-in if not
     if (!cookie || !user?.id || !authorization) {
       throw redirect('/sign-in')
     }
 
-    // Get the splat parameter (everything after /dashboard/)
+    // Parse the URL to extract the folder ID
+    // URL pattern: /dashboard/folder/{folderId} or /dashboard/folder/{parentId}/{childId}
     const splat = params['*' as keyof typeof params] as string | undefined
 
-    // Get the last segment as the current folder ID
+    // Split path into segments and get the last one as current folder ID
     const segments = splat ? splat.split('/').filter(Boolean) : []
     const folderId = segments.length > 0 ? segments[segments.length - 1] : null
 
-    // Fetch current folder first to check if it's a special folder
+    // Fetch the current folder's metadata to check if it's a special folder
     const currentFolder = folderId ? await getFolderById(folderId, authorization, cookie) : null
 
-    // Check which type of folder we're viewing
+    // Determine folder type by name to apply special logic
     const folderName = currentFolder?.name
-    const isStarredFolder = folderName === 'Starred'
-    const isExpiringFolder = folderName === 'Expiring'
-    const isRecentFolder = folderName === 'Recent'
+    const isStarredFolder = folderName === 'Starred'    // Show only starred records
+    const isExpiringFolder = folderName === 'Expiring'  // Show records expiring within 2 weeks
+    const isRecentFolder = folderName === 'Recent'      // Show 12 most recently purchased records
 
-    // Fetch child folders and records
-    // For special folders, get records using their specific logic
+    // Fetch both child folders and records in parallel for performance
+    // Use different record-fetching logic based on folder type
     const [childFolders, records] = await Promise.all([
+      // Always fetch child folders for the current folder
       getFoldersByParentFolderId(folderId, authorization, cookie),
+
+      // Fetch records based on folder type:
       isStarredFolder
-        ? getStarredRecordsByUserId(user.id, authorization, cookie)
+        ? getStarredRecordsByUserId(user.id, authorization, cookie)        // All starred records
         : isExpiringFolder
-          ? getExpiringRecordsByUserId(user.id, authorization, cookie)
+          ? getExpiringRecordsByUserId(user.id, authorization, cookie)     // Records expiring soon
           : isRecentFolder
-            ? getRecentRecordsByUserId(user.id, authorization, cookie)
-            : getRecordsByFolderId(folderId, authorization, cookie)
+            ? getRecentRecordsByUserId(user.id, authorization, cookie)     // 12 most recent records
+            : getRecordsByFolderId(folderId, authorization, cookie)        // Regular folder records
     ])
 
-    // return the folder data
+    // Return successful data load
     return { childFolders, records, currentFolder, error: null }
   } catch (error) {
     // If it's a redirect, rethrow it
@@ -326,7 +370,8 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
       )}
 
       {/* Folders Grid */}
-      {(childFolders || isLoading) && (
+      {/* Only show folder grid for user folders, or when there are actual child folders */}
+      {(childFolders || isLoading) && (isUserFolder || (childFolders && childFolders.length > 0)) && (
         <FolderGrid
           folders={childFolders}
           isLoading={isLoading && !childFolders}
