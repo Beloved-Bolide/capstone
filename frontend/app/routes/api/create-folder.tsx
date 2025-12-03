@@ -88,8 +88,7 @@ export async function action ({ request }: ActionFunctionArgs) {
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (error) {
-    // Handle other errors
-    console.error('[create-folder] Error:', error)
+    // Handle other errors and return 500 status
     return new Response(JSON.stringify({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create folder'

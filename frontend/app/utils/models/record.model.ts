@@ -172,19 +172,27 @@ export async function getRecentRecordsByUserId (userId: string, authorization: s
   return data
 }
 
+/**
+ * Searches for records based on a query string
+ * @param query - The search query string to match against record fields
+ * @param authorization - JWT authorization token from session
+ * @param cookie - Session cookie for authentication
+ * @param limit - Maximum number of results to return (default: 50)
+ * @returns Promise that resolves to an array of matching Record objects
+ */
 export async function searchRecords (query: string, authorization: string, cookie: string | null, limit: number = 50): Promise<Record[]> {
 
-  // Get API URL - use window location as fallback for client-side code
+  // Determine the API base URL
+  // If running in browser (window exists), construct URL from current location
+  // Otherwise use environment variable or localhost fallback for server-side rendering
   const apiBaseUrl = typeof window !== 'undefined'
     ? `${window.location.protocol}//${window.location.hostname}:8080/apis`
     : (process.env.REST_API_URL || 'http://localhost:8080/apis')
 
+  // Build the search endpoint URL with encoded query parameter and limit
   const url = `${apiBaseUrl}/record/search?q=${encodeURIComponent(query)}&limit=${limit}`
 
-  console.log('[SearchAPI] URL:', url)
-  console.log('[SearchAPI] Authorization:', !!authorization)
-  console.log('[SearchAPI] Cookie:', !!cookie)
-
+  // Make GET request to search endpoint
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -192,24 +200,23 @@ export async function searchRecords (query: string, authorization: string, cooki
       'Authorization': authorization,
       'Cookie': cookie ?? ''
     },
-    credentials: 'include',
+    credentials: 'include', // Include cookies in cross-origin requests
     body: null
   })
 
-  console.log('[SearchAPI] Response status:', response.status)
-  console.log('[SearchAPI] Response OK:', response.ok)
-
+  // If response is not OK (status 200-299), throw an error
   if (!response.ok) {
     const errorData = await response.text()
-    console.error('[SearchAPI] Error response:', errorData)
     throw new Error(`Failed to search records: ${response.status} ${errorData}`)
   }
 
+  // Parse the JSON response
   const responseData = await response.json()
-  console.log('[SearchAPI] Response data:', responseData)
 
+  // Extract the data array from the response
   const { data } = responseData
 
+  // Return the array of matching records
   return data
 }
 

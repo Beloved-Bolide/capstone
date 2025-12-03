@@ -1,3 +1,13 @@
+/**
+ * RecordGrid Component
+ *
+ * Displays a grid of file records with different views based on context:
+ * - Shows purchase dates in Recent folder view
+ * - Shows color-coded expiration dates in other views (red=expired, amber=expiring soon, gray=later)
+ * - Supports trash/restore operations
+ * - Displays metadata like company name, amount, and document type
+ */
+
 import { Link } from 'react-router'
 import { FileText, Star, Calendar, DollarSign, Building2, Trash2, Pencil, RotateCcw } from 'lucide-react'
 import type { Record } from '~/utils/models/record.model'
@@ -5,20 +15,27 @@ import { RecordSkeleton } from '../loading/RecordSkeleton'
 import { ErrorDisplay } from '../error/ErrorDisplay'
 import { EmptyState } from './EmptyState'
 
+/**
+ * Props interface for RecordGrid component
+ */
 interface RecordGridProps {
-  records: Record[] | null
-  isLoading: boolean
-  error: { message: string } | null
-  onRetry: () => void
-  emptyMessage?: string
-  showTrashButton?: boolean
-  onDeleteRecord?: (record: Record, event: React.MouseEvent) => void
-  onRestoreRecord?: (record: Record, event: React.MouseEvent) => void
-  isTrashFolder?: boolean
-  isDeleting?: boolean
-  isRecentFolder?: boolean
+  records: Record[] | null                                        // Array of record objects to display, or null if not loaded
+  isLoading: boolean                                              // Whether data is currently being fetched
+  error: { message: string } | null                               // Error object if fetch failed
+  onRetry: () => void                                             // Callback to retry failed data fetch
+  emptyMessage?: string                                           // Custom message for empty state
+  showTrashButton?: boolean                                       // Whether to show trash/delete button on cards
+  onDeleteRecord?: (record: Record, event: React.MouseEvent) => void    // Handler for delete/trash action
+  onRestoreRecord?: (record: Record, event: React.MouseEvent) => void   // Handler for restore action (Trash folder only)
+  isTrashFolder?: boolean                                         // Whether we're viewing the Trash folder
+  isDeleting?: boolean                                            // Whether a delete/restore operation is in progress
+  isRecentFolder?: boolean                                        // Whether we're viewing the Recent folder
 }
 
+/**
+ * RecordGrid Component
+ * Main component that handles all display states and renders the record grid
+ */
 export function RecordGrid({
   records,
   isLoading,
@@ -32,22 +49,29 @@ export function RecordGrid({
   isDeleting = false,
   isRecentFolder = false
 }: RecordGridProps) {
-  // Helper function to format dates
+
+  /**
+   * Helper function to format date strings for display
+   * @param dateString - ISO date string or null
+   * @returns Formatted date string (e.g., "Jan 15, 2025") or null
+   */
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
     return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+      month: 'short',  // Short month name (e.g., "Jan")
+      day: 'numeric',  // Day of month (e.g., "15")
+      year: 'numeric'  // Full year (e.g., "2025")
     })
   }
 
-  // Loading state
+  // ========== LOADING STATE ==========
+  // Show skeleton placeholders while data is being fetched
   if (isLoading) {
     return (
       <div>
         <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Files</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {/* Render 4 skeleton cards as loading placeholders */}
           {[1, 2, 3, 4].map((i) => (
             <RecordSkeleton key={i} />
           ))}
@@ -56,7 +80,8 @@ export function RecordGrid({
     )
   }
 
-  // Error state
+  // ========== ERROR STATE ==========
+  // Show error message with retry button if data fetch failed
   if (error) {
     return (
       <div>
@@ -65,13 +90,14 @@ export function RecordGrid({
           title="Failed to Load Files"
           message={error.message}
           type="error"
-          onRetry={onRetry}
+          onRetry={onRetry}  // Allow user to retry the failed request
         />
       </div>
     )
   }
 
-  // Empty state
+  // ========== EMPTY STATE ==========
+  // Show empty state message if no records exist
   if (!records || records.length === 0) {
     return (
       <EmptyState
@@ -82,45 +108,61 @@ export function RecordGrid({
     )
   }
 
-  // Success state with records
+  // ========== SUCCESS STATE ==========
+  // Render the grid of record cards with all metadata
   return (
     <div>
       <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Files</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* Map through each record and render a card */}
         {records.map((record) => (
           <div key={record.id} className="relative">
+            {/* Main clickable card that links to record details page */}
             <Link
               to={`./record/${record.id}`}
               className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200 block min-h-[200px]"
             >
               <div className="flex flex-col h-full">
-                {/* Header - add padding to prevent icon overlap */}
+
+                {/* ========== HEADER SECTION ========== */}
+                {/* Add padding at top to prevent icon overlap, show star if record is starred */}
                 <div className="flex items-start justify-between mb-3 pt-8">
+                  {/* Star icon appears for starred records (except in Trash folder) */}
                   {record.isStarred && !isTrashFolder && (
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   )}
                 </div>
 
-                {/* Title */}
+                {/* ========== TITLE SECTION ========== */}
+                {/* Display record name, fallback to "Untitled Document" if no name */}
                 <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {record.name || 'Untitled Document'}
                 </h3>
 
-                {/* Metadata */}
+                {/* ========== METADATA SECTION ========== */}
+                {/* Display various metadata fields with icons */}
                 <div className="mt-auto space-y-2">
+
+                  {/* Company Name */}
                   {record.companyName && (
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <Building2 className="w-3.5 h-3.5" />
                       <span className="truncate">{record.companyName}</span>
                     </div>
                   )}
+
+                  {/* Amount */}
                   {record.amount !== null && (
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <DollarSign className="w-3.5 h-3.5" />
                       <span>${record.amount.toFixed(2)}</span>
                     </div>
                   )}
-                  {/* Show only purchase date in Recent folder */}
+
+                  {/* ========== DATE DISPLAY LOGIC ========== */}
+                  {/* Show different dates based on which folder we're viewing */}
+
+                  {/* RECENT FOLDER: Show only purchase date */}
                   {isRecentFolder ? (
                     record.purchaseDate && (
                       <div className="flex items-center gap-2 text-xs text-gray-600">
@@ -132,14 +174,15 @@ export function RecordGrid({
                     )
                   ) : (
                     <>
-                      {/* Show expiration date with color coding in other folders */}
+                      {/* OTHER FOLDERS: Show expiration date with color coding */}
                       {record.expDate && (
                         <div className={`flex items-center gap-2 text-xs font-medium ${
+                          // Calculate time difference to determine urgency color
                           new Date(record.expDate) < new Date()
-                            ? 'text-red-600'
+                            ? 'text-red-600'      // RED: Already expired
                             : new Date(record.expDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                              ? 'text-amber-600'
-                              : 'text-gray-600'
+                              ? 'text-amber-600'  // AMBER: Expiring within 7 days
+                              : 'text-gray-600'   // GRAY: Expiring later
                         }`}>
                           <Calendar className="w-3.5 h-3.5" />
                           <span className="truncate">
@@ -147,7 +190,8 @@ export function RecordGrid({
                           </span>
                         </div>
                       )}
-                      {/* Show purchase date as fallback */}
+
+                      {/* FALLBACK: Show purchase date if no expiration date exists */}
                       {record.purchaseDate && !record.expDate && (
                         <div className="flex items-center gap-2 text-xs text-gray-600">
                           <Calendar className="w-3.5 h-3.5" />
@@ -158,6 +202,8 @@ export function RecordGrid({
                       )}
                     </>
                   )}
+
+                  {/* Document Type Badge */}
                   {record.docType && (
                     <div className="mt-2">
                       <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
@@ -168,18 +214,22 @@ export function RecordGrid({
                 </div>
               </div>
             </Link>
-            {/* Action buttons container */}
+
+            {/* ========== ACTION BUTTONS ========== */}
+            {/* Floating action buttons in top-right corner of card */}
             <div className="absolute top-3 right-3 flex gap-2 z-10">
-              {/* File icon - view details */}
+
+              {/* View Details Button (Green) - Always shown */}
               <Link
                 to={`./record/${record.id}`}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}  // Prevent card link from triggering
                 className="p-2 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
                 title="View details"
               >
                 <FileText className="w-4 h-4 text-green-600" />
               </Link>
-              {/* Edit button - show only if not in trash folder */}
+
+              {/* Edit Button (Blue) - Show only if NOT in Trash folder */}
               {!isTrashFolder && (
                 <Link
                   to={`/new-file-record?recordId=${record.id}`}
@@ -190,11 +240,12 @@ export function RecordGrid({
                   <Pencil className="w-4 h-4 text-blue-600" />
                 </Link>
               )}
-              {/* Restore button - show only in trash folder */}
+
+              {/* Restore Button (Amber) - Show only IN Trash folder */}
               {isTrashFolder && onRestoreRecord && (
                 <button
                   onClick={(e) => onRestoreRecord(record, e)}
-                  disabled={isDeleting}
+                  disabled={isDeleting}  // Disable during operations
                   className={`p-2 rounded-lg transition-colors ${
                     isDeleting
                       ? 'bg-gray-200 cursor-not-allowed'
@@ -209,7 +260,8 @@ export function RecordGrid({
                   />
                 </button>
               )}
-              {/* Trash button */}
+
+              {/* Trash/Delete Button - Behavior changes based on context */}
               {showTrashButton && onDeleteRecord && (
                 <button
                   onClick={(e) => onDeleteRecord(record, e)}
@@ -218,8 +270,8 @@ export function RecordGrid({
                     isDeleting
                       ? 'bg-gray-200 cursor-not-allowed'
                       : isTrashFolder
-                        ? 'bg-red-50 hover:bg-red-100'
-                        : 'bg-gray-50 hover:bg-gray-100'
+                        ? 'bg-red-50 hover:bg-red-100'    // Red in Trash (permanent delete)
+                        : 'bg-gray-50 hover:bg-gray-100'  // Gray elsewhere (move to trash)
                   }`}
                   title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Move to trash'}
                 >
@@ -228,8 +280,8 @@ export function RecordGrid({
                       isDeleting
                         ? 'text-gray-400'
                         : isTrashFolder
-                          ? 'text-red-600'
-                          : 'text-gray-600'
+                          ? 'text-red-600'   // Red in Trash
+                          : 'text-gray-600'  // Gray elsewhere
                     }`}
                   />
                 </button>

@@ -62,8 +62,16 @@ export async function getFolderById (id: string | null, authorization: string, c
   return folder.data
 }
 
+/**
+ * Fetches a single folder by its name
+ * @param name - The name of the folder to retrieve
+ * @param authorization - JWT authorization token from session
+ * @param cookie - Session cookie for authentication
+ * @returns Promise that resolves to the Folder object if found, or null if not found/error
+ */
 export async function getFolderByName (name: string, authorization: string, cookie: string | null): Promise<Folder | null> {
   try {
+    // Make GET request to fetch folder by name
     const response = await fetch(`${process.env.REST_API_URL}/folder/name/${name}`, {
       method: 'GET',
       headers: {
@@ -74,42 +82,46 @@ export async function getFolderByName (name: string, authorization: string, cook
       body: null
     })
 
+    // If request fails, return null (folder not found)
     if (!response.ok) {
-      console.error(`[getFolderByName] HTTP ${response.status} for folder: ${name}`)
       return null
     }
 
+    // Parse the JSON response
     const responseData = await response.json()
-    console.log('[getFolderByName] Response structure:', {
-      hasData: 'data' in responseData,
-      hasMessage: 'message' in responseData,
-      dataType: typeof responseData.data
-    })
 
-    // Extract data property, handle both direct folder and wrapped response
+    // Extract data property from response, handle both direct folder and wrapped response formats
     const folder = responseData.data ?? responseData
 
+    // If no folder data, return null
     if (!folder) {
-      console.warn(`[getFolderByName] Folder "${name}" not found`)
       return null
     }
 
-    // Validate it has required folder properties
+    // Validate that the folder has required properties (id and name)
     if (!folder.id || !folder.name) {
-      console.error('[getFolderByName] Invalid folder structure:', folder)
       return null
     }
 
+    // Return the folder object
     return folder as Folder
   } catch (error) {
-    console.error('[getFolderByName] Exception:', error)
+    // If any error occurs, return null
     return null
   }
 }
 
+/**
+ * Fetches all folders belonging to a specific user
+ * @param userId - The ID of the user whose folders to retrieve
+ * @param authorization - JWT authorization token from session
+ * @param cookie - Session cookie for authentication
+ * @returns Promise that resolves to an array of Folder objects
+ * @throws Error if the request fails or data format is invalid
+ */
 export async function getFoldersByUserId (userId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
-  console.log('[getFoldersByUserId] Fetching folders for userId:', userId)
 
+  // Make GET request to fetch all folders for the user
   const response = await fetch(`${process.env.REST_API_URL}/folder/userId/${userId}`, {
     method: 'GET',
     headers: {
@@ -120,28 +132,38 @@ export async function getFoldersByUserId (userId: string | null, authorization: 
     body: null
   })
 
-  console.log('[getFoldersByUserId] Response status:', response.status)
+  // Parse the JSON response
   const result = await response.json()
-  console.log('[getFoldersByUserId] Result:', { status: result.status, dataType: typeof result.data, dataLength: Array.isArray(result.data) ? result.data.length : 'N/A' })
 
+  // If request failed, throw an error with the server's message
   if (!response.ok) {
     throw new Error(result.message || 'Failed to get folders')
   }
 
+  // Extract the data array from the response
   const { data } = result
 
-  // Add validation - handle null/undefined data
+  // Validate that data is an array (backend should return array of folders)
+  // If not, it indicates a server error or invalid session
   if (!Array.isArray(data)) {
-    console.error('[getFoldersByUserId] Expected array, got:', typeof data, 'Value:', data)
     throw new Error('Invalid folder data received from server. Please sign in again.')
   }
 
-  console.log('[getFoldersByUserId] Returning', data.length, 'folders')
+  // Return the array of folders
   return data
 }
 
+/**
+ * Fetches all child folders of a parent folder
+ * @param parentFolderId - The ID of the parent folder (null for root level folders)
+ * @param authorization - JWT authorization token from session
+ * @param cookie - Session cookie for authentication
+ * @returns Promise that resolves to an array of child Folder objects
+ * @throws Error if the request fails
+ */
 export async function getFoldersByParentFolderId(parentFolderId: string | null, authorization: string, cookie: string | null): Promise<Folder[]> {
 
+  // Make GET request to fetch child folders
   const response = await fetch(`${process.env.REST_API_URL}/folder/parentFolderId/${parentFolderId}`, {
     method: 'GET',
     headers: {
@@ -152,20 +174,23 @@ export async function getFoldersByParentFolderId(parentFolderId: string | null, 
     body: null
   })
 
+  // Parse the JSON response
   const result = await response.json()
 
+  // If request failed, throw an error
   if (!response.ok) {
     throw new Error(result.message || 'Failed to get folder')
   }
 
+  // Extract the data array from the response
   const { data } = result
 
-  // Add validation
+  // Validate that data is an array, return empty array if not
   if (!Array.isArray(data)) {
-    console.error('[getFoldersByParentFolderId] Expected array, got:', typeof data)
     return []
   }
 
+  // Return the array of child folders
   return data
 }
 
@@ -214,15 +239,18 @@ export async function deleteFolder (folderId: string, authorization: string, coo
   return { result }
 }
 
+/**
+ * Moves a folder to the Trash folder by updating its parent folder ID
+ * @param folder - The folder object to move to trash
+ * @param trashFolderId - The ID of the Trash folder
+ * @param authorization - JWT authorization token from session
+ * @param cookie - Session cookie for authentication
+ * @returns Promise that resolves to an object containing the result status
+ * @throws Error if the move operation fails
+ */
 export async function moveFolderToTrash (folder: Folder, trashFolderId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
-  // Add at start of function
-  console.log('[moveFolderToTrash] Moving folder:', {
-    folderId: folder.id,
-    folderName: folder.name,
-    currentParent: folder.parentFolderId,
-    targetTrashId: trashFolderId
-  })
 
+  // Make PUT request to update the folder's parent to the Trash folder
   const response = await fetch(`${process.env.REST_API_URL}/folder/id/${folder.id}`, {
     method: 'PUT',
     headers: {
@@ -232,19 +260,17 @@ export async function moveFolderToTrash (folder: Folder, trashFolderId: string, 
     },
     body: JSON.stringify({
       name: folder.name,
-      parentFolderId: trashFolderId
+      parentFolderId: trashFolderId // Move to trash by changing parent
     })
   })
 
-  // After fetch, before return
-  console.log('[moveFolderToTrash] Response status:', response.status)
-
+  // If request failed, throw an error with details
   if (!response.ok) {
     const errorText = await response.text()
-    console.error('[moveFolderToTrash] Failed:', errorText)
     throw new Error(`Failed to move folder to trash: ${response.status} ${errorText}`)
   }
 
+  // Parse and return the result
   const result = await response.json()
   return { result }
 }
