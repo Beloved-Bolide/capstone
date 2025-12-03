@@ -87,7 +87,7 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
             <img src="/logo-croppy.png" alt="FileWise logo" />
           </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-cyan-700 to-cyan-600 bg-clip-text text-transparent">FileWise</span>
+          <span className="hidden text-2xl font-bold bg-gradient-to-r from-cyan-700 to-cyan-600 bg-clip-text text-transparent md:block">FileWise</span>
         </div>
       </div>
 
