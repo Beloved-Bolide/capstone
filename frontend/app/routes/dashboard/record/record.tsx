@@ -21,7 +21,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
   }
 
   // Get the record ID from params
-  const recordId = params.recordId
+  const recordId = params
 
   if (!recordId) {
     return { record: null, files: [] }
@@ -99,7 +99,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
           {/* Document Type Badge */}
           {record.docType && (
             <div className="mb-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-cyan-100 text-cyan-700">
                 {record.docType}
               </span>
             </div>
@@ -120,7 +120,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
                     onClick={() => setSelectedFileIndex(index)}
                     className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 transition-all ${
                       selectedFileIndex === index
-                        ? 'border-blue-500 ring-2 ring-blue-200'
+                        ? 'border-cyan-500 ring-2 ring-cyan-200'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -147,12 +147,12 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
 
             {/* OCR Data */}
             {selectedFile?.ocrData && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-blue-900 mb-2 flex items-center gap-2">
+              <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-cyan-900 mb-2 flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Extracted Text (OCR)
                 </h3>
-                <p className="text-sm text-blue-800 whitespace-pre-wrap">{selectedFile.ocrData}</p>
+                <p className="text-sm text-cyan-800 whitespace-pre-wrap">{selectedFile.ocrData}</p>
               </div>
             )}
           </div>
@@ -167,8 +167,8 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Company Name */}
             {record.companyName && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <Building2 className="w-5 h-5 text-blue-600" />
+                <div className="p-2 bg-cyan-50 rounded-lg">
+                  <Building2 className="w-5 h-5 text-cyan-600" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs text-gray-500 mb-1">Company</div>
