@@ -6,7 +6,9 @@ import {
   type NewFolder,
   NewFolderSchema,
   getFoldersByUserId,
-  postFolder
+  postFolder,
+  updateFolder,
+  deleteFolder
 } from '~/utils/models/folder.model'
 import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
@@ -50,7 +52,11 @@ export async function loader ({ request }: Route.LoaderArgs) {
     }
 
     const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
-    return { folders, authorization, error: null }
+
+    // Sort folders alphabetically by name
+    const sortedFolders = folders.sort((a, b) => a.name.localeCompare(b.name))
+
+    return { folders: sortedFolders, authorization, error: null }
   } catch (error) {
     // If it's a redirect, rethrow it
     if (error instanceof Response) throw error
@@ -174,6 +180,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [editingFolder, setEditingFolder] = useState<Folder | null>(null)
+  const [editFolderName, setEditFolderName] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const isLoading = revalidator.state === 'loading'
 
@@ -188,10 +197,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     .map(name => folders.find(f => f.name === name && f.parentFolderId === null))
     .filter((f): f is Folder => f !== undefined)
 
-  // Get user-created folders (not default system folders) and sort alphabetically
+  // Get user-created folders (not default system folders) including subfolders and sort alphabetically
   const userCreatedFolders = folders
     .filter(folder =>
-      folder.parentFolderId === null &&
       !['All Folders', 'Recent', 'Starred', 'Expiring', 'Trash'].includes(folder.name)
     )
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -199,6 +207,68 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   // Handle retry
   const handleRetry = () => {
     revalidator.revalidate()
+  }
+
+  // Handle edit folder
+  const handleEditFolder = (folder: Folder, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setEditingFolder(folder)
+    setEditFolderName(folder.name)
+  }
+
+  // Handle save folder name
+  const handleSaveFolderName = async () => {
+    if (!editingFolder || !loaderData.authorization) return
+
+    try {
+      const updatedFolder: Folder = {
+        ...editingFolder,
+        name: editFolderName.trim()
+      }
+
+      const cookie = document.cookie
+      await updateFolder(updatedFolder, loaderData.authorization, cookie)
+
+      setEditingFolder(null)
+      setEditFolderName('')
+      revalidator.revalidate()
+    } catch (error) {
+      console.error('Failed to update folder:', error)
+      alert(error instanceof Error ? error.message : 'Failed to update folder')
+    }
+  }
+
+  // Handle cancel edit
+  const handleCancelEdit = () => {
+    setEditingFolder(null)
+    setEditFolderName('')
+  }
+
+  // Handle delete folder
+  const handleDeleteFolder = async (folder: Folder, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (!loaderData.authorization) return
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${folder.name}"? This action cannot be undone.`
+    )
+
+    if (!confirmDelete) return
+
+    try {
+      setIsDeleting(true)
+      const cookie = document.cookie
+      await deleteFolder(folder.id, loaderData.authorization, cookie)
+      revalidator.revalidate()
+    } catch (error) {
+      console.error('Failed to delete folder:', error)
+      alert(error instanceof Error ? error.message : 'Failed to delete folder')
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   // Auto-redirect on auth errors
@@ -273,6 +343,20 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               actionData={actionData}
               setDisplayNewFolderForm={setDisplayNewFolderForm}
             />
+
+            {/* All Folders Link */}
+            <Link
+              to="/dashboard"
+              onClick={() => setSelectedFolder('All Folders')}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isBaseDashboard
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                  : 'text-gray-700 hover:bg-gray-100 border border-transparent'
+              }`}
+            >
+              {getFolderIcon('All Folders')}
+              <span className="flex-1 text-left">All Folders</span>
+            </Link>
 
             {/* Default Folders Only (in specific order) */}
             {defaultFolders.map((folder) => (
@@ -358,6 +442,12 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                   )}
 
                   <div>
+                    {/* Page Title */}
+                    <div className="mb-6">
+                      <h1 className="text-2xl font-bold text-gray-900 mb-1">All Folders</h1>
+                      <p className="text-sm text-gray-600">Browse all your folders and files in one place</p>
+                    </div>
+
                     {/* Default Folders Section */}
                     <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Quick Access</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
@@ -393,7 +483,10 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                           error={null}
                           onRetry={handleRetry}
                           emptyMessage="No custom folders yet. Create a new folder to get started."
-                          showTrashButton={false}
+                          showActionButtons={true}
+                          onEditFolder={handleEditFolder}
+                          onDeleteFolder={handleDeleteFolder}
+                          isDeleting={isDeleting}
                         />
                       </>
                     )}
@@ -533,6 +626,51 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         isLoading={searchFetcher.state === 'loading'}
         searchQuery={searchQuery}
       />
+
+      {/* Edit Folder Modal */}
+      {editingFolder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Rename Folder</h2>
+            <div className="mb-6">
+              <label htmlFor="folder-name" className="block text-sm font-medium text-gray-700 mb-2">
+                Folder Name
+              </label>
+              <input
+                id="folder-name"
+                type="text"
+                value={editFolderName}
+                onChange={(e) => setEditFolderName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveFolderName()
+                  } else if (e.key === 'Escape') {
+                    handleCancelEdit()
+                  }
+                }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="Enter folder name"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={handleCancelEdit}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveFolderName}
+                disabled={!editFolderName.trim()}
+                className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Receipt Preview Modal */}
       {previewOpen && (

@@ -109,6 +109,69 @@ export async function getRecordsByFolderId (folderId: string | null, authorizati
   return data
 }
 
+export async function getStarredRecordsByUserId (userId: string, authorization: string, cookie: string | null): Promise<Record[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/starred/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get starred records')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
+export async function getExpiringRecordsByUserId (userId: string, authorization: string, cookie: string | null): Promise<Record[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/expiring/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get expiring records')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
+export async function getRecentRecordsByUserId (userId: string, authorization: string, cookie: string | null): Promise<Record[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/recent/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get recent records')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
 export async function searchRecords (query: string, authorization: string, cookie: string | null, limit: number = 50): Promise<Record[]> {
 
   // Get API URL - use window location as fallback for client-side code

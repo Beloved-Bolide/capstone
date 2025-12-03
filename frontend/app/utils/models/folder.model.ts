@@ -169,6 +169,30 @@ export async function getFoldersByParentFolderId(parentFolderId: string | null, 
   return data
 }
 
+export async function updateFolder (folder: Folder, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/folder/id/${folder.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: JSON.stringify({
+      name: folder.name,
+      parentFolderId: folder.parentFolderId
+    })
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Failed to update folder: ${response.status} ${errorText}`)
+  }
+
+  const result = await response.json()
+  return { result }
+}
+
 export async function deleteFolder (folderId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
 
   const response = await fetch(`${process.env.REST_API_URL}/folder/id/${folderId}`, {
