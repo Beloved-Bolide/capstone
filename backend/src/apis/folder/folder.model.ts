@@ -60,7 +60,8 @@ export async function selectFoldersByParentFolderId(parentFolderId: string): Pro
     WHERE parent_folder_id = ${parentFolderId}`
 
   // return the folders or null if no folders were found
-  return FolderSchema.array().parse(rowList) ?? null
+  const result = FolderSchema.array().parse(rowList)
+  return result ?? null
 }
 
 /** select all folders from a user's id
@@ -80,11 +81,13 @@ export async function selectFoldersByUserId (id: string): Promise<Folder[] | nul
     WHERE user_id = ${id}`
 
   // return the folders or null if no folders were found
-  return FolderSchema.array().parse(rowList) ?? null
+  const result = FolderSchema.array().parse(rowList)
+  return result ?? null
 }
 
 /** selects the folder from the folder table by name
  * @param name the folder's name to search for in the folder table
+ * @param userId
  * @returns the folder or null if no folder was found **/
 export async function selectFolderByFolderName (name: string, userId: string): Promise<Folder | null> {
 

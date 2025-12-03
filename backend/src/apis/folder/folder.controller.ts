@@ -29,8 +29,10 @@ export async function getFolderByFolderIdController (request: Request, response:
       return
     }
 
+    const parentFolderId = validatedRequestParams.data.id
+
     // get the folder from the validated request body
-    const folder: Folder | null = await selectFolderByFolderId(validatedRequestParams.data.id)
+    const folder: Folder | null = await selectFolderByFolderId(parentFolderId)
 
     // if the folder is not found, return a preformatted response to the client
     if (!folder) {
@@ -144,7 +146,7 @@ export async function getFoldersByUserIdController (request: Request, response: 
       response.json({
         status: 404,
         data: null,
-        message: 'Get folder failed: No folders found for this user.'
+        message: 'Get folders failed: No folders found for this user.'
       })
       return
     }
