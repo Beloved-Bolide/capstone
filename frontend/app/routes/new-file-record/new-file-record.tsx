@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { type NewRecord, type Record, NewRecordSchema, postRecord, getRecordById, updateRecord } from '~/utils/models/record.model'
+import { type NewFile, postFile } from '~/utils/models/file.model'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getSession } from '~/utils/session.server'
@@ -9,7 +10,8 @@ import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
 import { Form, Link, redirect, useActionData } from 'react-router'
 import { StatusMessage } from '~/components/StatusMessage'
-import { Star, Bell } from 'lucide-react'
+import { Star, Bell, X, FileText } from 'lucide-react'
+import { uploadFileToSpaces } from '~/utils/upload.utils'
 
 
 const resolver = zodResolver(NewRecordSchema)
@@ -43,13 +45,7 @@ export async function loader ({ request }: Route.LoaderArgs) {
 
 export async function action ({ request }: Route.ActionArgs) {
 
-  // get the form data from the request body
-  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecord>(request, resolver)
-
-  // if there are errors, return them
-  if (errors) return { errors, defaultValues }
-
-  // get the cookie, user, and authorization from the session
+  // get the cookie, user, and authorization from the session first
   const cookie = request.headers.get('cookie')
   const session = await getSession(cookie)
   const user = session.get('user')
@@ -66,14 +62,45 @@ export async function action ({ request }: Route.ActionArgs) {
     }
   }
 
+  // Clone the request to read formData (can only be read once)
+  const formData = await request.clone().formData()
+  const uploadedFile = formData.get('file') as File | null
+
+  // Upload file to DigitalOcean Spaces if present
+  let fileUrl: string | null = null
+  if (uploadedFile && uploadedFile.size > 0) {
+    try {
+      const uploadResponse = await uploadFileToSpaces(uploadedFile, authorization, cookie)
+      fileUrl = uploadResponse.result.data.fileUrl
+    } catch (error) {
+      console.error('File upload error:', error)
+      return {
+        success: false,
+        status: {
+          status: 500,
+          data: null,
+          message: 'Failed to upload file to storage'
+        }
+      }
+    }
+  }
+
+  // get the form data from the request body
+  const { errors, data, receivedValues: defaultValues } = await getValidatedFormData<NewRecord>(request, resolver)
+
+  // if there are errors, return them
+  if (errors) return { errors, defaultValues }
+
   // Check if we're updating an existing record (from already-parsed form data)
   const existingRecordId = (defaultValues as any).existingRecordId as string | null
 
   let result
+  let recordId: string
 
   if (existingRecordId) {
 
     // Update existing record
+    recordId = existingRecordId
     const record = {
       id: existingRecordId,
       folderId: data.folderId,
@@ -98,8 +125,9 @@ export async function action ({ request }: Route.ActionArgs) {
   } else {
 
     // Create a new record
+    recordId = uuid()
     const record = {
-      id: uuid(),
+      id: recordId,
       folderId: data.folderId,
       categoryId: data.categoryId,
       amount: data.amount,
@@ -123,6 +151,24 @@ export async function action ({ request }: Route.ActionArgs) {
     return { success: false, status: result }
   }
 
+  // If a file was uploaded, create a file entry in the database
+  if (fileUrl) {
+    try {
+      const fileEntry: NewFile = {
+        id: uuid(),
+        recordId: recordId,
+        fileDate: new Date(),
+        fileUrl: fileUrl,
+        ocrData: null // OCR can be implemented later
+      }
+
+      await postFile(fileEntry, authorization, cookie)
+    } catch (error) {
+      console.error('Error saving file metadata:', error)
+      // Continue even if file metadata fails - the record is already created
+    }
+  }
+
   // Redirect to dashboard on success
   throw redirect('/dashboard')
 }
@@ -139,6 +185,8 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
   const [docType, setDocType] = useState<string>(existingRecord?.docType || '')
   const [isStarred, setIsStarred] = useState(existingRecord?.isStarred || false)
   const [notifyOn, setNotifyOn] = useState(existingRecord?.notifyOn || false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
 
   // Check if the amount field should be shown (only for Receipt/Invoice)
   const showAmountField = docType === 'Receipt/Invoice'
@@ -177,6 +225,51 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
 
   useActionData<typeof action>()
 
+  // File handling functions
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+    }
+  }
+
+  const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault()
+    setIsDragging(false)
+
+    const file = event.dataTransfer.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+    }
+  }
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null)
+    // Reset the file input
+    const fileInput = document.getElementById('dropzone-file') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
+    }
+  }
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -201,7 +294,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
           </div>
 
           {/* Card Body */}
-          <Form onSubmit={handleSubmit} noValidate={true} method="POST">
+          <Form onSubmit={handleSubmit} noValidate={true} method="POST" encType="multipart/form-data">
             {/* Hidden field for existing record ID */}
             {isEditing && existingRecord && (
               <input type="hidden" name="existingRecordId" value={existingRecord.id} />
@@ -212,33 +305,81 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
               <div className="mb-8">
                 <label
                   htmlFor="dropzone-file"
-                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-cyan-300 border-dashed rounded-md cursor-pointer bg-cyan-50 hover:bg-cyan-100 transition-colors"
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-md cursor-pointer transition-colors ${
+                    isDragging
+                      ? 'border-cyan-500 bg-cyan-100'
+                      : selectedFile
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-cyan-300 bg-cyan-50 hover:bg-cyan-100'
+                  }`}
                 >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <svg
-                      className="w-10 h-10 mb-3 text-cyan-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                    <p className="mb-2 text-sm text-gray-700">
-                      <span className="font-semibold">Drag and Drop File Here</span>
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      (automatically scanned)
-                    </p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      or click to browse
-                    </p>
-                  </div>
-                  <input id="dropzone-file" type="file" className="hidden"/>
+                  {!selectedFile ? (
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg
+                        className="w-10 h-10 mb-3 text-cyan-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-700">
+                        <span className="font-semibold">Drag and Drop File Here</span>
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        (automatically scanned)
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        or click to browse
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between w-full px-6 py-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex-shrink-0">
+                          <FileText className="w-10 h-10 text-green-500" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {selectedFile.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(selectedFile.size)} • {selectedFile.type || 'Unknown type'}
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            ✓ File ready to upload
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          handleRemoveFile()
+                        }}
+                        className="flex-shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                        title="Remove file"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+                  <input
+                    id="dropzone-file"
+                    name="file"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept="image/*,.pdf,.doc,.docx"
+                  />
                 </label>
               </div>
 

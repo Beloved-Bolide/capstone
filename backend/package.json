@@ -17,6 +17,8 @@
   "author": "George Kephart",
   "license": "Apache-2.0",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.943.0",
+    "@aws-sdk/s3-request-presigner": "^3.943.0",
     "@swc/core": "^1.15.1",
     "@swc/helpers": "^0.5.17",
     "argon2": "^0.44.0",
@@ -24,6 +26,7 @@
     "cloudinary": "^2.8.0",
     "connect-redis": "^9.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "form-data": "^4.0.4",

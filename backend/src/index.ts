@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { App } from './App'
 import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
