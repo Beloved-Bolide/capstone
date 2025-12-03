@@ -378,10 +378,16 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
           error={null}
           onRetry={handleRetry}
           emptyMessage="This folder has no subfolders. Add files or create subfolders to get started."
-          // showTrashButton={true}
+          showActionButtons={isTrashFolder}
+          showTrashButton={true}
           onDeleteFolder={handleFolderDelete}
+          onRestoreFolder={handleRestoreFolder}
           isTrashFolder={isTrashFolder}
           isDeleting={isDeleting}
+          emptyAction={isUserFolder ? {
+            label: 'Create Subfolder',
+            onClick: () => setShowCreateFolderModal(true)
+          } : undefined}
         />
       )}
 
@@ -395,20 +401,11 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
           emptyMessage="No files in this folder yet."
           showTrashButton={true}
           onDeleteRecord={handleRecordDelete}
+          onRestoreRecord={handleRestoreRecord}
           isTrashFolder={isTrashFolder}
           isDeleting={isDeleting}
+          isRecentFolder={isRecentFolder}
         />
-      )}
-
-      {/* Empty state when no folders and no records */}
-      {!isLoading && !error && childFolders?.length === 0 && records?.length === 0 && (
-        <div className="text-center py-12">
-          <div className="flex justify-center mb-4">
-            <FolderOpen className="w-16 h-16 text-gray-300" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No items yet</h3>
-          <p className="text-gray-500">This folder is empty. Add files or create subfolders to get started.</p>
-        </div>
       )}
 
       {/* Create Subfolder Modal */}
