@@ -1,16 +1,22 @@
-import React, { useState } from 'react'
-import {Link, Outlet, redirect, useActionData, useLocation} from 'react-router'
+import React, { useState, useEffect } from 'react'
+import { Link, Outlet, redirect, useActionData, useLocation, useFetcher, useNavigate, useRevalidator } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
   type Folder,
   type NewFolder,
   NewFolderSchema,
   getFoldersByUserId,
-  postFolder
+  postFolder,
+  updateFolder,
+  deleteFolder
 } from '~/utils/models/folder.model'
+import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
 import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
-import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
+import { AddFolderForm } from '~/routes/dashboard/add-folder-form'
+import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
+import { ErrorDisplay } from '~/components/error/ErrorDisplay'
+import { FolderGrid } from '~/components/folder-grid/FolderGrid'
 import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,29 +31,45 @@ export function meta ({}: Route.MetaArgs) {
 const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
-  console.log('Dashboard loader running...')
+  try {
 
-  // Check if user is logged in using session
-  const { isLoggedIn } = await import('~/utils/session.server')
-  const loginStatus = await isLoggedIn(request)  // FIX: define loginStatus before using it
-  console.log('Login status:', loginStatus)
+    // Check if the user is logged in using session
+    const { isLoggedIn } = await import('~/utils/session.server')
+    const loginStatus = await isLoggedIn(request)
 
-  // If not logged in, redirect to sign-in
-  if (loginStatus.status !== 200) {
-    throw redirect('/sign-in')
+    // If not logged in, redirect to sign-in
+    if (loginStatus.status !== 200) {
+      throw redirect('/sign-in')
+    }
+
+    const cookie = request.headers.get('cookie')
+    const session = await getSession(cookie)
+    const user = session.get('user')
+    const authorization = session.get('authorization')
+
+    if (!cookie || !user?.id || !authorization) {
+      throw redirect('/sign-in')
+    }
+
+    const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
+
+    // Sort folders alphabetically by name
+    const sortedFolders = folders.sort((a, b) => a.name.localeCompare(b.name))
+
+    return { folders: sortedFolders, authorization, error: null }
+  } catch (error) {
+    // If it's a redirect, rethrow it
+    if (error instanceof Response) throw error
+
+    // Otherwise, return the error state
+    return {
+      folders: null,
+      authorization: null,
+      error: {
+        message: error instanceof Error ? error.message : 'Failed to load folders'
+      }
+    }
   }
-
-  const cookie = request.headers.get('cookie')
-  const session = await getSession(cookie)
-  const user = session.get('user')
-  const authorization = session.get('authorization')
-
-  if (!cookie || !user?.id || !authorization) {
-    return { folders: null }
-  }
-
-  const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
-  return { folders }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
@@ -77,22 +99,11 @@ export async function action ({ request }: Route.ActionArgs) {
     }
   }
 
-  // get the folders for the current user
-  const folders: Folder[] | null = await getFoldersByUserId(user.id, authorization, cookie)
-
-  // if there are folders, find the "All Folders" parent folder
-  let allFoldersParent: Folder | null | undefined = null
-  if (folders) {
-    allFoldersParent = folders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
-  }
-
-  // find the parent folder of the selected folder
-  const allFoldersId = allFoldersParent ? allFoldersParent.id : null
-
   // create a new folder object with the required attributes
+  // User-created folders are top-level folders (parentFolderId: null)
   const folder = {
     id: uuid(),
-    parentFolderId: allFoldersId, // needs work
+    parentFolderId: null,
     userId: user.id,
     name: data.name
   }
@@ -135,7 +146,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
   const getFolderIcon = (folderName: string, size: 'sm' | 'md' = 'sm') => {
 
-    const iconProps = { className: size === 'sm' ? "w-4 h-4" : "w-5 h-5 text-blue-600" }
+    const iconProps = { className: size === 'sm' ? "w-4 h-4" : "w-5 h-5 text-cyan-600" }
 
     switch (folderName) {
       case 'All Folders':
@@ -153,23 +164,143 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     }
   }
 
-  // if there are no folders, set the array to an empty array
-  let { folders } = loaderData
+  // Get data from the loader
+  let { folders, error } = loaderData
   if (!folders) folders = []
 
   useActionData<typeof action>()
   const location = useLocation()
+  const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
+  const revalidator = useRevalidator()
+  const navigate = useNavigate()
 
   const [selectedFolder, setSelectedFolder] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [displayNewFolderForm, setDisplayNewFolderForm] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearchResults, setShowSearchResults] = useState(false)
+  const [editingFolder, setEditingFolder] = useState<Folder | null>(null)
+  const [editFolderName, setEditFolderName] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const isLoading = revalidator.state === 'loading'
 
   // Check if we're at the base dashboard route
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
-  // Filter parent folders excluding Trash
-  const parentFolders = folders.filter(folder => folder.parentFolderId === null && folder.name !== 'Trash')
+  // Define the order of default folders
+  const defaultFolderOrder = ['Expiring', 'Recent', 'Starred', 'Trash']
+
+  // Separate default folders and user-created folders
+  const defaultFolders = defaultFolderOrder
+    .map(name => folders.find(f => f.name === name && f.parentFolderId === null))
+    .filter((f): f is Folder => f !== undefined)
+
+  // Get user-created folders (not default system folders)
+  // On base dashboard, only show parent folders (parentFolderId === null)
+  const userCreatedFolders = folders
+    .filter(folder =>
+      !['All Folders', 'Recent', 'Starred', 'Expiring', 'Trash'].includes(folder.name) &&
+      folder.parentFolderId === null
+    )
+    .sort((a, b) => a.name.localeCompare(b.name))
+
+  // Handle retry
+  const handleRetry = () => {
+    revalidator.revalidate()
+  }
+
+  // Handle edit folder
+  const handleEditFolder = (folder: Folder, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setEditingFolder(folder)
+    setEditFolderName(folder.name)
+  }
+
+  // Handle save folder name
+  const handleSaveFolderName = async () => {
+    if (!editingFolder || !loaderData.authorization) return
+
+    try {
+      const updatedFolder: Folder = {
+        ...editingFolder,
+        name: editFolderName.trim()
+      }
+
+      const cookie = document.cookie
+      await updateFolder(updatedFolder, loaderData.authorization, cookie)
+
+      setEditingFolder(null)
+      setEditFolderName('')
+      revalidator.revalidate()
+    } catch (error) {
+      console.error('Failed to update folder:', error)
+      alert(error instanceof Error ? error.message : 'Failed to update folder')
+    }
+  }
+
+  // Handle cancel edit
+  const handleCancelEdit = () => {
+    setEditingFolder(null)
+    setEditFolderName('')
+  }
+
+  // Handle delete folder
+  const handleDeleteFolder = async (folder: Folder, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (!loaderData.authorization) return
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${folder.name}"? This action cannot be undone.`
+    )
+
+    if (!confirmDelete) return
+
+    try {
+      setIsDeleting(true)
+      const cookie = document.cookie
+      await deleteFolder(folder.id, loaderData.authorization, cookie)
+      revalidator.revalidate()
+    } catch (error) {
+      console.error('Failed to delete folder:', error)
+      alert(error instanceof Error ? error.message : 'Failed to delete folder')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  // Auto-redirect on auth errors
+  useEffect(() => {
+    if (error && (error.message.includes('Unauthorized') || error.message.includes('sign in'))) {
+      const timer = setTimeout(() => navigate('/sign-in'), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, navigate])
+
+  // Handle search with debouncing
+  useEffect(() => {
+    if (searchQuery.trim().length === 0) {
+      setShowSearchResults(false)
+      return
+    }
+
+    console.log('[Search] Query entered:', searchQuery)
+    setShowSearchResults(true)
+
+    const timer = setTimeout(() => {
+      console.log('[Search] Searching for:', searchQuery)
+      // Use the fetcher to call the search resource route
+      searchFetcher.load(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=50`)
+    }, 300)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [searchQuery])
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -178,27 +309,17 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       <div
         className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
-        {/* Logo */}
-        <div className="px-4 lg:px-6 py-3 lg:pt-5 lg:pb-4.5 border-b border-gray-200">
-          <div className="flex items-center justify-between h-[42px]">
-            <Link to=".." className="flex items-center gap-2">
-              <div className="w-10.5 h-10.5 rounded-md flex items-center justify-center">
-                <img src="/logo-croppy.png" alt="logo"/>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
-                FileWise
-              </span>
-            </Link>
-            <button
-              aria-label="Close sidebar"
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
+        {/* Close Sidebar Button - Mobile Only */}
+        <div className="lg:hidden px-4 py-3 border-b border-gray-200">
+          <button
+            aria-label="Close sidebar"
+            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
         </div>
 
         {/* Create Folder Button */}
@@ -207,7 +328,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             onClick={() => {
               setDisplayNewFolderForm(!displayNewFolderForm)
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -225,15 +346,29 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               setDisplayNewFolderForm={setDisplayNewFolderForm}
             />
 
-            {/* Folders */}
-            {folders.filter(folder => folder.parentFolderId === null).map((folder) => (
+            {/* All Folders Link */}
+            <Link
+              to="/dashboard"
+              onClick={() => setSelectedFolder('All Folders')}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isBaseDashboard
+                  ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
+                  : 'text-gray-700 hover:bg-gray-100 border border-transparent'
+              }`}
+            >
+              {getFolderIcon('All Folders')}
+              <span className="flex-1 text-left">All Folders</span>
+            </Link>
+
+            {/* Default Folders Only (in specific order) */}
+            {defaultFolders.map((folder) => (
               <Link
                 key={folder.id}
                 to={`./${folder.id}`}
                 onClick={() => setSelectedFolder(folder.name)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   selectedFolder === folder.name
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-sm'
+                    ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
               >
@@ -247,7 +382,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         {/* Settings */}
         <div className="px-3 lg:px-4 py-4 border-t border-gray-200">
           <button
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-blue-50 focus:text-blue-700 focus:border-blue-200 focus:shadow-sm">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-cyan-50 focus:text-cyan-700 focus:border-cyan-200 focus:shadow-sm">
             <Settings className="w-4 h-4"/>
             <span className="flex-1 text-left">Settings</span>
           </button>
@@ -257,52 +392,6 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       {/* Main Content */}
       <div
         className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
-
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-3">
-          <div className="flex items-center justify-between gap-3 lg:gap-4">
-            <div className="flex items-center gap-3 lg:gap-5 flex-1 min-w-0">
-
-              {/* Mobile Menu Button */}
-              <button
-                aria-label="Open sidebar"
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-              </button>
-
-              {/* Search Bar */}
-              <div className="flex-1 max-w-2xl relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
-                <input
-                  type="text"
-                  placeholder="Search files and folders..."
-                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                />
-              </div>
-
-              {/* New File Button */}
-              <Link
-                aria-label="Add new file"
-                to="/new-file-record"
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
-              >
-                <Plus className="w-4 h-4"/>
-                <span className="hidden sm:inline">New File</span>
-              </Link>
-            </div>
-
-            {/* User Profile */}
-            <button className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:cursor-pointer">
-              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-xs lg:text-sm shadow-sm">
-                DR
-              </div>
-            </button>
-          </div>
-        </div>
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
@@ -316,30 +405,92 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
                 // Main Dashboard
                 <div className="p-4 lg:p-6">
+
+                  {/* New Folder Button - Mobile Only */}
+                  <button
+                    onClick={() => {
+                      setDisplayNewFolderForm(!displayNewFolderForm)
+                    }}
+                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
+                  >
+                    <Plus className="w-4 h-4"/>
+                    <span>New Folder</span>
+                  </button>
+
+                  {/* Add Folder Form - Mobile Only */}
+                  <div className="lg:hidden mb-6">
+                    <AddFolderForm
+                      displayNewFolderForm={displayNewFolderForm}
+                      actionData={actionData}
+                      setDisplayNewFolderForm={setDisplayNewFolderForm}
+                    />
+                  </div>
+
+                  {/* Error display with auto-redirect */}
+                  {error && (
+                    <div className="mb-4">
+                      <ErrorDisplay
+                        title="Failed to Load Folders"
+                        message={error.message}
+                        type="error"
+                        onRetry={handleRetry}
+                        autoRedirect={
+                          error.message.includes('Unauthorized') || error.message.includes('sign in')
+                            ? { path: '/sign-in', delay: 3000 }
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
+
                   <div>
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">All Folders</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {parentFolders.map((folder) => (
+                    {/* Page Title */}
+                    <div className="mb-6">
+                      <h1 className="text-2xl font-bold text-gray-900 mb-1">All Folders</h1>
+                      <p className="text-sm text-gray-600">Browse all your folders and files in one place</p>
+                    </div>
+
+                    {/* Default Folders Section */}
+                    <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Quick Access</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+                      {defaultFolders.map((folder) => (
                         <Link
                           key={folder.id}
                           to={`./${folder.id}`}
                           onClick={() => setSelectedFolder(folder.name)}
-                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
                         >
                           <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+                            <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
                               {getFolderIcon(folder.name, 'md')}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                              <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
                                 {folder.name}
                               </h3>
-                              <p className="text-xs text-gray-500 mt-1">Folder</p>
+                              <p className="text-xs text-gray-500 mt-1">System Folder</p>
                             </div>
                           </div>
                         </Link>
                       ))}
                     </div>
+
+                    {/* User-Created Folders Section */}
+                    {userCreatedFolders.length > 0 && (
+                      <>
+                        <FolderGrid
+                          folders={userCreatedFolders}
+                          isLoading={isLoading && !folders}
+                          error={null}
+                          onRetry={handleRetry}
+                          emptyMessage="No custom folders yet. Create a new folder to get started."
+                          showActionButtons={true}
+                          onEditFolder={handleEditFolder}
+                          onDeleteFolder={handleDeleteFolder}
+                          isDeleting={isDeleting}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -453,9 +604,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                   <div>
                     <div className="font-semibold mb-1">A Subtitle</div>
                     <div>
-                      A paragraph of text with an <span className="text-blue-600 underline">unsupported link</span>.
-                      A second row of text with a <span className="text-blue-600 underline">web link</span>.
-                      An icon of a <span className="text-blue-600">profile</span> with info.
+                      A paragraph of text with an <span className="text-cyan-600 underline">unsupported link</span>.
+                      A second row of text with a <span className="text-cyan-600 underline">web link</span>.
+                      An icon of a <span className="text-cyan-600">profile</span> with info.
                     </div>
                   </div>
                 </div>
@@ -464,6 +615,63 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
           </div>
         </div>
       </div>
+
+      {/* Search Results Modal */}
+      <SearchResultsModal
+        isOpen={showSearchResults}
+        onClose={() => {
+          setShowSearchResults(false)
+          setSearchQuery('')
+        }}
+        results={(searchFetcher.data?.data as Record[]) || []}
+        isLoading={searchFetcher.state === 'loading'}
+        searchQuery={searchQuery}
+      />
+
+      {/* Edit Folder Modal */}
+      {editingFolder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Rename Folder</h2>
+            <div className="mb-6">
+              <label htmlFor="folder-name" className="block text-sm font-medium text-gray-700 mb-2">
+                Folder Name
+              </label>
+              <input
+                id="folder-name"
+                type="text"
+                value={editFolderName}
+                onChange={(e) => setEditFolderName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveFolderName()
+                  } else if (e.key === 'Escape') {
+                    handleCancelEdit()
+                  }
+                }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                placeholder="Enter folder name"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={handleCancelEdit}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveFolderName}
+                disabled={!editFolderName.trim()}
+                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Receipt Preview Modal */}
       {previewOpen && (
@@ -588,9 +796,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     <div>
                       <div className="font-semibold mb-1">A Subtitle</div>
                       <div>
-                        A paragraph of text with an <span className="text-blue-600 underline">unsupported link</span>.
-                        A second row of text with a <span className="text-blue-600 underline">web link</span>.
-                        An icon of a <span className="text-blue-600">profile</span> with info.
+                        A paragraph of text with an <span className="text-cyan-600 underline">unsupported link</span>.
+                        A second row of text with a <span className="text-cyan-600 underline">web link</span>.
+                        An icon of a <span className="text-cyan-600">profile</span> with info.
                       </div>
                     </div>
                   </div>

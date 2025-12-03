@@ -36,20 +36,28 @@ export async function signUpUserController (request: Request, response: Response
     await insertUser(user)
 
     // prepare and send activation email to a new user
-    const mailGun: Mailgun = new Mailgun(formData)
-    const mailgunClient = mailGun.client({ username: 'api', key: process.env.MAILGUN_API_KEY as string })
-    const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}/activation/${activationToken}`
-    const message = `
-      <h2>Welcome to FileWise!</h2>
-      <p>To start storing your documents, you must confirm your account.</p>
-      <p><a href="${basePath}">${basePath}</a></p>`
-    const mailgunMessage = {
-      from: `Mailgun Sandbox <postmaster@${process.env.MAILGUN_DOMAIN as string}>`,
-      to: email,
-      subject: 'Please confirm your Filewise account -- Account Activation',
-      html: message
+    let emailSent = false
+    try {
+      const mailGun: Mailgun = new Mailgun(formData)
+      const mailgunClient = mailGun.client({ username: 'api', key: process.env.MAILGUN_API_KEY as string })
+      const basePath: string = `${request.protocol}://${request.hostname}:8080${request.originalUrl}/activation/${activationToken}`
+      const message = `
+        <h2>Welcome to FileWise!</h2>
+        <p>To start storing your documents, you must confirm your account.</p>
+        <p><a href="${basePath}">${basePath}</a></p>`
+      const mailgunMessage = {
+        from: `Mailgun Sandbox <postmaster@${process.env.MAILGUN_DOMAIN as string}>`,
+        to: email,
+        subject: 'Please confirm your Filewise account -- Account Activation',
+        html: message
+      }
+      await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
+      emailSent = true
+    } catch (mailError: any) {
+      console.error('Mailgun error:', mailError.message)
+      // Continue with signup even if email fails - user was created successfully
+      console.log('User created but activation email could not be sent')
     }
-    await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN as string, mailgunMessage)
 
     // seed default folders for the new user
     await seedFolders(user.id)
@@ -57,7 +65,9 @@ export async function signUpUserController (request: Request, response: Response
     // create a status message
     const status: Status = {
       status: 200,
-      message: 'User successfully created! Please check your email.',
+      message: emailSent
+        ? 'User successfully created! Please check your email.'
+        : 'User successfully created! (Note: Activation email could not be sent. Please contact support.)',
       data: null
     }
 
@@ -71,7 +81,7 @@ export async function signUpUserController (request: Request, response: Response
       message: error.message,
       data: null
     }
-    // return a server error response
-    response.status(200).json(status)
+    // return a server error response with proper HTTP status code
+    response.status(500).json(status)
   }
 }

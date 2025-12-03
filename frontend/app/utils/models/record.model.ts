@@ -59,15 +59,33 @@ export async function postRecord (data: Record, authorization: string, cookie: s
     body: JSON.stringify(data)
   })
 
-  const result = await response.json()
-
-
   if (!response.ok) {
-    throw new Error(result.message || 'Failed to create new record')
+    throw new Error('Failed to create new record')
   }
 
   const headers = response.headers
+  const result = await response.json()
   return { headers, result }
+}
+
+export async function getRecordById (recordId: string, authorization: string, cookie: string | null): Promise<Record | null> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${recordId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get record')
+  }
+
+  const result = await response.json()
+  return result.data
 }
 
 export async function getRecordsByFolderId (folderId: string | null, authorization: string, cookie: string | null): Promise<Record[]> {
@@ -82,12 +100,211 @@ export async function getRecordsByFolderId (folderId: string | null, authorizati
     body: null
   })
 
-  const result = await response.json()
-
-
   if (!response.ok) {
-    throw new Error(result.message || 'Failed to get folder')
+    throw new Error('Failed to get folder')
   }
 
-  return result.data
+  const { data } = await response.json()
+
+  return data
 }
+
+export async function getStarredRecordsByUserId (userId: string, authorization: string, cookie: string | null): Promise<Record[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/starred/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get starred records')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
+export async function getExpiringRecordsByUserId (userId: string, authorization: string, cookie: string | null): Promise<Record[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/expiring/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get expiring records')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
+export async function getRecentRecordsByUserId (userId: string, authorization: string, cookie: string | null): Promise<Record[]> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/recent/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get recent records')
+  }
+
+  const { data } = await response.json()
+
+  return data
+}
+
+export async function searchRecords (query: string, authorization: string, cookie: string | null, limit: number = 50): Promise<Record[]> {
+
+  // Get API URL - use window location as fallback for client-side code
+  const apiBaseUrl = typeof window !== 'undefined'
+    ? `${window.location.protocol}//${window.location.hostname}:8080/apis`
+    : (process.env.REST_API_URL || 'http://localhost:8080/apis')
+
+  const url = `${apiBaseUrl}/record/search?q=${encodeURIComponent(query)}&limit=${limit}`
+
+  console.log('[SearchAPI] URL:', url)
+  console.log('[SearchAPI] Authorization:', !!authorization)
+  console.log('[SearchAPI] Cookie:', !!cookie)
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    credentials: 'include',
+    body: null
+  })
+
+  console.log('[SearchAPI] Response status:', response.status)
+  console.log('[SearchAPI] Response OK:', response.ok)
+
+  if (!response.ok) {
+    const errorData = await response.text()
+    console.error('[SearchAPI] Error response:', errorData)
+    throw new Error(`Failed to search records: ${response.status} ${errorData}`)
+  }
+
+  const responseData = await response.json()
+  console.log('[SearchAPI] Response data:', responseData)
+
+  const { data } = responseData
+
+  return data
+}
+
+export async function deleteRecord (recordId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${recordId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  const result = await response.json()
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Failed to delete record')
+  }
+
+  return { result }
+}
+
+export async function updateRecord (record: Record, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${record.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: JSON.stringify(record)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to update record')
+  }
+
+  const result = await response.json()
+  return { result }
+}
+
+export async function moveRecordToTrash (record: Record, trashFolderId: string, authorization: string, cookie: string | null): Promise<{ result: Status }> {
+
+  const updatedRecord = {
+    id: record.id,
+    folderId: trashFolderId,
+    categoryId: record.categoryId,
+    amount: record.amount,
+    companyName: record.companyName,
+    couponCode: record.couponCode,
+    description: record.description,
+    docType: record.docType,
+    expDate: record.expDate,
+    isStarred: record.isStarred,
+    lastAccessedAt: record.lastAccessedAt,
+    name: record.name,
+    notifyOn: record.notifyOn,
+    productId: record.productId,
+    purchaseDate: record.purchaseDate
+  }
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${record.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: JSON.stringify(updatedRecord)
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to move record to trash')
+  }
+
+  const result = await response.json()
+  return { result }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

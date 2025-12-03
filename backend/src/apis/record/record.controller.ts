@@ -12,6 +12,9 @@ import {
   deleteRecord,
   selectRecordByRecordId,
   selectRecordsByFolderId,
+  selectStarredRecordsByUserId,
+  selectExpiringRecordsByUserId,
+  selectRecentRecordsByUserId,
   selectRecordsByCategoryId,
   selectRecordsByCompanyName,
   selectRecordsByLastAccessedAt,
@@ -36,7 +39,7 @@ export async function getRecordByRecordIdController (request: Request, response:
     const { id } = validatedRequestParams.data
     const record: Record | null = await selectRecordByRecordId(id)
     if (!record) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Record not found!'
@@ -80,7 +83,7 @@ export async function getRecordsByFolderIdController (request: Request, response
 
     // if the folder does not exist, return a 404 error
     if (!existingFolder) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: Records with that folder id do not exist.'
@@ -95,11 +98,104 @@ export async function getRecordsByFolderIdController (request: Request, response
     // select the records by folder id
     const records: Record[] | null = await selectRecordsByFolderId(folderId)
 
+    // Return empty array if no records found (not an error condition)
+    const recordData = records || []
+
     // return a success response
     response.json({
       status: 200,
-      data: records,
-      message: "Records by folder id successfully got!"
+      data: recordData,
+      message: recordData.length > 0 ? "Records by folder id successfully got!" : "No records found in this folder."
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting starred records by userId
+ * @endpoint GET /apis/record/starred/:userId **/
+export async function getStarredRecordsByUserIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // get the user id from the request parameters
+    const userId = request.params.userId as string
+
+    // verify ownership
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // select the starred records for the user
+    const records: Record[] | null = await selectStarredRecordsByUserId(userId)
+
+    // Return empty array if no records found (not an error condition)
+    const recordData = records || []
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: recordData,
+      message: recordData.length > 0 ? "Starred records successfully retrieved!" : "No starred records found."
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting expiring records by userId
+ * @endpoint GET /apis/record/expiring/:userId **/
+export async function getExpiringRecordsByUserIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // get the user id from the request parameters
+    const userId = request.params.userId as string
+
+    // verify ownership
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // select the expiring records for the user
+    const records: Record[] | null = await selectExpiringRecordsByUserId(userId)
+
+    // Return empty array if no records found (not an error condition)
+    const recordData = records || []
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: recordData,
+      message: recordData.length > 0 ? "Expiring records successfully retrieved!" : "No expiring records found."
+    })
+
+  } catch (error: any) {
+    console.error(error)
+    serverErrorResponse(response, error.message)
+  }
+}
+
+/** Express controller for getting recent records by userId
+ * @endpoint GET /apis/record/recent/:userId **/
+export async function getRecentRecordsByUserIdController (request: Request, response: Response): Promise<void> {
+  try {
+
+    // get the user id from the request parameters
+    const userId = request.params.userId as string
+
+    // verify ownership
+    if (!(await validateSessionUser(request, response, userId))) return
+
+    // select the recent records for the user
+    const records: Record[] | null = await selectRecentRecordsByUserId(userId)
+
+    // Return empty array if no records found (not an error condition)
+    const recordData = records || []
+
+    // return a success response
+    response.json({
+      status: 200,
+      data: recordData,
+      message: recordData.length > 0 ? "Recent records successfully retrieved!" : "No recent records found."
     })
 
   } catch (error: any) {
@@ -124,7 +220,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     const { categoryId } = validatedRequestParams.data
     const category: Category | null = await selectCategoryByCategoryId(categoryId)
     if (!category) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found for that category.'
@@ -135,7 +231,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     // get the user id from the category in the validated request body and verify it exists
     const records: Record[] | null = await selectRecordsByCategoryId(categoryId)
     if (!records) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found for that category.'
@@ -146,7 +242,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     // get the folder id from the first record in the validated request body and verify it exists
     const folderId = records[0]?.folderId
     if (!folderId) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found for that category.'
@@ -187,7 +283,7 @@ export async function getRecordsByCompanyNameController (request: Request, respo
     // get the companyName from the validated request parameters and check if it exists
     const { companyName } = validatedRequestParams.data
     if (!companyName) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found with that company name.'
@@ -198,7 +294,7 @@ export async function getRecordsByCompanyNameController (request: Request, respo
     // get the records by company name and check if it exists
     const records: Record[] | null = await selectRecordsByCompanyName(companyName)
     if (!records) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found with that company name.'
@@ -209,7 +305,7 @@ export async function getRecordsByCompanyNameController (request: Request, respo
     // get the folder id from the first record in the validated request body and verify it exists
     const folderId = records[0]?.folderId
     if (!folderId) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'No records found for that company name.'
@@ -250,7 +346,7 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
     // get the companyName from the validated request parameters and check if it exists
     const { lastAccessedAt } = validatedRequestParams.data
     if (!lastAccessedAt) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found that were last accessed at that time.'
@@ -261,7 +357,7 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
     // get the record by when it was last accessed and check if it exists
     const records: Record[] | null = await selectRecordsByLastAccessedAt(lastAccessedAt)
     if (!records || records[0] === undefined) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found with that were accessed at that time.'
@@ -272,7 +368,7 @@ export async function getRecordsByLastAccessedAtController (request: Request, re
     // get the folder id from the first record in the validated request body and verify it exists
     const folderId = records[0]?.folderId
     if (!folderId) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No records found with that were accessed at that time.'
@@ -313,7 +409,7 @@ export async function getRecordByNameController (request: Request, response: Res
     // get the name from the validated request parameters and check if it exists
     const { name } = validatedRequestParams.data
     if (!name) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No record with that name because that record does not exist.'
@@ -324,7 +420,7 @@ export async function getRecordByNameController (request: Request, response: Res
     // get the record by name and check if it exists
     const record: Record | null = await selectRecordByName(name)
     if (!record) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Get record failed: No record found with that name found.'
@@ -355,6 +451,16 @@ export async function getRecordByNameController (request: Request, response: Res
 export async function searchRecordsController (request: Request, response: Response): Promise<void> {
   try {
 
+    const user = request.session?.user
+     if (!user) {
+       response.status(403).json({
+         status: 403,
+         data: null,
+         message:'Please login first!'
+       })
+       return
+     }
+
     // validate the search query using zod
     const validatedRequestParams = z.object({
       q: z.string().min(1, 'Please enter a search term.')
@@ -372,12 +478,12 @@ export async function searchRecordsController (request: Request, response: Respo
     // limit query parameter to a maximum of 50 records
     const limit = request.query.limit ? parseInt(request.query.limit as string) : 50
 
-    // search for records that match the search query
-    const records: Record[] | null = await searchRecords(searchTerm, limit)
+    // search for records that match the search query, filtered by user
+    const records: Record[] | null = await searchRecords(searchTerm, user.id, limit)
 
     // if no records are found, return a 404 response
     if (!records) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Search failed: No records found with that search term.'
@@ -413,7 +519,7 @@ export async function postRecordController (request: Request, response: Response
     // get the folder id from the validated request body and check if it exists
     const { folderId } = validatedRequestBody.data
     if (!folderId) {
-      response.json({
+      response.status(400).json({
         status: 400,
         data: null,
         message: 'Post record failed: Folder id is required.'
@@ -463,7 +569,7 @@ export async function putRecordController (request: Request, response: Response)
     const { id } = validatedRequestParams.data
     const existingRecord: Record | null = await selectRecordByRecordId(id)
     if (!existingRecord) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Put record failed: Record not found.'
@@ -494,7 +600,7 @@ export async function putRecordController (request: Request, response: Response)
 
       // if the new folder's user id does not match the session user's id, return a 403 error
       if (!(await validateSessionUser(request, response, newFolderUserId))) {
-        response.json({
+        response.status(403).json({
           status: 403,
           data: null,
           message: 'Put record failed: Forbidden: You cannot move a record to another user\'s folder.'
@@ -537,7 +643,7 @@ export async function deleteRecordController (request: Request, response: Respon
     // get the user from the current session and check if they are signed in
     const user = request.session?.user
     if (!user) {
-      response.json({
+      response.status(401).json({
         status: 401,
         data: null,
         message: 'Delete record failed: Unauthorized: Please sign in to perform this action.'
@@ -548,7 +654,7 @@ export async function deleteRecordController (request: Request, response: Respon
     // get the record by id and check if it exists
     const record = await selectRecordByRecordId(id)
     if (!record) {
-      response.json({
+      response.status(404).json({
         status: 404,
         data: null,
         message: 'Delete record failed: Record not found.'

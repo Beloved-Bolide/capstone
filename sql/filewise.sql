@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS folder (
   id               UUID PRIMARY KEY,
   parent_folder_id UUID,
   user_id          UUID,
+  deleted_at       TIMESTAMPTZ,
   name             VARCHAR(64) NOT NULL,
   FOREIGN KEY (user_id) REFERENCES "user" (id),
   FOREIGN KEY (parent_folder_id) REFERENCES folder (id)
@@ -36,6 +37,7 @@ CREATE TABLE IF NOT EXISTS record (
   folder_id        UUID,
   category_id      UUID,
   amount           DECIMAL(10, 2),
+  deleted_at       TIMESTAMPTZ,
   company_name     VARCHAR(64),
   coupon_code      VARCHAR(32),
   description      VARCHAR(512),
@@ -52,15 +54,13 @@ CREATE TABLE IF NOT EXISTS record (
 );
 CREATE INDEX ON record (folder_id);
 CREATE INDEX ON record (category_id);
+CREATE INDEX ON record (deleted_at);
 
 CREATE TABLE IF NOT EXISTS file (
   id            UUID PRIMARY KEY,
   record_id     UUID,
---description   VARCHAR(512),
---document_date DATE,
   file_date     DATE,
   file_url      VARCHAR(256) NOT NULL,
---name          VARCHAR(64),
   ocr_data      TEXT,
   FOREIGN KEY (record_id) REFERENCES record (id)
 );

@@ -29,16 +29,28 @@ export async function action ({ request }: Route.ActionArgs): Promise<FormAction
     return { errors, defaultValues }
   }
 
-  // post the form data to the server
-  const response = await postSignUp(data)
+  try {
+    // post the form data to the server
+    const response = await postSignUp(data)
 
-  // if the response is not successful, return false and an error message
-  if (response.status !== 200) {
-    return { success: false, status: response }
+    // if the response is not successful, return false and an error message
+    if (response.status !== 200) {
+      return { success: false, status: response }
+    }
+
+    // if the response is successful, return true and a success message
+    return { success: true, status: response }
+  } catch (error) {
+    // handle network errors or other exceptions
+    return {
+      success: false,
+      status: {
+        status: 500,
+        message: error instanceof Error ? error.message : 'An unexpected error occurred',
+        data: null
+      }
+    }
   }
-
-  // if the response is successful, return true and a success message
-  return { success: true, status: response }
 }
 
 export default function SignUpPage () {
@@ -88,7 +100,7 @@ export default function SignUpPage () {
                 id="email"
                 type="email"
                 placeholder="name@example.com"
-                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent ${
                 errors.email
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:ring-slate-500'
@@ -111,7 +123,7 @@ export default function SignUpPage () {
                 type="text"
                 id="name"
                 placeholder="Enter Name"
-                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent ${
                 errors.name
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus: ring-slate-500'
@@ -128,13 +140,13 @@ export default function SignUpPage () {
               <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">
                 Password
               </label>
-              <div>
+              <div className="relative">
                 <input
                 {...register('password')}
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter Password"
-                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent ${
                 errors.password
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus: ring-slate-500'
@@ -168,7 +180,7 @@ export default function SignUpPage () {
                 id="passwordConfirm"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm Password"
-                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent${
+                className={`w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent${
                 errors.passwordConfirm
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus: ring-slate-500'
@@ -184,7 +196,7 @@ export default function SignUpPage () {
             <button
             type="submit"
 
-            className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6"
+            className="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6"
             >
               Sign Up
             </button>

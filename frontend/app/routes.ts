@@ -19,14 +19,24 @@ export default [
 
     // Dashboard at "/dashboard"
     route('dashboard', 'routes/dashboard/dashboard.tsx', [
+      route(':folderId/record/:recordId', 'routes/dashboard/folder/record/record-detail.tsx'),
       route('*', 'routes/dashboard/folder/folder.tsx')
     ]),
+
+    // Record detail at "/record/:recordId"
+    route('record/:recordId', 'routes/dashboard/record/record.tsx'),
 
     // New file at "/new-file-record"
     route('new-file-record', 'routes/new-file-record/new-file-record.tsx'),
 
     // Expenses at "/expenses"
-    route('expenses', 'routes/expenses/expenses.tsx')
+    route('expenses', 'routes/expenses/expenses.tsx'),
+
+    // Search API at "/api/search"
+    route('api/search', 'routes/api/search.tsx'),
+
+    // Delete Item API at "/api/delete-item"
+    route('api/delete-item', 'routes/api/delete-item.tsx')
 
   ])
 

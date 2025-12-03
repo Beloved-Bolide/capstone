@@ -64,7 +64,7 @@ export function AddFolderForm (props: Props) {
           type="text"
           placeholder="New Folder"
           onKeyDown={handleKeyDown}
-          className={`w-full flex-1 items-center gap-1 px-2 py-2.5 rounded-md text-xs font-medium transition-colors text-gray-900 bg-gray-50 border border-gray-300  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full flex-1 items-center gap-1 px-2 py-2.5 rounded-md text-xs font-medium transition-colors text-gray-900 bg-gray-50 border border-gray-300  focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-transparent ${
           errors.name
           ? 'border-red-500 focus:ring-red-500'
           : 'border-gray-300 focus:ring-slate-500'

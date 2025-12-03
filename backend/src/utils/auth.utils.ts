@@ -48,7 +48,7 @@ export async function validateSessionUser (request: Request, response: Response,
 
   // if the user id is undefined or null, send a 403 and return false
   if (!userId) {
-    response.json({
+    response.status(403).json({
       status: 403,
       data: null,
       message: 'Forbidden: You do not have access to this resource.'
@@ -61,7 +61,7 @@ export async function validateSessionUser (request: Request, response: Response,
 
   // if the user id from the session is undefined, send a 401 and return false
   if (!sessionUser) {
-    response.json({
+    response.status(401).json({
       status: 401,
       data: null,
       message: 'Unauthorized: You must be signed in to access this resource.'
@@ -74,7 +74,7 @@ export async function validateSessionUser (request: Request, response: Response,
 
   // check if the user id from the request body matches the user id from the session
   if (userId !== sessionUserId) {
-    response.json({
+    response.status(403).json({
       status: 403,
       data: null,
       message: 'Forbidden: You do not own this resource.'

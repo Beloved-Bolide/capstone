@@ -27,6 +27,7 @@ export function isLoggedInController (request: Request, response: Response, next
     // if the user, jwt token, or signature are undefined, return the status
     if (user === undefined || signature === undefined || unverifiedJwtToken === undefined) {
       response.json(status)
+      return
     }
 
     // if the jwt token from the request header does not match the jwt token from the session, return the status
@@ -44,5 +45,6 @@ export function isLoggedInController (request: Request, response: Response, next
   } catch (error: unknown) {
     // if an error occurs, return the status
     response.json(status)
+    return
   }
 }
