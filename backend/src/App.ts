@@ -38,7 +38,8 @@ export class App {
 
   // private method to setting up the middleware to handle JSON responses, one for dev and one for prod
   private middlewares (): void {
-    // Add CORS first - allows frontend to communicate with backend
+
+    // Add CORS first - allows the frontend to communicate with the backend
     this.app.use(cors({
       origin: 'http://localhost:5173', // Change this to match your React dev server port
       credentials: true // CRITICAL: allows session cookies to be sent
@@ -54,14 +55,14 @@ export class App {
       secret: process.env.SESSION_SECRET as string,
       resave: false,
       cookie: {
-        maxAge: 1 * 60 * 1000, // Session expires after 1 minute of inactivity (TESTING ONLY)
+        maxAge: 30 * 60 * 1000, // Session expires after 30 minutes of inactivity (TESTING ONLY)
         httpOnly: true, // Prevents JavaScript from accessing the cookie
         secure: false, // Set to true in production with HTTPS
         sameSite: 'lax' // Helps protect against CSRF attacks
       }
     }))
 
-    // Middleware to reset session timeout on each request
+    // Middleware to reset the session timeout on each request
     this.app.use((req, res, next) => {
       if (req.session) {
         req.session.touch() // Resets the maxAge timer

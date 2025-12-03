@@ -2,7 +2,7 @@ import { redirect } from 'react-router'
 import { destroySession, getSession } from '~/utils/session.server'
 
 /** Action for sign-out route.
- * Calls backend API to destroy server session, clears frontend session, and redirects to sign-in.
+ * Calls backend API to destroy the server session, clears the frontend session, and redirects to sign-in.
  * @param request Action request object **/
 export async function action ({ request }: { request: Request }) {
 
