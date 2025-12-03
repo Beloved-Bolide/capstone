@@ -133,7 +133,7 @@ export async function getFoldersByUserId (userId: string | null, authorization: 
   // Add validation - handle null/undefined data
   if (!Array.isArray(data)) {
     console.error('[getFoldersByUserId] Expected array, got:', typeof data, 'Value:', data)
-    return []
+    throw new Error('Invalid folder data received from server. Please sign in again.')
   }
 
   console.log('[getFoldersByUserId] Returning', data.length, 'folders')

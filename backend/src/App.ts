@@ -54,7 +54,7 @@ export class App {
       secret: process.env.SESSION_SECRET as string,
       resave: false,
       cookie: {
-        maxAge: 1 * 60 * 1000, // Session expires after 1 minute of inactivity (TESTING ONLY)
+        maxAge: 15 * 60 * 1000, // Session expires after 15 minutes of inactivity (matches frontend timeout)
         httpOnly: true, // Prevents JavaScript from accessing the cookie
         secure: false, // Set to true in production with HTTPS
         sameSite: 'lax' // Helps protect against CSRF attacks
