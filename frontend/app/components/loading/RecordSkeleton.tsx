@@ -2,6 +2,7 @@ export function RecordSkeleton() {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 animate-pulse">
       <div className="flex flex-col h-full space-y-3">
+
         {/* Header with icon */}
         <div className="flex items-start justify-between">
           <div className="p-2.5 bg-gray-200 rounded-lg w-10 h-10"></div>
@@ -26,6 +27,7 @@ export function RecordSkeleton() {
             <div className="w-3.5 h-3.5 bg-gray-200 rounded"></div>
             <div className="h-3 bg-gray-200 rounded w-2/5"></div>
           </div>
+
           {/* Tag placeholder */}
           <div className="mt-2">
             <div className="h-6 bg-gray-200 rounded w-20"></div>

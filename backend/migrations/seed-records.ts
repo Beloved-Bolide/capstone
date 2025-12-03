@@ -55,7 +55,7 @@ function futureDate(daysAhead: number): Date {
   return new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000)
 }
 
-// Helper function to generate a random amount
+// A Helper function to generate a random amount
 function randomAmount(min: number, max: number): number {
   return Math.round((Math.random() * (max - min) + min) * 100) / 100
 }

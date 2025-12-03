@@ -46,7 +46,6 @@ export function RecordGrid({
   if (isLoading) {
     return (
       <div>
-        <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Files</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <RecordSkeleton key={i} />
@@ -74,30 +73,27 @@ export function RecordGrid({
   // Empty state
   if (!records || records.length === 0) {
     return (
-      <EmptyState
-        icon={<FileText className="w-16 h-16 text-gray-300" />}
-        title="No files yet"
-        message={emptyMessage}
-      />
+      <></>
     )
   }
 
   // Success state with records
   return (
     <div>
-      <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Files</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {records.map((record) => (
           <div key={record.id} className="relative">
             <Link
               to={`./record/${record.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200  min-h-[200px]"
+              className="group flex bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
             >
               <div className="flex flex-col h-full">
-                {/* Header - add padding to prevent icon overlap */}
-                <div className="flex items-start justify-between mb-3 pt-8">
-                  {record.isStarred && !isTrashFolder && (
+                {/* Header with a star */}
+                <div className="flex items-start justify-between mb-3">
+                  {record.isStarred && !isTrashFolder ? (
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                  ) : (
+                    <div />
                   )}
                 </div>
 

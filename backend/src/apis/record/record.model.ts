@@ -119,7 +119,8 @@ export async function selectRecordsByFolderId (folderId: string): Promise<Record
       product_id,
       purchase_date
     FROM record
-    WHERE folder_id = ${folderId}`
+    WHERE folder_id = ${folderId}
+    AND deleted_at IS NULL`
 
   // return the result as an array of records, or null if no records were found
   return RecordSchema.array().parse(rowList) ?? null

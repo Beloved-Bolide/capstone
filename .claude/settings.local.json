@@ -6,7 +6,9 @@
       "Bash(npx tsc:*)",
       "Bash(git rm:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(findstr:*)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []

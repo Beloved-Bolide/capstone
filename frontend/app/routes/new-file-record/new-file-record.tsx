@@ -66,13 +66,13 @@ export async function action ({ request }: Route.ActionArgs) {
     }
   }
 
-  // Check if we're updating an existing record
-  const formData = await request.formData()
-  const existingRecordId = formData.get('existingRecordId') as string | null
+  // Check if we're updating an existing record (from already-parsed form data)
+  const existingRecordId = (defaultValues as any).existingRecordId as string | null
 
   let result
 
   if (existingRecordId) {
+
     // Update existing record
     const record = {
       id: existingRecordId,
@@ -91,10 +91,13 @@ export async function action ({ request }: Route.ActionArgs) {
       productId: data.productId,
       purchaseDate: data.purchaseDate
     }
+
     const response = await updateRecord(record, authorization, cookie)
     result = response.result
+
   } else {
-    // Create new record
+
+    // Create a new record
     const record = {
       id: uuid(),
       folderId: data.folderId,

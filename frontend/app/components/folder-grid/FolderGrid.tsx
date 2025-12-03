@@ -37,11 +37,11 @@ export function FolderGrid({
   isDeleting = false,
   emptyAction
 }: FolderGridProps) {
+
   // Loading state
   if (isLoading) {
     return (
       <div className="mb-8">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Folders</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <FolderSkeleton key={i} />
@@ -55,7 +55,6 @@ export function FolderGrid({
   if (error) {
     return (
       <div className="mb-8">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Folders</h2>
         <ErrorDisplay
           title="Failed to Load Folders"
           message={error.message}
@@ -69,12 +68,7 @@ export function FolderGrid({
   // Empty state
   if (!folders || folders.length === 0) {
     return (
-      <EmptyState
-        icon={<FolderOpen className="w-16 h-16 text-gray-300" />}
-        title="No folders yet"
-        message={emptyMessage}
-        action={emptyAction}
-      />
+      <></>
     )
   }
 
@@ -87,9 +81,9 @@ export function FolderGrid({
           <div key={folder.id} className="relative">
             <Link
               to={`./${folder.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block min-h-[120px]"
+              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block"
             >
-              <div className="flex items-start gap-3 pt-8">
+              <div className="flex items-start gap-3">
                 <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
                   <FolderOpen className="w-5 h-5 text-cyan-600" />
                 </div>
@@ -101,9 +95,11 @@ export function FolderGrid({
                 </div>
               </div>
             </Link>
+
             {/* Action buttons container */}
             {showActionButtons && (
               <div className="absolute top-3 right-3 flex gap-2 z-10">
+
                 {/* Edit button - show only if not in trash */}
                 {!isTrashFolder && onEditFolder && (
                   <button
@@ -123,7 +119,8 @@ export function FolderGrid({
                     />
                   </button>
                 )}
-                {/* Restore button - show only in trash folder */}
+
+                {/* Restore button - show only in the trash folder */}
                 {isTrashFolder && onRestoreFolder && (
                   <button
                     onClick={(e) => onRestoreFolder(folder, e)}
@@ -142,6 +139,7 @@ export function FolderGrid({
                     />
                   </button>
                 )}
+
                 {/* Delete button */}
                 {onDeleteFolder && (
                   <button

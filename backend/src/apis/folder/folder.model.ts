@@ -59,7 +59,8 @@ export async function selectFoldersByParentFolderId(parentFolderId: string, user
       name
     FROM folder
     WHERE parent_folder_id = ${parentFolderId}
-    AND user_id = ${userId}`
+    AND user_id = ${userId}
+    AND deleted_at IS NULL`
 
   // return the folders or null if no folders were found
   const result = FolderSchema.array().parse(rowList)

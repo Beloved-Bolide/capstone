@@ -476,7 +476,6 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     {/* User-Created Folders Section */}
                     {userCreatedFolders.length > 0 && (
                       <>
-                        <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">My Folders</h2>
                         <FolderGrid
                           folders={userCreatedFolders}
                           isLoading={isLoading && !folders}

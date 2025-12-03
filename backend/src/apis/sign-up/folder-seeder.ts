@@ -8,10 +8,6 @@ export async function seedFolders(userId: string) {
   // seed the root folders
   await sql `
     INSERT INTO folder(id, parent_folder_id, user_id, name)
-    VALUES (${uuid()}, ${null}, ${userId}, ${'All Folders'})
-  `
-  await sql `
-    INSERT INTO folder(id, parent_folder_id, user_id, name)
     VALUES (${uuid()}, ${null}, ${userId}, ${'Starred'})
   `
   await sql `
@@ -27,29 +23,21 @@ export async function seedFolders(userId: string) {
     VALUES (${uuid()}, ${null}, ${userId}, ${'Trash'})
   `
 
-  // get all the folders that the user owns
-  const folders: Folder[] | null = await selectFoldersByUserId(userId)
-  if (!folders) return
-
-  // get the parent folder id for the new folders
-  let parentFolderId: string | undefined | null = folders[0]?.id
-  if (parentFolderId === undefined) parentFolderId = null
-
-  // seed the child folders
+  // seed the user folders (top-level folders for organizing records)
   await sql `
     INSERT INTO folder(id, parent_folder_id, user_id, name)
-    VALUES (${uuid()}, ${parentFolderId}, ${userId}, ${'Receipts'})
+    VALUES (${uuid()}, ${null}, ${userId}, ${'Receipts'})
   `
   await sql `
     INSERT INTO folder(id, parent_folder_id, user_id, name)
-    VALUES (${uuid()}, ${parentFolderId}, ${userId}, ${'Warranties'})
+    VALUES (${uuid()}, ${null}, ${userId}, ${'Warranties'})
   `
   await sql `
     INSERT INTO folder(id, parent_folder_id, user_id, name)
-    VALUES (${uuid()}, ${parentFolderId}, ${userId}, ${'Manuals'})
+    VALUES (${uuid()}, ${null}, ${userId}, ${'Manuals'})
   `
   await sql `
     INSERT INTO folder(id, parent_folder_id, user_id, name)
-    VALUES (${uuid()}, ${parentFolderId}, ${userId}, ${'Coupons'})
+    VALUES (${uuid()}, ${null}, ${userId}, ${'Coupons'})
   `
 }
