@@ -6,10 +6,8 @@ import {
   FolderSchema,
   insertFolder,
   updateFolder,
-  deleteFolder,
+  deleteFolderRecursive,
   isDescendant,
-  hasChildFolders,
-  hasRecords,
   selectFolderByFolderId,
   selectFoldersByParentFolderId,
   selectFoldersByUserId,
@@ -409,26 +407,14 @@ export async function deleteFolderController (request: Request, response: Respon
       return
     }
 
-    // check if the folder has any child folders or files
-    const hasChildren = await hasChildFolders(id, userId)
-    const hasItems = await hasRecords(id)
-    if (hasChildren || hasItems) {
-      response.status(400).json({
-        status: 400,
-        data: null,
-        message: 'Delete folder failed: Folder has child folders or files. Delete them first.'
-      })
-      return
-    }
+    // Recursively delete the folder and all its contents
+    const { foldersDeleted, recordsDeleted } = await deleteFolderRecursive(id, userId)
 
-    // delete the folder
-    const message = await deleteFolder(id)
-
-    // return a success response
+    // return a success response with counts
     response.json({
       status: 200,
-      data: null,
-      message: message
+      data: { foldersDeleted, recordsDeleted },
+      message: `Successfully deleted ${foldersDeleted} folder(s) and ${recordsDeleted} file(s).`
     })
 
   } catch (error: any) {

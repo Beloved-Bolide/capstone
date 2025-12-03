@@ -115,7 +115,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
     event.preventDefault()
     event.stopPropagation()
 
-    if (!confirm(`Are you sure you want to permanently delete "${folderName}" and all its contents? This action cannot be undone.`)) {
+    if (!confirm(`⚠️ PERMANENT DELETE WARNING ⚠️\n\nYou are about to permanently delete "${folderName}" and ALL of its contents:\n• All subfolders (recursively)\n• All files inside\n\nThis action CANNOT be undone!\n\nAre you absolutely sure?`)) {
       return
     }
 

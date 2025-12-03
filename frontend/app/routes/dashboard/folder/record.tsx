@@ -1,7 +1,7 @@
 import type { Route } from './+types/record'
 import { useLoaderData, useNavigate } from 'react-router'
 import { getSession } from '~/utils/session.server'
-import { selectRecordByRecordId, type Record } from '~/utils/models/record.model'
+import { getRecordById, type Record } from '~/utils/models/record.model'
 import { getFilesByRecordId, type File } from '~/utils/models/file.model'
 import React, { useState } from 'react'
 import { ArrowLeft, Star, Calendar, DollarSign, Building2, FileText, Package, Tag, AlertCircle } from 'lucide-react'
@@ -28,7 +28,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
   }
 
   // Fetch the record and its files
-  const record = await selectRecordByRecordId(recordId, authorization, cookie)
+  const record = await getRecordById(recordId, authorization, cookie)
   const files = record ? await getFilesByRecordId(recordId, authorization, cookie) : []
 
   return { record, files }
@@ -114,7 +114,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* File Thumbnails */}
             {files.length > 1 && (
               <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                {files.map((file, index) => (
+                {files.map((file: File, index: number) => (
                   <button
                     key={file.id}
                     onClick={() => setSelectedFileIndex(index)}

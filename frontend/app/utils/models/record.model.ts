@@ -68,6 +68,26 @@ export async function postRecord (data: Record, authorization: string, cookie: s
   return { headers, result }
 }
 
+export async function getRecordById (recordId: string, authorization: string, cookie: string | null): Promise<Record | null> {
+
+  const response = await fetch(`${process.env.REST_API_URL}/record/id/${recordId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+      'Cookie': cookie ?? ''
+    },
+    body: null
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to get record')
+  }
+
+  const result = await response.json()
+  return result.data
+}
+
 export async function getRecordsByFolderId (folderId: string | null, authorization: string, cookie: string | null): Promise<Record[]> {
 
   const response = await fetch(`${process.env.REST_API_URL}/record/folderId/${folderId}`, {

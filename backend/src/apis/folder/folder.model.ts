@@ -211,9 +211,50 @@ export async function deleteFolder (id: string): Promise<string> {
 
   // delete the folder from the database
   await sql `
-    DELETE FROM folder 
+    DELETE FROM folder
     WHERE id = ${id}`
 
   // return a success message
   return 'Folder successfully deleted!'
+}
+
+/** Recursively deletes a folder and all its contents (subfolders and records)
+ * @param id the folder's id to delete
+ * @param userId the user's id (for security filtering)
+ * @returns { Promise<{ foldersDeleted: number, recordsDeleted: number }> } counts of deleted items **/
+export async function deleteFolderRecursive (id: string, userId: string): Promise<{ foldersDeleted: number, recordsDeleted: number }> {
+  let foldersDeleted = 0
+  let recordsDeleted = 0
+
+  // Import deleteRecord to avoid circular dependency issues
+  const { selectRecordsByFolderId, deleteRecord } = await import('../record/record.model.ts')
+
+  // 1. Get all child folders (filtered by user for security)
+  const childFolders = await selectFoldersByParentFolderId(id, userId)
+
+  // 2. Recursively delete all child folders
+  if (childFolders && childFolders.length > 0) {
+    for (const childFolder of childFolders) {
+      const childResult = await deleteFolderRecursive(childFolder.id, userId)
+      foldersDeleted += childResult.foldersDeleted
+      recordsDeleted += childResult.recordsDeleted
+    }
+  }
+
+  // 3. Get all records in this folder
+  const records = await selectRecordsByFolderId(id)
+
+  // 4. Delete all records in this folder
+  if (records && records.length > 0) {
+    for (const record of records) {
+      await deleteRecord(record.id)
+      recordsDeleted++
+    }
+  }
+
+  // 5. Finally delete the folder itself
+  await deleteFolder(id)
+  foldersDeleted++
+
+  return { foldersDeleted, recordsDeleted }
 }
