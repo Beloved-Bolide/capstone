@@ -66,3 +66,10 @@ The seed script generates 50 records with:
 - Make sure your backend server has database access before running these scripts
 - The seed:records script requires at least one folder to exist for your user
 - Records are randomly distributed, so each run will produce different results
+
+## Trevor's Notes
+
+```
+docker cp backend/migrations/seed-folders-simple.sql filewise-sql-1:/tmp/seed-records.sql
+docker exec -it filewise-sql-1 psql -U therrera39 -d filewise -f /tmp/seed-records.sql
+```1

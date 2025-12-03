@@ -38,7 +38,7 @@ const descriptions = [
 
 // Helper function to get a random item from an array
 function randomItem<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]
+  return arr[Math.floor(Math.random() * arr.length)]!
 }
 
 // Helper function to get a random date within a range
@@ -208,7 +208,7 @@ async function seedRecords(userId: string): Promise<void> {
   console.log(`   • Varied amounts, dates, and document types`)
 }
 
-// Get user ID from command line argument or environment variable
+// Get user ID from command the line argument or environment variable
 const userId = process.argv[2] || process.env.USER_ID
 
 if (!userId) {
