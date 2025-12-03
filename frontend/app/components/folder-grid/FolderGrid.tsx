@@ -68,14 +68,29 @@ export function FolderGrid({
   // Empty state
   if (!folders || folders.length === 0) {
     return (
-      <></>
+      <EmptyState
+        icon={<FolderOpen className="w-16 h-16 text-gray-300" />}
+        title="No folders yet"
+        message={emptyMessage}
+        action={emptyAction}
+      />
     )
   }
 
   // Success state with folders
   return (
     <div className="mb-8">
-      <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Folders</h2>
+      <div className="flex items-center justify-between mb-4 px-1">
+        <h2 className="text-sm font-semibold text-gray-900">Folders</h2>
+        {emptyAction && (
+          <button
+            onClick={emptyAction.onClick}
+            className="px-3 py-1.5 text-sm font-medium text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 rounded-md transition-colors"
+          >
+            + {emptyAction.label}
+          </button>
+        )}
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {folders.map((folder) => (
           <div key={folder.id} className="relative">
