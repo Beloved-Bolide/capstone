@@ -155,7 +155,7 @@ export function FolderGrid({
                     title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Delete folder'}
                   >
                     <Trash2
-                      className={`w-4 h-4 ${
+                      className={`cursor-pointer w-4 h-4 ${
                         isDeleting
                           ? 'text-gray-400'
                           : isTrashFolder

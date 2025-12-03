@@ -32,6 +32,7 @@ export function RecordGrid({
   isDeleting = false,
   isRecentFolder = false
 }: RecordGridProps) {
+
   // Helper function to format dates
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
@@ -88,12 +89,13 @@ export function RecordGrid({
               className="group flex bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
             >
               <div className="flex flex-col h-full">
+
                 {/* Header with a star */}
                 <div className="flex items-start justify-between mb-3">
                   {record.isStarred && !isTrashFolder ? (
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   ) : (
-                    <div />
+                    <div className="mb-4"/>
                   )}
                 </div>
 
@@ -228,7 +230,7 @@ export function RecordGrid({
                   title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Move to trash'}
                 >
                   <Trash2
-                    className={`w-4 h-4 ${
+                    className={`cursor-pointer w-4 h-4 ${
                       isDeleting
                         ? 'text-gray-400'
                         : isTrashFolder
