@@ -20,7 +20,7 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
   const [showSearchResults, setShowSearchResults] = useState(false)
   const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
 
-  // Handle search with debounce
+  // Handle search with debouncing
   useEffect(() => {
     if (searchQuery.trim().length === 0) {
       setShowSearchResults(false)
@@ -100,12 +100,14 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
         </button>
 
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <img src="/logo-croppy.png" alt="FileWise logo" />
+        <Link to="/dashboard" className="flex items-center gap-2" title="FileWise" aria-label="FileWise">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+              <img src="/logo-croppy.png" alt="FileWise logo" />
+            </div>
+            <span className="text-xl font-bold text-gray-800 hidden sm:inline">FileWise</span>
           </div>
-          <span className="text-xl font-bold text-gray-800 hidden sm:inline">FileWise</span>
-        </div>
+        </Link>
       </div>
 
       {/* Search Bar */}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Outlet, redirect, useActionData, useLocation, useFetcher } from 'react-router'
+import { Link, Outlet, redirect, useActionData, useLocation, useFetcher, useNavigate, useRevalidator } from 'react-router'
 import type { Route } from './+types/dashboard'
 import {
   type Folder,
@@ -13,6 +13,8 @@ import { getSession } from '~/utils/session.server'
 import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
 import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
+import { ErrorDisplay } from '~/components/error/ErrorDisplay'
+import { FolderGrid } from '~/components/folder-grid/FolderGrid'
 import { getValidatedFormData } from 'remix-hook-form'
 import { v7 as uuid } from 'uuid'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,27 +29,40 @@ export function meta ({}: Route.MetaArgs) {
 const resolver = zodResolver(NewFolderSchema)
 
 export async function loader ({ request }: Route.LoaderArgs) {
+  try {
+    // Check if the user is logged in using session
+    const { isLoggedIn } = await import('~/utils/session.server')
+    const loginStatus = await isLoggedIn(request)
 
-  // Check if user is logged in using session
-  const { isLoggedIn } = await import('~/utils/session.server')
-  const loginStatus = await isLoggedIn(request)  // FIX: define loginStatus before using it
+    // If not logged in, redirect to sign-in
+    if (loginStatus.status !== 200) {
+      throw redirect('/sign-in')
+    }
 
-  // If not logged in, redirect to sign-in
-  if (loginStatus.status !== 200) {
-    throw redirect('/sign-in')
+    const cookie = request.headers.get('cookie')
+    const session = await getSession(cookie)
+    const user = session.get('user')
+    const authorization = session.get('authorization')
+
+    if (!cookie || !user?.id || !authorization) {
+      throw redirect('/sign-in')
+    }
+
+    const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
+    return { folders, authorization, error: null }
+  } catch (error) {
+    // If it's a redirect, rethrow it
+    if (error instanceof Response) throw error
+
+    // Otherwise, return error state
+    return {
+      folders: null,
+      authorization: null,
+      error: {
+        message: error instanceof Error ? error.message : 'Failed to load folders'
+      }
+    }
   }
-
-  const cookie = request.headers.get('cookie')
-  const session = await getSession(cookie)
-  const user = session.get('user')
-  const authorization = session.get('authorization')
-
-  if (!cookie || !user?.id || !authorization) {
-    return { redirect: '/login' }
-  }
-
-  const folders: Folder[] = await getFoldersByUserId(user.id, authorization, cookie)
-  return { folders, authorization }
 }
 
 export async function action ({ request }: Route.ActionArgs) {
@@ -153,13 +168,15 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     }
   }
 
-  // if there are no folders, set the array to an empty array
-  let { folders } = loaderData
+  // Get data from loader
+  let { folders, error } = loaderData
   if (!folders) folders = []
 
   useActionData<typeof action>()
   const location = useLocation()
   const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
+  const revalidator = useRevalidator()
+  const navigate = useNavigate()
 
   const [selectedFolder, setSelectedFolder] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -168,11 +185,26 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
 
+  const isLoading = revalidator.state === 'loading'
+
   // Check if we're at the base dashboard route
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
   // Filter parent folders excluding Trash
   const parentFolders = folders.filter(folder => folder.parentFolderId === null && folder.name !== 'Trash')
+
+  // Handle retry
+  const handleRetry = () => {
+    revalidator.revalidate()
+  }
+
+  // Auto-redirect on auth errors
+  useEffect(() => {
+    if (error && (error.message.includes('Unauthorized') || error.message.includes('sign in'))) {
+      const timer = setTimeout(() => navigate('/sign-in'), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, navigate])
 
   // Handle search with debounce
   useEffect(() => {
@@ -201,29 +233,6 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       {/* Sidebar */}
       <div
         className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
-
-        {/* Logo */}
-        <div className="px-4 lg:px-6 py-3 lg:pt-5 lg:pb-4.5 border-b border-gray-200">
-          <div className="flex items-center justify-between h-[42px]">
-            <Link to=".." className="flex items-center gap-2">
-              <div className="w-10.5 h-10.5 rounded-md flex items-center justify-center">
-                <img src="/logo-croppy.png" alt="logo"/>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
-                FileWise
-              </span>
-            </Link>
-            <button
-              aria-label="Close sidebar"
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        </div>
 
         {/* Create Folder Button */}
         <div className="px-3 lg:px-4 pt-4">
@@ -282,55 +291,6 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       <div
         className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
 
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-3">
-          <div className="flex items-center justify-between gap-3 lg:gap-4">
-            <div className="flex items-center gap-3 lg:gap-5 flex-1 min-w-0">
-
-              {/* Mobile Menu Button */}
-              <button
-                aria-label="Open sidebar"
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-              </button>
-
-              {/* Search Bar */}
-              <div className="flex-1 max-w-2xl relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
-                <input
-                  type="text"
-                  placeholder="Search files and folders..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => searchQuery && setShowSearchResults(true)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                />
-              </div>
-
-              {/* New File Button */}
-              <Link
-                aria-label="Add new file"
-                to="/new-file-record"
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
-              >
-                <Plus className="w-4 h-4"/>
-                <span className="hidden sm:inline">New File</span>
-              </Link>
-            </div>
-
-            {/* User Profile */}
-            <button className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:cursor-pointer">
-              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-xs lg:text-sm shadow-sm">
-                DR
-              </div>
-            </button>
-          </div>
-        </div>
-
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
 
@@ -343,31 +303,31 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
                 // Main Dashboard
                 <div className="p-4 lg:p-6">
-                  <div>
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">All Folders</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {parentFolders.map((folder) => (
-                        <Link
-                          key={folder.id}
-                          to={`./${folder.id}`}
-                          onClick={() => setSelectedFolder(folder.name)}
-                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
-                              {getFolderIcon(folder.name, 'md')}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                                {folder.name}
-                              </h3>
-                              <p className="text-xs text-gray-500 mt-1">Folder</p>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
+                  {/* Error display with auto-redirect */}
+                  {error && (
+                    <div className="mb-4">
+                      <ErrorDisplay
+                        title="Failed to Load Folders"
+                        message={error.message}
+                        type="error"
+                        onRetry={handleRetry}
+                        autoRedirect={
+                          error.message.includes('Unauthorized') || error.message.includes('sign in')
+                            ? { path: '/sign-in', delay: 3000 }
+                            : undefined
+                        }
+                      />
                     </div>
-                  </div>
+                  )}
+
+                  <FolderGrid
+                    folders={parentFolders}
+                    isLoading={isLoading && !folders}
+                    error={null}
+                    onRetry={handleRetry}
+                    emptyMessage="No folders yet. Create a new folder to get started."
+                    showTrashButton={false}
+                  />
                 </div>
               ) : (
 
