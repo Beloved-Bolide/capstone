@@ -99,7 +99,8 @@ export async function action ({ request }: Route.ActionArgs) {
     return { success: false, status: result }
   }
 
-  return redirect('/dashboard', result)
+  // Redirect to dashboard on success
+  throw redirect('/dashboard')
 }
 
 export default function NewFileRecord ({ loaderData, actionData }: Route.ComponentProps) {

@@ -29,16 +29,28 @@ export async function action ({ request }: Route.ActionArgs): Promise<FormAction
     return { errors, defaultValues }
   }
 
-  // post the form data to the server
-  const response = await postSignUp(data)
+  try {
+    // post the form data to the server
+    const response = await postSignUp(data)
 
-  // if the response is not successful, return false and an error message
-  if (response.status !== 200) {
-    return { success: false, status: response }
+    // if the response is not successful, return false and an error message
+    if (response.status !== 200) {
+      return { success: false, status: response }
+    }
+
+    // if the response is successful, return true and a success message
+    return { success: true, status: response }
+  } catch (error) {
+    // handle network errors or other exceptions
+    return {
+      success: false,
+      status: {
+        status: 500,
+        message: error instanceof Error ? error.message : 'An unexpected error occurred',
+        data: null
+      }
+    }
   }
-
-  // if the response is successful, return true and a success message
-  return { success: true, status: response }
 }
 
 export default function SignUpPage () {
