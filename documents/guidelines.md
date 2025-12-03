@@ -279,7 +279,7 @@ Use lucide-react icons sized to text density
 
 ```jsx
 <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black bg-opacity-50">
-  <div className="bg-white w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-xl">
+  <div className="bg-white w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-lg">
     {/* sticky header */}
     <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
       <h2 className="text-lg font-semibold text-gray-900">Title</h2>

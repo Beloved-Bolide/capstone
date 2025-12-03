@@ -31,7 +31,7 @@ export function SearchResultsModal ({
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 pointer-events-none px-4">
-        <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl max-h-[70vh] overflow-hidden flex flex-col pointer-events-auto border border-gray-100">
+        <div className="w-full max-w-2xl bg-white rounded-lg shadow-2xl max-h-[70vh] overflow-hidden flex flex-col pointer-events-auto border border-gray-100">
 
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-cyan-50 to-white">
@@ -48,7 +48,7 @@ export function SearchResultsModal ({
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0 ml-2"
+              className="p-2 rounded-md hover:bg-gray-100 transition-colors flex-shrink-0 ml-2"
               aria-label="Close search results"
             >
               <X className="w-5 h-5 text-gray-400"/>
@@ -92,10 +92,10 @@ function LoadingState ({ query }: { query: string }) {
       {/* Skeleton loaders */}
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="space-y-3 p-4 bg-gray-50 rounded-lg">
+          <div key={i} className="space-y-3 p-4 bg-gray-50 rounded-md">
             <div className="flex items-start gap-4">
               {/* Icon skeleton */}
-              <div className="w-10 h-10 bg-gray-200 rounded-lg flex-shrink-0 animate-pulse"></div>
+              <div className="w-10 h-10 bg-gray-200 rounded-md flex-shrink-0 animate-pulse"></div>
 
               {/* Content skeleton */}
               <div className="flex-1 space-y-2 min-w-0">
@@ -147,7 +147,7 @@ function ResultsList ({ results, onClose }: { results: Record[], onClose: () => 
           <div className="flex items-start gap-4">
             {/* Icon */}
             <div className="mt-1 flex-shrink-0">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-100 to-cyan-50 flex items-center justify-center group-hover:from-cyan-200 group-hover:to-cyan-100 transition-colors">
+              <div className="w-10 h-10 rounded-md bg-gradient-to-br from-cyan-100 to-cyan-50 flex items-center justify-center group-hover:from-cyan-200 group-hover:to-cyan-100 transition-colors">
                 <FileText className="w-5 h-5 text-cyan-600"/>
               </div>
             </div>

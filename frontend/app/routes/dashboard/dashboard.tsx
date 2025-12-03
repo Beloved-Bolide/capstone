@@ -313,7 +313,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         <div className="lg:hidden px-4 py-3 border-b border-gray-200">
           <button
             aria-label="Close sidebar"
-            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors"
+            className="p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors"
             onClick={() => setSidebarOpen(false)}
           >
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,7 +328,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             onClick={() => {
               setDisplayNewFolderForm(!displayNewFolderForm)
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-md hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -350,7 +350,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             <Link
               to="/dashboard"
               onClick={() => setSelectedFolder('All Folders')}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
                 isBaseDashboard
                   ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
                   : 'text-gray-700 hover:bg-gray-100 border border-transparent'
@@ -366,7 +366,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 key={folder.id}
                 to={`./${folder.id}`}
                 onClick={() => setSelectedFolder(folder.name)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
                   selectedFolder === folder.name
                     ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100 border border-transparent'
@@ -382,7 +382,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         {/* Settings */}
         <div className="px-3 lg:px-4 py-4 border-t border-gray-200">
           <button
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-cyan-50 focus:text-cyan-700 focus:border-cyan-200 focus:shadow-sm">
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-cyan-50 focus:text-cyan-700 focus:border-cyan-200 focus:shadow-sm">
             <Settings className="w-4 h-4"/>
             <span className="flex-1 text-left">Settings</span>
           </button>
@@ -411,7 +411,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     onClick={() => {
                       setDisplayNewFolderForm(!displayNewFolderForm)
                     }}
-                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
+                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-cyan-700 text-white rounded-md hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
                   >
                     <Plus className="w-4 h-4"/>
                     <span>New Folder</span>
@@ -458,10 +458,10 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                           key={folder.id}
                           to={`./${folder.id}`}
                           onClick={() => setSelectedFolder(folder.name)}
-                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
+                          className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
                         >
                           <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
+                            <div className="p-2.5 bg-cyan-50 rounded-md group-hover:bg-cyan-100 transition-colors">
                               {getFolderIcon(folder.name, 'md')}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -631,7 +631,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       {/* Edit Folder Modal */}
       {editingFolder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Rename Folder</h2>
             <div className="mb-6">
               <label htmlFor="folder-name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -649,7 +649,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     handleCancelEdit()
                   }
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 placeholder="Enter folder name"
                 autoFocus
               />
@@ -657,14 +657,14 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleCancelEdit}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveFolderName}
                 disabled={!editFolderName.trim()}
-                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-md transition-colors font-medium"
               >
                 Save
               </button>
@@ -685,7 +685,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               <button
                 aria-label="Close preview"
                 onClick={() => setPreviewOpen(false)}
-                className="p-2 rounded-lg hover:cursor-pointer hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-md hover:cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>

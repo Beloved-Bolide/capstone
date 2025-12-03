@@ -81,10 +81,10 @@ export function FolderGrid({
           <div key={folder.id} className="relative">
             <Link
               to={`./${folder.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block"
+              className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block"
             >
               <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
+                <div className="p-2.5 bg-cyan-50 rounded-md group-hover:bg-cyan-100 transition-colors">
                   <FolderOpen className="w-5 h-5 text-cyan-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -105,7 +105,7 @@ export function FolderGrid({
                   <button
                     onClick={(e) => onEditFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : 'bg-cyan-50 hover:bg-cyan-100'
@@ -125,7 +125,7 @@ export function FolderGrid({
                   <button
                     onClick={(e) => onRestoreFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : 'bg-amber-50 hover:bg-amber-100'
@@ -145,7 +145,7 @@ export function FolderGrid({
                   <button
                     onClick={(e) => onDeleteFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : isTrashFolder

@@ -297,13 +297,13 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
 
       {/* Fetcher status messages */}
       {fetcher.data?.error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
           <p className="text-sm text-red-800">{fetcher.data.error}</p>
         </div>
       )}
 
       {fetcher.data?.success && fetcher.data?.message && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
           <p className="text-sm text-green-800">{fetcher.data.message}</p>
         </div>
       )}
@@ -373,7 +373,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
           onClick={() => setShowCreateFolderModal(false)}
         >
           <div
-            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4"
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
@@ -406,13 +406,13 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
                   }
                 }}
                 placeholder="Enter subfolder name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 autoFocus
               />
             </div>
 
             {createFolderFetcher.data?.error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
                 <p className="text-sm text-red-800">{createFolderFetcher.data.error}</p>
               </div>
             )}
@@ -420,14 +420,14 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCreateFolderModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateSubfolder}
                 disabled={!newFolderName.trim() || createFolderFetcher.state !== 'idle'}
-                className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+                className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 {createFolderFetcher.state !== 'idle' ? 'Creating...' : 'Create'}
               </button>

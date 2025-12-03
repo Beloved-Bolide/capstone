@@ -86,7 +86,7 @@ export function RecordGrid({
           <div key={record.id} className="relative">
             <Link
               to={`./record/${record.id}`}
-              className="group flex bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
+              className="group flex bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
             >
               <div className="flex flex-col h-full">
 
@@ -177,7 +177,7 @@ export function RecordGrid({
               <Link
                 to={`./record/${record.id}`}
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                className="p-2 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
                 title="View details"
               >
                 <FileText className="w-4 h-4 text-green-600" />
@@ -188,7 +188,7 @@ export function RecordGrid({
                 <Link
                   to={`/new-file-record?recordId=${record.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="p-2 bg-cyan-50 hover:bg-cyan-100 rounded-lg transition-colors"
+                  className="p-2 bg-cyan-50 hover:bg-cyan-100 rounded-md transition-colors"
                   title="Edit record"
                 >
                   <Pencil className="w-4 h-4 text-cyan-600" />
@@ -200,7 +200,7 @@ export function RecordGrid({
                 <button
                   onClick={(e) => onRestoreRecord(record, e)}
                   disabled={isDeleting}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-md transition-colors ${
                     isDeleting
                       ? 'bg-gray-200 cursor-not-allowed'
                       : 'bg-amber-50 hover:bg-amber-100'
@@ -220,7 +220,7 @@ export function RecordGrid({
                 <button
                   onClick={(e) => onDeleteRecord(record, e)}
                   disabled={isDeleting}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-md transition-colors ${
                     isDeleting
                       ? 'bg-gray-200 cursor-not-allowed'
                       : isTrashFolder

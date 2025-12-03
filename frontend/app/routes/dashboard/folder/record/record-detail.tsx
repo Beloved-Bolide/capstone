@@ -64,7 +64,7 @@ export default function RecordDetail ({ loaderData }: Route.ComponentProps) {
     return (
       <div className="p-4 lg:p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 border border-red-200 rounded-md p-4">
             <p className="text-sm text-red-800">{error?.message || 'Failed to load record'}</p>
             <button
               onClick={() => navigate(-1)}
@@ -93,7 +93,7 @@ export default function RecordDetail ({ loaderData }: Route.ComponentProps) {
 
           <Link
             to={`/new-file-record?recordId=${record.id}`}
-            className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors"
           >
             <Pencil className="w-4 h-4" />
             <span>Edit</span>
@@ -101,12 +101,12 @@ export default function RecordDetail ({ loaderData }: Route.ComponentProps) {
         </div>
 
         {/* Record Card */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-green-50 to-cyan-50 px-6 py-4 border-b border-gray-200">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-green-100 rounded-lg">
+                <div className="p-3 bg-green-100 rounded-md">
                   <FileText className="w-6 h-6 text-green-600" />
                 </div>
                 <div>

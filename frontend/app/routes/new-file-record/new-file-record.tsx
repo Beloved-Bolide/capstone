@@ -481,7 +481,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                           setIsStarred(!isStarred)
                           setValue('isStarred', !isStarred)
                         }}
-                        className="inline-flex items-center justify-center p-3 rounded-lg border-2 transition-all hover:bg-yellow-50"
+                        className="inline-flex items-center justify-center p-3 rounded-md border-2 transition-all hover:bg-yellow-50"
                         style={{
                           borderColor: isStarred ? '#fbbf24' : '#e5e7eb',
                           backgroundColor: isStarred ? '#fffbf0' : 'white'
@@ -517,7 +517,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                           setNotifyOn(!notifyOn)
                           setValue('notifyOn', !notifyOn)
                         }}
-                        className="inline-flex items-center w-full px-4 py-2 rounded-lg border-2 transition-all hover:bg-cyan-50"
+                        className="inline-flex items-center w-full px-4 py-2 rounded-md border-2 transition-all hover:bg-cyan-50"
                         style={{
                           borderColor: notifyOn ? '#3b82f6' : '#e5e7eb',
                           backgroundColor: notifyOn ? '#f0f9ff' : 'white'
