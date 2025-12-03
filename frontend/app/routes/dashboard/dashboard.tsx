@@ -92,22 +92,11 @@ export async function action ({ request }: Route.ActionArgs) {
     }
   }
 
-  // get the folders for the current user
-  const folders: Folder[] | null = await getFoldersByUserId(user.id, authorization, cookie)
-
-  // if there are folders, find the "All Folders" parent folder
-  let allFoldersParent: Folder | null | undefined = null
-  if (folders) {
-    allFoldersParent = folders.find(f => f.name === 'All Folders' && f.parentFolderId === null)
-  }
-
-  // find the parent folder of the selected folder
-  const allFoldersId = allFoldersParent ? allFoldersParent.id : null
-
   // create a new folder object with the required attributes
+  // User-created folders are top-level folders (parentFolderId: null)
   const folder = {
     id: uuid(),
-    parentFolderId: allFoldersId, // needs work
+    parentFolderId: null,
     userId: user.id,
     name: data.name
   }
@@ -190,8 +179,21 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   // Check if we're at the base dashboard route
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
-  // Filter parent folders excluding Trash
-  const parentFolders = folders.filter(folder => folder.parentFolderId === null && folder.name !== 'Trash')
+  // Define the order of default folders
+  const defaultFolderOrder = ['Expiring', 'Recent', 'Starred', 'Trash']
+
+  // Separate default folders and user-created folders
+  const defaultFolders = defaultFolderOrder
+    .map(name => folders.find(f => f.name === name && f.parentFolderId === null))
+    .filter((f): f is Folder => f !== undefined)
+
+  // Get user-created folders (not default system folders) and sort alphabetically
+  const userCreatedFolders = folders
+    .filter(folder =>
+      folder.parentFolderId === null &&
+      !['All Folders', 'Recent', 'Starred', 'Expiring', 'Trash'].includes(folder.name)
+    )
+    .sort((a, b) => a.name.localeCompare(b.name))
 
   // Handle retry
   const handleRetry = () => {
@@ -271,8 +273,8 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               setDisplayNewFolderForm={setDisplayNewFolderForm}
             />
 
-            {/* Folders */}
-            {folders.filter(folder => folder.parentFolderId === null).map((folder) => (
+            {/* Default Folders Only (in specific order) */}
+            {defaultFolders.map((folder) => (
               <Link
                 key={folder.id}
                 to={`./${folder.id}`}
@@ -353,14 +355,47 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     </div>
                   )}
 
-                  <FolderGrid
-                    folders={parentFolders}
-                    isLoading={isLoading && !folders}
-                    error={null}
-                    onRetry={handleRetry}
-                    emptyMessage="No folders yet. Create a new folder to get started."
-                    showTrashButton={false}
-                  />
+                  <div>
+                    {/* Default Folders Section */}
+                    <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Quick Access</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+                      {defaultFolders.map((folder) => (
+                        <Link
+                          key={folder.id}
+                          to={`./${folder.id}`}
+                          onClick={() => setSelectedFolder(folder.name)}
+                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="p-2.5 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+                              {getFolderIcon(folder.name, 'md')}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                                {folder.name}
+                              </h3>
+                              <p className="text-xs text-gray-500 mt-1">System Folder</p>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* User-Created Folders Section */}
+                    {userCreatedFolders.length > 0 && (
+                      <>
+                        <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">My Folders</h2>
+                        <FolderGrid
+                          folders={userCreatedFolders}
+                          isLoading={isLoading && !folders}
+                          error={null}
+                          onRetry={handleRetry}
+                          emptyMessage="No custom folders yet. Create a new folder to get started."
+                          showTrashButton={false}
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
               ) : (
 
