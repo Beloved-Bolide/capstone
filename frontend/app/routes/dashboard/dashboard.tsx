@@ -10,7 +10,7 @@ import {
 } from '~/utils/models/folder.model'
 import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
-import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
+import { Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
 import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
 import { getValidatedFormData } from 'remix-hook-form'
@@ -202,27 +202,17 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       <div
         className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
-        {/* Logo */}
-        <div className="px-4 lg:px-6 py-3 lg:pt-5 lg:pb-4.5 border-b border-gray-200">
-          <div className="flex items-center justify-between h-[42px]">
-            <Link to=".." className="flex items-center gap-2">
-              <div className="w-10.5 h-10.5 rounded-md flex items-center justify-center">
-                <img src="/logo-croppy.png" alt="logo"/>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
-                FileWise
-              </span>
-            </Link>
-            <button
-              aria-label="Close sidebar"
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
+        {/* Close Sidebar Button - Mobile Only */}
+        <div className="lg:hidden px-4 py-3 border-b border-gray-200">
+          <button
+            aria-label="Close sidebar"
+            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
         </div>
 
         {/* Create Folder Button */}
@@ -282,55 +272,6 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       <div
         className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
 
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-3">
-          <div className="flex items-center justify-between gap-3 lg:gap-4">
-            <div className="flex items-center gap-3 lg:gap-5 flex-1 min-w-0">
-
-              {/* Mobile Menu Button */}
-              <button
-                aria-label="Open sidebar"
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-              </button>
-
-              {/* Search Bar */}
-              <div className="flex-1 max-w-2xl relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
-                <input
-                  type="text"
-                  placeholder="Search files and folders..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => searchQuery && setShowSearchResults(true)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                />
-              </div>
-
-              {/* New File Button */}
-              <Link
-                aria-label="Add new file"
-                to="/new-file-record"
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
-              >
-                <Plus className="w-4 h-4"/>
-                <span className="hidden sm:inline">New File</span>
-              </Link>
-            </div>
-
-            {/* User Profile */}
-            <button className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:cursor-pointer">
-              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-xs lg:text-sm shadow-sm">
-                DR
-              </div>
-            </button>
-          </div>
-        </div>
-
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
 
@@ -343,6 +284,26 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
                 // Main Dashboard
                 <div className="p-4 lg:p-6">
+                  {/* New Folder Button - Mobile Only */}
+                  <button
+                    onClick={() => {
+                      setDisplayNewFolderForm(!displayNewFolderForm)
+                    }}
+                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+                  >
+                    <Plus className="w-4 h-4"/>
+                    <span>New Folder</span>
+                  </button>
+
+                  {/* Add Folder Form - Mobile Only */}
+                  <div className="lg:hidden mb-6">
+                    <AddFolderForm
+                      displayNewFolderForm={displayNewFolderForm}
+                      actionData={actionData}
+                      setDisplayNewFolderForm={setDisplayNewFolderForm}
+                    />
+                  </div>
+
                   <div>
                     <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">All Folders</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
