@@ -1,4 +1,4 @@
-import { Search, Plus, LogOut } from 'lucide-react'
+import { Search, Plus, LogOut, Menu, X } from 'lucide-react'
 import { Link, useLocation, useFetcher } from 'react-router'
 import { fetchWithSession } from '~/utils/api'
 import { API_URL } from '~/config'
@@ -18,6 +18,7 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
   const currentPath = location.pathname
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const searchFetcher = useFetcher<{ success: boolean, data: Record[], message: string }>()
 
   // Handle search with debounce
@@ -77,38 +78,18 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
   <>
   <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 lg:py-4">
     <div className="flex items-center justify-between gap-4">
-      {/* Left: Mobile Menu + Logo */}
-      <div className="flex items-center gap-2 lg:gap-6">
-        {/* Mobile Menu Button */}
-        <button
-        className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
-        onClick={onMenuClick}
-        >
-          <svg
-          className="w-5 h-5 text-gray-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          >
-            <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
-
-        {/* Logo */}
+      {/* Left: Logo (Hidden on Mobile) */}
+      <div className="hidden lg:flex items-center gap-6">
+        {/* Logo - Only Desktop */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
             <img src="/logo-croppy.png" alt="FileWise logo" />
           </div>
-          <span className="text-xl font-bold text-gray-800 hidden sm:inline">FileWise</span>
+          <span className="text-2xl font-bold bg-gradient-to-r from-cyan-700 to-cyan-600 bg-clip-text text-transparent">FileWise</span>
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Center: Search Bar */}
       <div className="flex-1 max-w-2xl relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
         <input
@@ -121,20 +102,32 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
         />
       </div>
 
-      {/* New File Button */}
-      <Link
-      aria-label="Add new file"
-      to="/new-file-record"
-      className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
-      >
-        <Plus className="w-4 h-4"/>
-        <span className="hidden sm:inline">New File</span>
-      </Link>
+      {/* Right: New File Button + Mobile Menu */}
+      <div className="flex items-center gap-3 lg:gap-6">
+        {/* New File Button */}
+        <Link
+        aria-label="Add new file"
+        to="/new-file-record"
+        className="flex items-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:bg-cyan-800 transition-colors focus:outline-none text-sm font-medium"
+        >
+          <Plus className="w-4 h-4"/>
+          <span className="hidden sm:inline">New File</span>
+        </Link>
 
-      {/* Right: Navigation Links + User Profile + Sign Out */}
-      <div className="flex items-center gap-4 lg:gap-6">
-        {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Mobile Dropdown Menu Button */}
+        <button
+          className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+        >
+          {showMobileMenu ? (
+            <X className="w-5 h-5 text-gray-600" />
+          ) : (
+            <Menu className="w-5 h-5 text-gray-600" />
+          )}
+        </button>
+
+        {/* Desktop Navigation Links */}
+        <div className="hidden lg:flex items-center gap-4">
           {currentPath !== '/' && (
             <Link
             to="/"
@@ -151,31 +144,69 @@ export function Navbar({onMenuClick, userEmail}: NavbarProps) {
               Dashboard
             </Link>
           )}
+          <Link
+            to="/expenses"
+            className="text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors"
+          >
+            Expenses
+          </Link>
         </div>
 
-        {/* User Profile */}
-        <div className="hidden sm:flex items-center gap-2 lg:gap-3">
-          <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
-            {userInitials}
-          </div>
-          <div className="hidden md:block text-sm">
-            <div className="font-medium text-gray-900">{userEmail?.split('@')[0] || 'User'}</div>
-          </div>
-        </div>
-
-        {/* Sign Out Button */}
-        <Form method="post" action="/sign-out">
+        {/* Desktop Sign Out Button */}
+        <Form method="post" action="/sign-out" className="hidden lg:block">
           <button
           type="submit"
           className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           title="Sign Out"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden lg:inline">Sign Out</span>
+            <span>Sign Out</span>
           </button>
         </Form>
       </div>
     </div>
+
+    {/* Mobile Dropdown Menu */}
+    {showMobileMenu && (
+      <div className="lg:hidden mt-4 pt-4 border-t border-gray-200 space-y-2">
+        {/* Navigation Links */}
+        <Link
+          to="/"
+          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          onClick={() => setShowMobileMenu(false)}
+        >
+          Home
+        </Link>
+        <Link
+          to="/dashboard"
+          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          onClick={() => setShowMobileMenu(false)}
+        >
+          Dashboard
+        </Link>
+        <Link
+          to="/expenses"
+          className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          onClick={() => setShowMobileMenu(false)}
+        >
+          Expenses
+        </Link>
+
+        {/* Divider */}
+        <div className="my-2 border-t border-gray-200"></div>
+
+        {/* Sign Out Button */}
+        <Form method="post" action="/sign-out" className="block">
+          <button
+            type="submit"
+            className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
+        </Form>
+      </div>
+    )}
   </div>
 
   {/* Search Results Modal */}

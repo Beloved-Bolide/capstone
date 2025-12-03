@@ -10,7 +10,7 @@ import {
 } from '~/utils/models/folder.model'
 import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
-import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
+import { Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/folder/add-folder-form'
 import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
 import { getValidatedFormData } from 'remix-hook-form'
@@ -202,6 +202,19 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       <div
         className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
+        {/* Close Sidebar Button - Mobile Only */}
+        <div className="lg:hidden px-4 py-3 border-b border-gray-200">
+          <button
+            aria-label="Close sidebar"
+            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
         {/* Create Folder Button */}
         <div className="px-3 lg:px-4 pt-4">
           <button
@@ -271,6 +284,26 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
                 // Main Dashboard
                 <div className="p-4 lg:p-6">
+                  {/* New Folder Button - Mobile Only */}
+                  <button
+                    onClick={() => {
+                      setDisplayNewFolderForm(!displayNewFolderForm)
+                    }}
+                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-blue-600 text-white rounded-lg hover:cursor-pointer hover:bg-blue-700 transition-colors focus:outline-none text-sm font-medium"
+                  >
+                    <Plus className="w-4 h-4"/>
+                    <span>New Folder</span>
+                  </button>
+
+                  {/* Add Folder Form - Mobile Only */}
+                  <div className="lg:hidden mb-6">
+                    <AddFolderForm
+                      displayNewFolderForm={displayNewFolderForm}
+                      actionData={actionData}
+                      setDisplayNewFolderForm={setDisplayNewFolderForm}
+                    />
+                  </div>
+
                   <div>
                     <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">All Folders</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
