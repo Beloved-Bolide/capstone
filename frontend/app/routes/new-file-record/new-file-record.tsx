@@ -8,7 +8,8 @@ import type { Route } from './+types/new-file-record'
 import { type Folder, getFoldersByUserId } from '~/utils/models/folder.model'
 import { type Category, getCategories } from '~/utils/models/category.model'
 import { Form, Link, redirect, useActionData } from 'react-router'
-import { StatusMessage } from '~/components/StatusMessage';
+import { StatusMessage } from '~/components/StatusMessage'
+import { Star, Bell } from 'lucide-react'
 
 
 const resolver = zodResolver(NewRecordSchema)
@@ -107,7 +108,9 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
   if (!folders) folders = []
   if (!categories) categories = []
 
-  const [docType, setdocType] = useState<string>('')
+  const [docType, setDocType] = useState<string>('')
+  const [isStarred, setIsStarred] = useState(false)
+  const [notifyOn, setNotifyOn] = useState(false)
 
   // Check if the amount field should be shown (only for Receipt/Invoice)
   const showAmountField = docType === 'Receipt/Invoice'
@@ -116,7 +119,8 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
   const {
     handleSubmit,
     formState: { errors },
-    register
+    register,
+    setValue
   } = useRemixForm<NewRecord>({
     mode: 'onSubmit',
     resolver,
@@ -411,40 +415,73 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2">
+                  <div className="grid grid-cols-2 gap-4">
 
                     {/* Starred */}
                     <div>
-                      <label
-                        htmlFor="isStarred"
-                        className="block mb-2 text-sm font-medium text-gray-700"
-                      >
+                      <label className="block mb-3 text-sm font-medium text-gray-700">
                         Mark as Starred
                       </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsStarred(!isStarred)
+                          setValue('isStarred', !isStarred)
+                        }}
+                        className="inline-flex items-center justify-center p-3 rounded-lg border-2 transition-all hover:bg-yellow-50"
+                        style={{
+                          borderColor: isStarred ? '#fbbf24' : '#e5e7eb',
+                          backgroundColor: isStarred ? '#fffbf0' : 'white'
+                        }}
+                      >
+                        <Star
+                          className="w-6 h-6 transition-colors"
+                          style={{
+                            fill: isStarred ? '#fbbf24' : 'none',
+                            color: isStarred ? '#fbbf24' : '#d1d5db',
+                            strokeWidth: 1.5
+                          }}
+                        />
+                      </button>
                       <input
                         {...register('isStarred')}
-                        type="checkbox"
-                        id="isStarred"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md hover:cursor-pointer focus:border-blue-500 block w-full p-2.5"
+                        type="hidden"
+                        value={isStarred ? 'true' : 'false'}
                       />
                       {errors.isStarred && (
-                        <p className="text-sm text-red-500">{errors.isStarred.message} </p>
+                        <p className="text-sm text-red-500 mt-1">{errors.isStarred.message} </p>
                       )}
                     </div>
 
                     {/* Notifications On */}
                     <div>
-                      <label
-                        htmlFor="notifyOn"
-                        className="block mb-2 text-sm font-medium text-gray-700"
-                      >
+                      <label className="block mb-3 text-sm font-medium text-gray-700">
                         Notifications On
                       </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNotifyOn(!notifyOn)
+                          setValue('notifyOn', !notifyOn)
+                        }}
+                        className="inline-flex items-center w-full px-4 py-2 rounded-lg border-2 transition-all hover:bg-blue-50"
+                        style={{
+                          borderColor: notifyOn ? '#3b82f6' : '#e5e7eb',
+                          backgroundColor: notifyOn ? '#f0f9ff' : 'white'
+                        }}
+                      >
+                        <Bell
+                          className="w-5 h-5 mr-2 transition-colors"
+                          style={{ color: notifyOn ? '#3b82f6' : '#d1d5db' }}
+                        />
+                        <span style={{ color: notifyOn ? '#3b82f6' : '#6b7280' }} className="text-sm font-medium">
+                          {notifyOn ? 'Notifications Enabled' : 'Disabled'}
+                        </span>
+                      </button>
                       <input
                         {...register('notifyOn')}
-                        type="checkbox"
-                        id="notifyOn"
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        type="hidden"
+                        value={notifyOn ? 'true' : 'false'}
                       />
                       {errors.notifyOn && (
                         <p className="text-sm text-red-500">{errors.notifyOn.message} </p>

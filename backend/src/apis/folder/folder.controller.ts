@@ -174,8 +174,18 @@ export async function getFolderByFolderNameController (request: Request, respons
       return
     }
 
+    const userId = request.session?.user?.id
+    if (!userId) {
+        response.json({
+        status: 404,
+        data: null,
+        message: 'Get folder failed: Please login to continue!'
+        })
+        return
+    }
+
     // get the folder from the validated request parameters
-    const folder: Folder | null = await selectFolderByFolderName(validatedRequestParams.data.name)
+    const folder: Folder | null = await selectFolderByFolderName(validatedRequestParams.data.name, userId)
 
     // if the folder is not found, return a preformatted response to the client
     if (!folder) {
@@ -237,7 +247,7 @@ export async function postFolderController (request: Request, response: Response
     if (!(await validateSessionUser(request, response, newFolder.userId))) return
 
     // check if a folder with the same name already exists
-    const existingFolder = await selectFolderByFolderName(newFolder.name)
+    const existingFolder = await selectFolderByFolderName(newFolder.name, newFolder.userId)
     if (existingFolder) {
       response.json({
         status: 409,
@@ -404,7 +414,7 @@ export async function deleteFolderController (request: Request, response: Respon
       response.json({
         status: 400,
         data: null,
-        message: 'Put folder failed: Cannot delete a root folder.'
+        message: 'Delete folder failed: Cannot delete a root folder.'
       })
       return
     }
@@ -416,7 +426,7 @@ export async function deleteFolderController (request: Request, response: Respon
       response.json({
         status: 400,
         data: null,
-        message: 'Put folder failed: Folder has child folders or files. Delete them first.'
+        message: 'Delete folder failed: Folder has child folders or files. Delete them first.'
       })
       return
     }
