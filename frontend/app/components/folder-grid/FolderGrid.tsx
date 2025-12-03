@@ -96,18 +96,13 @@ export function FolderGrid({
           <div key={folder.id} className="relative">
             <Link
               to={`./${folder.id}`}
-              className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block"
+              className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 flex items-center min-h-[140px]"
             >
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-cyan-50 rounded-md group-hover:bg-cyan-100 transition-colors">
-                  <FolderOpen className="w-5 h-5 text-cyan-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
-                    {folder.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1">Folder</p>
-                </div>
+              <div className="flex-1 pr-4 min-w-0">
+                <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-cyan-600 transition-colors">
+                  {folder.name}
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">Folder</p>
               </div>
             </Link>
 

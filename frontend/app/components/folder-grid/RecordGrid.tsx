@@ -86,10 +86,9 @@ export function RecordGrid({
           <div key={record.id} className="relative">
             <Link
               to={`./record/${record.id}`}
-              className="group flex bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
+              className="group flex bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 h-[240px]"
             >
-              <div className="flex flex-col h-full">
-
+              <div className="pr-32 h-full flex flex-col">
                 {/* Header with a star */}
                 <div className="flex items-start justify-between mb-3">
                   {record.isStarred && !isTrashFolder ? (

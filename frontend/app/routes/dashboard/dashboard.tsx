@@ -508,8 +508,14 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
           </div>
 
           {/* Receipt Preview - Desktop */}
-          <div className="hidden xl:block w-96 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto">
-            <div className="bg-white rounded-md shadow-sm p-4 lg:p-6 border border-gray-200">
+          <div className="hidden xl:block w-96 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto relative">
+            <div className="bg-white rounded-md shadow-sm p-4 lg:p-6 border border-gray-200 relative">
+              {/* Coming Soon Watermark */}
+              <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <h2 className="text-6xl font-black text-cyan-600 opacity-30 transform -rotate-45 select-none whitespace-nowrap">
+                  COMING SOON
+                </h2>
+              </div>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-900">receipt</h3>
                 <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
