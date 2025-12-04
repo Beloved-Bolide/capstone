@@ -25,12 +25,12 @@ export function SearchResultsModal ({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 z-40 transition-opacity"
+        className="fixed inset-0 bg-black/50 z-[60] transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 pointer-events-none px-4">
+      <div className="fixed inset-0 z-[70] flex items-start justify-center pt-16 pointer-events-none px-4">
         <div className="w-full max-w-2xl bg-white rounded-lg shadow-2xl max-h-[70vh] overflow-hidden flex flex-col pointer-events-auto border border-gray-100">
 
           {/* Header */}
