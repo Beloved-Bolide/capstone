@@ -139,6 +139,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
   const [docType, setDocType] = useState<string>(existingRecord?.docType || '')
   const [isStarred, setIsStarred] = useState(existingRecord?.isStarred || false)
   const [notifyOn, setNotifyOn] = useState(existingRecord?.notifyOn || false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   // Check if the amount field should be shown (only for Receipt/Invoice)
   const showAmountField = docType === 'Receipt/Invoice'
@@ -177,6 +178,51 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
 
   useActionData<typeof action>()
 
+  // Helper: Format file size
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes'
+
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  }
+
+  // Handler: File input change
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (files && files.length > 0) {
+      setSelectedFile(files[0])
+    }
+  }
+
+  // Handler: Drag over
+  const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  // Handler: Drop file
+  const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const files = event.dataTransfer.files
+    if (files && files.length > 0) {
+      setSelectedFile(files[0])
+    }
+  }
+
+  // Handler: Remove file
+  const handleRemoveFile = () => {
+    setSelectedFile(null)
+    const fileInput = document.getElementById('dropzone-file') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -214,33 +260,78 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
               <div className="mb-8">
                 <label
                   htmlFor="dropzone-file"
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
                   className="flex flex-col items-center justify-center w-full h-48 border-2 border-cyan-300 border-dashed rounded-md cursor-pointer bg-cyan-50 hover:bg-cyan-100 transition-colors"
                 >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <svg
-                      className="w-10 h-10 mb-3 text-cyan-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                    <p className="mb-2 text-sm text-gray-700">
-                      <span className="font-semibold">Drag and Drop File Here</span>
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      (automatically scanned)
-                    </p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      or click to browse
-                    </p>
-                  </div>
-                  <input id="dropzone-file" type="file" className="hidden"/>
+                  {!selectedFile ? (
+                    // Placeholder UI - No file selected
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg
+                        className="w-10 h-10 mb-3 text-cyan-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-700">
+                        <span className="font-semibold">Drag and Drop File Here</span>
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        (automatically scanned)
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        or click to browse
+                      </p>
+                    </div>
+                  ) : (
+                    // File Details UI - File selected
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6 w-full px-6">
+                      {/* File Icon */}
+                      <div className="w-16 h-16 mb-4 bg-cyan-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                      </div>
+
+                      {/* File Details */}
+                      <div className="text-center w-full mb-4">
+                        <p className="text-sm font-semibold text-gray-900 truncate px-4" title={selectedFile.name}>
+                          {selectedFile.name}
+                        </p>
+                        <div className="flex items-center justify-center gap-4 mt-2 text-xs text-gray-600">
+                          <span>{formatFileSize(selectedFile.size)}</span>
+                          <span className="text-gray-400">•</span>
+                          <span className="uppercase">{selectedFile.name.split('.').pop() || 'File'}</span>
+                        </div>
+                      </div>
+
+                      {/* Change File Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          handleRemoveFile()
+                        }}
+                        className="text-sm text-cyan-700 hover:text-cyan-800 font-medium hover:underline transition-colors"
+                      >
+                        Change file
+                      </button>
+                    </div>
+                  )}
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                  />
                 </label>
               </div>
 
