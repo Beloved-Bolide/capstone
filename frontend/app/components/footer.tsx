@@ -4,9 +4,10 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-200 mt-auto py-2">
+    <footer className="bg-gray-50 border-t border-gray-200 mt-auto py-2 lg:py-4">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-1 mb-1">
@@ -25,15 +26,12 @@ export function Footer() {
             <h3 className="font-bold text-cyan-700 mb-1 text-xs">Quick Links</h3>
             <ul className="space-y-0.5">
               <li>
-
                 <Link to="/" className="text-xs text-cyan-700 hover:text-cyan-800">
                   Home
                 </Link>
               </li>
               <li>
-
                 <Link to="/dashboard" className="text-xs text-cyan-700 hover:text-cyan-800">
-
                   Dashboard
                 </Link>
               </li>
@@ -45,15 +43,12 @@ export function Footer() {
             <h3 className="font-bold text-cyan-700 mb-1 text-xs">Legal</h3>
             <ul className="space-y-0.5">
               <li>
-
                 <Link to="/privacy" className="text-xs text-cyan-700 hover:text-cyan-800">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-
                 <Link to="/terms" className="text-xs text-cyan-700 hover:text-cyan-800">
-
                   Terms of Service
                 </Link>
               </li>

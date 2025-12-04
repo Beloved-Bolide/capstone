@@ -425,7 +425,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
       )}
 
       {/* Folders Grid */}
-      {/* Only show folder grid for user folders, or when there are actual child folders */}
+      {/* Only show the folder grid for user folders, or when there are actual child folders */}
       {(childFolders || isLoading) && (isUserFolder || (childFolders && childFolders.length > 0)) && (
         <FolderGrid
           folders={childFolders}
