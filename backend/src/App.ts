@@ -12,7 +12,7 @@ import { signOutRoute } from './apis/sign-out/sign-out.route.ts'
 import { folderRoute } from './apis/folder/folder.route.ts'
 import { categoryRoute } from './apis/category/category.route.ts'
 import { recordRoute } from './apis/record/record.route.ts'
-import {userRoute} from "./apis/user/user.route.ts"
+import { userRoute } from "./apis/user/user.route.ts"
 import { healthRoute } from './apis/health/health.route.ts'
 import { fileRoute } from './apis/file/file.route.ts'
 

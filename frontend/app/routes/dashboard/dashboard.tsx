@@ -318,7 +318,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   }, [searchQuery])
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-gray-50 overflow-hidden">
+    <div className="flex h-[calc(100vh-4.5rem)] bg-gray-50 overflow-hidden">
 
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>

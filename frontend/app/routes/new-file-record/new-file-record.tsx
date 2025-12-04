@@ -224,7 +224,7 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-[calc(100vh-4.5rem)] bg-gray-50">
       {/* Header */}
 
       <div className="bg-cyan-600 border-b border-cyan-700">
