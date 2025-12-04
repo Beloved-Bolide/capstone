@@ -12,7 +12,7 @@ import {
 } from '~/utils/models/folder.model'
 import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
-import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
+import { Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/add-folder-form'
 import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
 import { ErrorDisplay } from '~/components/error/ErrorDisplay'
@@ -144,9 +144,24 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     total: 154.06
   }
 
-  const getFolderIcon = (folderName: string, size: 'sm' | 'md' = 'sm') => {
+  const getFolderColors = (folderName: string) => {
+    switch (folderName) {
+      case 'Expiring':
+        return { icon: 'text-orange-600', bg: 'bg-orange-50', bgHover: 'group-hover:bg-orange-100' }
+      case 'Recent':
+        return { icon: 'text-green-600', bg: 'bg-green-50', bgHover: 'group-hover:bg-green-100' }
+      case 'Starred':
+        return { icon: 'text-yellow-600', bg: 'bg-yellow-50', bgHover: 'group-hover:bg-yellow-100' }
+      case 'Trash':
+        return { icon: 'text-red-600', bg: 'bg-red-50', bgHover: 'group-hover:bg-red-100' }
+      default:
+        return { icon: 'text-cyan-600', bg: 'bg-cyan-50', bgHover: 'group-hover:bg-cyan-100' }
+    }
+  }
 
-    const iconProps = { className: size === 'sm' ? "w-4 h-4" : "w-5 h-5 text-cyan-600" }
+  const getFolderIcon = (folderName: string, size: 'sm' | 'md' = 'sm') => {
+    const colors = getFolderColors(folderName)
+    const iconProps = { className: size === 'sm' ? `w-4 h-4 ${colors.icon}` : `w-5 h-5 ${colors.icon}` }
 
     switch (folderName) {
       case 'All Folders':
@@ -457,26 +472,29 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     {/* Default Folders Section */}
                     <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Quick Access</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
-                      {defaultFolders.map((folder) => (
-                        <Link
-                          key={folder.id}
-                          to={`./${folder.id}`}
-                          onClick={() => setSelectedFolder(folder.name)}
-                          className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-cyan-50 rounded-md group-hover:bg-cyan-100 transition-colors">
-                              {getFolderIcon(folder.name, 'md')}
+                      {defaultFolders.map((folder) => {
+                        const colors = getFolderColors(folder.name)
+                        return (
+                          <Link
+                            key={folder.id}
+                            to={`./${folder.id}`}
+                            onClick={() => setSelectedFolder(folder.name)}
+                            className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`p-2.5 ${colors.bg} rounded-md ${colors.bgHover} transition-colors`}>
+                                {getFolderIcon(folder.name, 'md')}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
+                                  {folder.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-1">System Folder</p>
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
-                                {folder.name}
-                              </h3>
-                              <p className="text-xs text-gray-500 mt-1">System Folder</p>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        )
+                      })}
                     </div>
 
                     {/* User-Created Folders Section */}
