@@ -428,9 +428,11 @@ export default function NewFileRecord ({ loaderData, actionData }: Route.Compone
 
                       >
                         <option value="">Select folder...</option>
-                        {folders.map((folder, index) => (
-                          <option key={index} value={folder.id}>{folder.name}</option>
-                        ))}
+                        {folders
+                          .filter(folder => !['All Folders', 'Recent', 'Starred', 'Expiring', 'Trash'].includes(folder.name))
+                          .map((folder, index) => (
+                            <option key={index} value={folder.id}>{folder.name}</option>
+                          ))}
                       </select>
                       {errors.name && (
                         <p className="text-sm text-red-500">{errors.name.message} </p>
