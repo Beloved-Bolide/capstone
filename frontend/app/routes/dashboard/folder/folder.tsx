@@ -267,7 +267,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
     if (createFolderFetcher.data?.success) {
       revalidator.revalidate()
     }
-  }, [createFolderFetcher.data, revalidator])
+  }, [createFolderFetcher.data])
 
   // Close modal on successful folder update
   useEffect(() => {
@@ -276,7 +276,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
       setEditFolderName('')
       revalidator.revalidate()
     }
-  }, [editFolderFetcher.data, revalidator])
+  }, [editFolderFetcher.data])
 
   // Auto-redirect on auth errors
   useEffect(() => {

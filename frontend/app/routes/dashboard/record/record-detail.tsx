@@ -1,11 +1,12 @@
-import { useLoaderData, useNavigate, Link, redirect } from 'react-router'
-import { getRecordById, type Record } from '~/utils/models/record.model'
+import { useNavigate, Link, redirect } from 'react-router'
+import { getRecordById } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
 import type { Route } from './+types/record-detail'
 import { FileText, Calendar, DollarSign, Building2, Tag, Star, Bell, Pencil, ArrowLeft } from 'lucide-react'
 
 export async function loader ({ request, params }: Route.LoaderArgs) {
   try {
+
     // get the cookie, session, user, and authorization
     const cookie = request.headers.get('cookie')
     const session = await getSession(cookie)
@@ -36,7 +37,7 @@ export async function loader ({ request, params }: Route.LoaderArgs) {
     // If it's a redirect, rethrow it
     if (error instanceof Response) throw error
 
-    // Otherwise, return error state
+    // Otherwise, return the error state
     return {
       record: null,
       error: {
