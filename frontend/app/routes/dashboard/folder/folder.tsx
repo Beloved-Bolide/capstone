@@ -466,7 +466,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
       {/* Create Subfolder Modal */}
       {showCreateFolderModal && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
           onClick={() => setShowCreateFolderModal(false)}
         >
           <div
@@ -535,7 +535,7 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
 
       {/* Edit Folder Modal */}
       {editingFolder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Rename Folder</h2>
             <div className="mb-6">

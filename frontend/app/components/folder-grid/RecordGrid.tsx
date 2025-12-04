@@ -81,12 +81,13 @@ export function RecordGrid({
   // Success state with records
   return (
     <div>
+      <h2 className="block text-sm mb-3 font-semibold text-gray-900">Records</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {records.map((record) => (
           <div key={record.id} className="relative">
             <Link
               to={`./record/${record.id}`}
-              className="group flex bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 h-[240px]"
+              className="group flex bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 h-[230px]"
             >
               <div className="pr-32 h-full flex flex-col">
                 {/* Header with a star */}
@@ -99,12 +100,12 @@ export function RecordGrid({
                 </div>
 
                 {/* Title */}
-                <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-cyan-600 transition-colors">
+                <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-cyan-600 transition-colors">
                   {record.name || 'Untitled Document'}
                 </h3>
 
                 {/* Metadata */}
-                <div className="mt-auto space-y-2">
+                <div className="mt-2 lg:mt-4 space-y-2">
                   {record.companyName && (
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <Building2 className="w-3.5 h-3.5" />
@@ -229,7 +230,7 @@ export function RecordGrid({
                   title={isDeleting ? 'Processing...' : isTrashFolder ? 'Delete permanently' : 'Move to trash'}
                 >
                   <Trash2
-                    className={`cursor-pointer w-4 h-4 ${
+                    className={`w-4 h-4 ${
                       isDeleting
                         ? 'text-gray-400'
                         : isTrashFolder

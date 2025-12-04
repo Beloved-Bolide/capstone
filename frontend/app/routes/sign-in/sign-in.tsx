@@ -215,7 +215,7 @@ export default function SignInPage () {
             {/*Submit Button*/}
             <button
               type="submit"
-              className="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6"
+              className="cursor-pointer w-full bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6"
             >
               Sign In
             </button>

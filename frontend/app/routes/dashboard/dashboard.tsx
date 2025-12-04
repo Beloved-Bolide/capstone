@@ -328,9 +328,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             onClick={() => {
               setDisplayNewFolderForm(!displayNewFolderForm)
             }}
-
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-800 transition-colors focus:outline-none text-sm font-medium"
-
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-md hover:cursor-pointer hover:bg-cyan-800 transition-colors focus:outline-none text-sm font-medium"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -371,7 +369,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
                   selectedFolder === folder.name
 
-                    ? 'bg-blue-50 text-cyan-700 border border-blue-200 shadow-sm'
+                    ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
 
                     : 'text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}

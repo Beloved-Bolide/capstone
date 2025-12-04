@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { FolderOpen, Trash2, Pencil, RotateCcw } from 'lucide-react'
+import { Trash2, Pencil, RotateCcw, FolderOpen } from 'lucide-react'
 import type { Folder } from '~/utils/models/folder.model'
 import { FolderSkeleton } from '../loading/FolderSkeleton'
 import { ErrorDisplay } from '../error/ErrorDisplay'
@@ -96,7 +96,7 @@ export function FolderGrid({
           <div key={folder.id} className="relative">
             <Link
               to={`./${folder.id}`}
-              className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 flex items-center min-h-[140px]"
+              className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 flex items-center min-h-[60px]"
             >
               <div className="flex-1 pr-4 min-w-0">
                 <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-cyan-600 transition-colors">
