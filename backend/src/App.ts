@@ -33,7 +33,7 @@ export class App {
     this.routes()
   }
 
-  // private method that sets the port for the sever, to one from index.route.ts, and external .env file or defaults to 3000
+  // private method that sets the port for the sever, to one from index.route.ts, and external .env.production.development file or defaults to 3000
   public settings (): void {}
 
   // private method to setting up the middleware to handle JSON responses, one for dev and one for prod

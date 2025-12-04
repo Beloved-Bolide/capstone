@@ -2,6 +2,7 @@ import { z } from 'zod/v4'
 import type { Status } from '~/utils/interfaces/Status'
 import { v7 as uuid } from 'uuid'
 import { UserSchema } from '~/utils/models/user.model'
+import process from 'node:process'
 
 
 export const SignUpSchema = UserSchema.omit({ id: true, notifications: true })
@@ -24,7 +25,7 @@ export type SignUp = z.infer<typeof SignUpSchema>
 export async function postSignUp (data: SignUp): Promise<Status> {
 
   const modifiedSignUp = { id: uuid(), ...data, notifications: true }
-  const response = await fetch(`${import.meta.env.VITE_REST_API_URL}/sign-up`, {
+  const response = await fetch(`${process.env.REST_API_URL}/sign-up`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
