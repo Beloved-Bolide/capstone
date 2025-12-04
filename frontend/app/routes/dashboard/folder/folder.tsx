@@ -31,7 +31,7 @@ import {
 import { FolderGrid } from '~/components/folder-grid/FolderGrid'
 import { RecordGrid } from '~/components/folder-grid/RecordGrid'
 import { ErrorDisplay } from '~/components/error/ErrorDisplay'
-import { FolderOpen, FolderPlus, X } from 'lucide-react'
+import { FolderOpen } from 'lucide-react'
 import { v7 as uuid } from 'uuid'
 
 /**
@@ -465,28 +465,10 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
 
       {/* Create Subfolder Modal */}
       {showCreateFolderModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          onClick={() => setShowCreateFolderModal(false)}
-        >
-          <div
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <FolderPlus className="w-5 h-5 text-cyan-600" />
-                <h2 className="text-xl font-semibold text-gray-900">Create Subfolder</h2>
-              </div>
-              <button
-                onClick={() => setShowCreateFolderModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="mb-4">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Create Subfolder</h2>
+            <div className="mb-6">
               <label htmlFor="subfolder-name" className="block text-sm font-medium text-gray-700 mb-2">
                 Subfolder Name
               </label>
@@ -502,8 +484,8 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
                     setShowCreateFolderModal(false)
                   }
                 }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 placeholder="Enter subfolder name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 autoFocus
               />
             </div>
@@ -514,17 +496,17 @@ export default function Folder ({ loaderData }: Route.ComponentProps) {
               </div>
             )}
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowCreateFolderModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateSubfolder}
                 disabled={!newFolderName.trim() || createFolderFetcher.state !== 'idle'}
-                className="flex-1 px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-md transition-colors font-medium"
               >
                 {createFolderFetcher.state !== 'idle' ? 'Creating...' : 'Create'}
               </button>
