@@ -28,19 +28,19 @@
 - Styled and polished the frontend
 - Added features that were not necessary for MVP
 
-## Presentation Itinerary (~13 minutes)
+## Presentation Itinerary (~12 minutes)
 
-### Introduction (2 minutes)
-- Blu intro, Denise intro, Jijo intro, Trevor intro (20 seconds)
+### Introduction and PWP Presentation(3 minutes)
+- Blu intro, Denise intro, Jijo intro, Trevor intro
 - Who are we? (20 seconds)
 
-### PWP Presentation Order (3 minutes)
+### PWP Presentation Order
 - Blu
 - Denise
 - Jijo
 - Trevor
 
-### FileWise Presentation (8 minutes)
+### FileWise Presentation (9 minutes)
 - What is this project? (90 seconds)
   - The Problem We’re Solving
     - People lose or misplace paper receipts, especially when they need them for returns, warranties, or taxes.
@@ -57,7 +57,7 @@
     - Coupon Keeper – Organize digital or scanned coupons with expiry notifications, so users never miss a saving opportunity.
     - Smart Search & Filters – Instantly find any receipt by keyword, date, or category.
     - Spending Insights – Analyze spending patterns and generate downloadable reports for budgeting or taxes.
-- Demo (6 minutes)
+- Demo (5 minutes)
 - Our Vision for the Future
   - FileWise will evolve into a personal finance companion, integrating AI-driven insights to:
   - Recommend budget improvements based on spending trends.
