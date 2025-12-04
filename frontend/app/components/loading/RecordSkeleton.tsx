@@ -1,11 +1,11 @@
 export function RecordSkeleton() {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 animate-pulse">
+    <div className="bg-white border border-gray-200 rounded-lg p-5 animate-pulse">
       <div className="flex flex-col h-full space-y-3">
 
         {/* Header with icon */}
         <div className="flex items-start justify-between">
-          <div className="p-2.5 bg-gray-200 rounded-lg w-10 h-10"></div>
+          <div className="p-2.5 bg-gray-200 rounded-md w-10 h-10"></div>
           <div className="w-4 h-4 bg-gray-200 rounded"></div>
         </div>
 

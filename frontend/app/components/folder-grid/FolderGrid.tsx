@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { FolderOpen, Trash2, Pencil, RotateCcw } from 'lucide-react'
+import { Trash2, Pencil, RotateCcw, FolderOpen } from 'lucide-react'
 import type { Folder } from '~/utils/models/folder.model'
 import { FolderSkeleton } from '../loading/FolderSkeleton'
 import { ErrorDisplay } from '../error/ErrorDisplay'
@@ -68,31 +68,41 @@ export function FolderGrid({
   // Empty state
   if (!folders || folders.length === 0) {
     return (
-      <></>
+      <EmptyState
+        icon={<FolderOpen className="w-16 h-16 text-gray-300" />}
+        title="No folders yet"
+        message={emptyMessage}
+        action={emptyAction}
+      />
     )
   }
 
   // Success state with folders
   return (
     <div className="mb-8">
-      <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Folders</h2>
+      <div className="flex items-center justify-between mb-4 px-1">
+        <h2 className="text-sm font-semibold text-gray-900">Folders</h2>
+        {emptyAction && (
+          <button
+            onClick={emptyAction.onClick}
+            className="px-3 py-1.5 text-sm font-medium text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50 rounded-md transition-colors"
+          >
+            + {emptyAction.label}
+          </button>
+        )}
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {folders.map((folder) => (
           <div key={folder.id} className="relative">
             <Link
               to={`./${folder.id}`}
-              className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 block"
+              className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 flex items-center min-h-[60px]"
             >
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
-                  <FolderOpen className="w-5 h-5 text-cyan-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
-                    {folder.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1">Folder</p>
-                </div>
+              <div className="flex-1 pr-4 min-w-0">
+                <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-cyan-600 transition-colors">
+                  {folder.name}
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">Folder</p>
               </div>
             </Link>
 
@@ -105,7 +115,7 @@ export function FolderGrid({
                   <button
                     onClick={(e) => onEditFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : 'bg-cyan-50 hover:bg-cyan-100'
@@ -125,7 +135,7 @@ export function FolderGrid({
                   <button
                     onClick={(e) => onRestoreFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : 'bg-amber-50 hover:bg-amber-100'
@@ -145,7 +155,7 @@ export function FolderGrid({
                   <button
                     onClick={(e) => onDeleteFolder(folder, e)}
                     disabled={isDeleting}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-md transition-colors ${
                       isDeleting
                         ? 'bg-gray-200 cursor-not-allowed'
                         : isTrashFolder

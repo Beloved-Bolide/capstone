@@ -12,7 +12,7 @@ import { signOutRoute } from './apis/sign-out/sign-out.route.ts'
 import { folderRoute } from './apis/folder/folder.route.ts'
 import { categoryRoute } from './apis/category/category.route.ts'
 import { recordRoute } from './apis/record/record.route.ts'
-import {userRoute} from "./apis/user/user.route.ts"
+import { userRoute } from "./apis/user/user.route.ts"
 import { healthRoute } from './apis/health/health.route.ts'
 import { fileRoute } from './apis/file/file.route.ts'
 
@@ -33,7 +33,7 @@ export class App {
     this.routes()
   }
 
-  // private method that sets the port for the sever, to one from index.route.ts, and external .env file or defaults to 3000
+  // private method that sets the port for the sever, to one from index.route.ts, and external .env.production.development file or defaults to 3000
   public settings (): void {}
 
   // private method to setting up the middleware to handle JSON responses, one for dev and one for prod
@@ -55,7 +55,7 @@ export class App {
       secret: process.env.SESSION_SECRET as string,
       resave: false,
       cookie: {
-        maxAge: 30 * 60 * 1000, // Session expires after 30 minutes of inactivity (TESTING ONLY)
+        maxAge: 2 * 60 * 60 * 1000, // Session expires after 1 hour of inactivity
         httpOnly: true, // Prevents JavaScript from accessing the cookie
         secure: false, // Set to true in production with HTTPS
         sameSite: 'lax' // Helps protect against CSRF attacks
