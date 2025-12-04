@@ -105,7 +105,7 @@ export async function getRecordsByFolderIdController (request: Request, response
     response.json({
       status: 200,
       data: recordData,
-      message: recordData.length > 0 ? "Records by folder id successfully got!" : "No records found in this folder."
+      message: recordData.length > 0 ? 'Records by folder id successfully got!' : 'No records found in this folder.'
     })
 
   } catch (error: any) {
@@ -135,7 +135,7 @@ export async function getStarredRecordsByUserIdController (request: Request, res
     response.json({
       status: 200,
       data: recordData,
-      message: recordData.length > 0 ? "Starred records successfully retrieved!" : "No starred records found."
+      message: recordData.length > 0 ? 'Starred records successfully retrieved!' : 'No starred records found.'
     })
 
   } catch (error: any) {
@@ -165,7 +165,7 @@ export async function getExpiringRecordsByUserIdController (request: Request, re
     response.json({
       status: 200,
       data: recordData,
-      message: recordData.length > 0 ? "Expiring records successfully retrieved!" : "No expiring records found."
+      message: recordData.length > 0 ? 'Expiring records successfully retrieved!' : 'No expiring records found.'
     })
 
   } catch (error: any) {
@@ -195,7 +195,7 @@ export async function getRecentRecordsByUserIdController (request: Request, resp
     response.json({
       status: 200,
       data: recordData,
-      message: recordData.length > 0 ? "Recent records successfully retrieved!" : "No recent records found."
+      message: recordData.length > 0 ? 'Recent records successfully retrieved!' : 'No recent records found.'
     })
 
   } catch (error: any) {
@@ -259,7 +259,7 @@ export async function getRecordsByCategoryIdController (request: Request, respon
     response.json({
       status: 200,
       data: records,
-      message: "Records with that category id successfully selected!"
+      message: 'Records with that category id successfully selected!'
     })
 
   } catch (error: any) {
@@ -447,19 +447,22 @@ export async function getRecordByNameController (request: Request, response: Res
 }
 
 /** Express controller for searching for a record
+ * @param { Request } request - Express request object
+ * @param { Response } response - Express response object
+ * @returns { Promise<void >}
  * @endpoint GET /apis/record/search **/
 export async function searchRecordsController (request: Request, response: Response): Promise<void> {
   try {
 
     const user = request.session?.user
-     if (!user) {
-       response.status(403).json({
-         status: 403,
-         data: null,
-         message:'Please login first!'
-       })
-       return
-     }
+    if (!user) {
+      response.status(403).json({
+        status: 403,
+        data: null,
+        message: 'Please login first!'
+      })
+      return
+    }
 
     // validate the search query using zod
     const validatedRequestParams = z.object({
