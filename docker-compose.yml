@@ -8,7 +8,9 @@ services:
     healthcheck:
       test: [ 'CMD', 'redis-cli', 'ping']
   sql:
-    build: ./sql
+    build:
+      context: .
+      dockerfile: ./sql/Dockerfile
     volumes:
       - capstone-sql:/var/lib/postgresql/data/
     env_file:

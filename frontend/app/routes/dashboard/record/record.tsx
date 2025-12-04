@@ -81,7 +81,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
         </button>
 
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-md shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
@@ -110,7 +110,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
 
         {/* File Image Display */}
         {files && files.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="bg-white rounded-md shadow-sm border border-gray-200 p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">File Preview</h2>
 
             {/* File Thumbnails */}
@@ -120,7 +120,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
                   <button
                     key={file.id}
                     onClick={() => setSelectedFileIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 transition-all ${
+                    className={`flex-shrink-0 w-20 h-20 rounded-md border-2 transition-all ${
                       selectedFileIndex === index
                         ? 'border-cyan-500 ring-2 ring-cyan-200'
                         : 'border-gray-200 hover:border-gray-300'
@@ -138,18 +138,18 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
 
             {/* Main File Display */}
             {selectedFile && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+              <div className="bg-gray-50 rounded-md p-4 mb-4">
                 <img
                   src={selectedFile.fileUrl}
                   alt={record.name || 'File preview'}
-                  className="w-full h-auto rounded-lg shadow-md"
+                  className="w-full h-auto rounded-md shadow-md"
                 />
               </div>
             )}
 
             {/* OCR Data */}
             {selectedFile?.ocrData && (
-              <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+              <div className="bg-cyan-50 border border-cyan-200 rounded-md p-4">
                 <h3 className="text-sm font-semibold text-cyan-900 mb-2 flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Extracted Text (OCR)
@@ -161,7 +161,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
         )}
 
         {/* Record Attributes */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-md shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Details</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,7 +169,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Company Name */}
             {record.companyName && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-cyan-50 rounded-lg">
+                <div className="p-2 bg-cyan-50 rounded-md">
                   <Building2 className="w-5 h-5 text-cyan-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -182,7 +182,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Amount */}
             {record.amount !== null && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-green-50 rounded-lg">
+                <div className="p-2 bg-green-50 rounded-md">
                   <DollarSign className="w-5 h-5 text-green-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -195,7 +195,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Purchase Date */}
             {record.purchaseDate && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-purple-50 rounded-lg">
+                <div className="p-2 bg-purple-50 rounded-md">
                   <Calendar className="w-5 h-5 text-purple-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -208,7 +208,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Expiration Date */}
             {record.expDate && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-orange-50 rounded-lg">
+                <div className="p-2 bg-orange-50 rounded-md">
                   <AlertCircle className="w-5 h-5 text-orange-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -221,7 +221,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Product ID */}
             {record.productId && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-indigo-50 rounded-lg">
+                <div className="p-2 bg-indigo-50 rounded-md">
                   <Package className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -234,7 +234,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Coupon Code */}
             {record.couponCode && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-pink-50 rounded-lg">
+                <div className="p-2 bg-pink-50 rounded-md">
                   <Tag className="w-5 h-5 text-pink-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -247,7 +247,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Last Accessed */}
             {record.lastAccessedAt && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-gray-50 rounded-lg">
+                <div className="p-2 bg-gray-50 rounded-md">
                   <Calendar className="w-5 h-5 text-gray-600" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -260,7 +260,7 @@ export default function RecordPreview ({ loaderData }: Route.ComponentProps) {
             {/* Notifications */}
             {record.notifyOn && (
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-yellow-50 rounded-lg">
+                <div className="p-2 bg-yellow-50 rounded-md">
                   <AlertCircle className="w-5 h-5 text-yellow-600" />
                 </div>
                 <div className="flex-1 min-w-0">

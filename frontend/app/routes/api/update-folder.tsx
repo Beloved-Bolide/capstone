@@ -1,10 +1,8 @@
 import type { ActionFunctionArgs } from 'react-router'
-import { postFolder, type Folder } from '~/utils/models/folder.model'
 import { getSession } from '~/utils/session.server'
-import { v7 as uuid } from 'uuid'
+import { updateFolder, type Folder } from '~/utils/models/folder.model'
 
 export async function action ({ request }: ActionFunctionArgs) {
-
   // Only allow POST requests
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
@@ -14,8 +12,7 @@ export async function action ({ request }: ActionFunctionArgs) {
   }
 
   try {
-
-    // Get session data
+    // Get user from session
     const cookie = request.headers.get('cookie')
     const session = await getSession(cookie)
     const user = session.get('user')
@@ -32,68 +29,46 @@ export async function action ({ request }: ActionFunctionArgs) {
       })
     }
 
-    // Get form data
+    // Parse form data
     const formData = await request.formData()
+    const folderId = formData.get('folderId') as string
     const folderName = formData.get('folderName') as string
     const parentFolderId = formData.get('parentFolderId') as string | null
 
-    // Validate folder name
-    if (!folderName || folderName.trim().length === 0) {
+    // Validate required fields
+    if (!folderId || !folderName) {
       return new Response(JSON.stringify({
         success: false,
-        error: 'Folder name is required'
+        error: 'Missing required fields'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       })
     }
 
-    if (folderName.trim().length > 64) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Folder name must be 64 characters or less'
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Create folder object
-    const folder: Folder = {
-      id: uuid(),
-      parentFolderId: parentFolderId || null,
+    // Create updated folder object
+    const updatedFolder: Folder = {
+      id: folderId,
       userId: user.id,
-      name: folderName.trim()
+      name: folderName.trim(),
+      parentFolderId: parentFolderId || null
     }
 
-    // Create the folder
-    const { result } = await postFolder(folder, authorization, cookie)
+    // Update the folder
+    await updateFolder(updatedFolder, authorization, cookie)
 
-    // Check if creation was successful
-    if (result.status !== 200) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: result.message || 'Failed to create folder'
-      }), {
-        status: result.status || 500,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Return success
     return new Response(JSON.stringify({
       success: true,
-      message: 'Folder created successfully',
-      folderId: folder.id
+      message: 'Folder updated successfully'
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (error) {
-    // Handle other errors and return a 500 status
+    console.error('Failed to update folder:', error)
     return new Response(JSON.stringify({
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to create folder'
+      error: error instanceof Error ? error.message : 'Failed to update folder'
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

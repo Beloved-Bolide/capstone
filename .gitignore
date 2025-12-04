@@ -4,7 +4,7 @@ node_modules
 project.env
 .env.development
 .env
-backend/.env
+backend/.env.development
 .flowbite-react
 .react-router
 

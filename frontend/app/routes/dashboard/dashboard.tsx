@@ -12,7 +12,7 @@ import {
 } from '~/utils/models/folder.model'
 import type { Record } from '~/utils/models/record.model'
 import { getSession } from '~/utils/session.server'
-import { Search, Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
+import { Plus, FolderOpen, Star, RotateCw, ClockAlert, Trash2, Settings } from 'lucide-react'
 import { AddFolderForm } from '~/routes/dashboard/add-folder-form'
 import { SearchResultsModal } from '~/routes/dashboard/search-results-modal'
 import { ErrorDisplay } from '~/components/error/ErrorDisplay'
@@ -144,9 +144,24 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
     total: 154.06
   }
 
-  const getFolderIcon = (folderName: string, size: 'sm' | 'md' = 'sm') => {
+  const getFolderColors = (folderName: string) => {
+    switch (folderName) {
+      case 'Expiring':
+        return { icon: 'text-orange-600', bg: 'bg-orange-50', bgHover: 'group-hover:bg-orange-100' }
+      case 'Recent':
+        return { icon: 'text-green-600', bg: 'bg-green-50', bgHover: 'group-hover:bg-green-100' }
+      case 'Starred':
+        return { icon: 'text-yellow-600', bg: 'bg-yellow-50', bgHover: 'group-hover:bg-yellow-100' }
+      case 'Trash':
+        return { icon: 'text-red-600', bg: 'bg-red-50', bgHover: 'group-hover:bg-red-100' }
+      default:
+        return { icon: 'text-cyan-600', bg: 'bg-cyan-50', bgHover: 'group-hover:bg-cyan-100' }
+    }
+  }
 
-    const iconProps = { className: size === 'sm' ? "w-4 h-4" : "w-5 h-5 text-cyan-600" }
+  const getFolderIcon = (folderName: string, size: 'sm' | 'md' = 'sm') => {
+    const colors = getFolderColors(folderName)
+    const iconProps = { className: size === 'sm' ? `w-4 h-4 ${colors.icon}` : `w-5 h-5 ${colors.icon}` }
 
     switch (folderName) {
       case 'All Folders':
@@ -190,7 +205,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
   // Define the order of default folders
-  const defaultFolderOrder = ['Expiring', 'Recent', 'Starred', 'Trash']
+  const defaultFolderOrder = ['Recent', 'Starred', 'Expiring', 'Trash']
 
   // Separate default folders and user-created folders
   const defaultFolders = defaultFolderOrder
@@ -303,17 +318,16 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   }, [searchQuery])
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-[calc(100vh-4.5rem)] bg-gray-50 overflow-hidden">
 
       {/* Sidebar */}
-      <div
-        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
         {/* Close Sidebar Button - Mobile Only */}
         <div className="lg:hidden px-4 py-3 border-b border-gray-200">
           <button
             aria-label="Close sidebar"
-            className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors"
+            className="p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors"
             onClick={() => setSidebarOpen(false)}
           >
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,7 +342,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             onClick={() => {
               setDisplayNewFolderForm(!displayNewFolderForm)
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-md hover:cursor-pointer hover:bg-cyan-800 transition-colors focus:outline-none text-sm font-medium"
           >
             <Plus className="w-4 h-4"/>
             <span>New Folder</span>
@@ -350,7 +364,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             <Link
               to="/dashboard"
               onClick={() => setSelectedFolder('All Folders')}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
                 isBaseDashboard
                   ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
                   : 'text-gray-700 hover:bg-gray-100 border border-transparent'
@@ -366,9 +380,11 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                 key={folder.id}
                 to={`./${folder.id}`}
                 onClick={() => setSelectedFolder(folder.name)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
                   selectedFolder === folder.name
+
                     ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm'
+
                     : 'text-gray-700 hover:bg-gray-100 border border-transparent'
                 }`}
               >
@@ -382,7 +398,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
         {/* Settings */}
         <div className="px-3 lg:px-4 py-4 border-t border-gray-200">
           <button
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-cyan-50 focus:text-cyan-700 focus:border-cyan-200 focus:shadow-sm">
+
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all text-gray-700 hover:bg-gray-100 border border-transparent hover:cursor-pointer focus:bg-cyan-50 focus:text-cyan-700 focus:border-cyan-200 focus:shadow-sm">
+
             <Settings className="w-4 h-4"/>
             <span className="flex-1 text-left">Settings</span>
           </button>
@@ -390,8 +408,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       </div>
 
       {/* Main Content */}
-      <div
-        className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
+      <div className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
@@ -411,8 +428,8 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     onClick={() => {
                       setDisplayNewFolderForm(!displayNewFolderForm)
                     }}
-                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-cyan-700 text-white rounded-lg hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium"
-                  >
+
+                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-6 bg-cyan-700 text-white rounded-md hover:cursor-pointer hover:bg-cyan-700 transition-colors focus:outline-none text-sm font-medium">
                     <Plus className="w-4 h-4"/>
                     <span>New Folder</span>
                   </button>
@@ -453,26 +470,29 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     {/* Default Folders Section */}
                     <h2 className="text-sm font-semibold text-gray-900 mb-4 px-1">Quick Access</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
-                      {defaultFolders.map((folder) => (
-                        <Link
-                          key={folder.id}
-                          to={`./${folder.id}`}
-                          onClick={() => setSelectedFolder(folder.name)}
-                          className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-cyan-50 rounded-lg group-hover:bg-cyan-100 transition-colors">
-                              {getFolderIcon(folder.name, 'md')}
+                      {defaultFolders.map((folder) => {
+                        const colors = getFolderColors(folder.name)
+                        return (
+                          <Link
+                            key={folder.id}
+                            to={`./${folder.id}`}
+                            onClick={() => setSelectedFolder(folder.name)}
+                            className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`p-2.5 ${colors.bg} rounded-md ${colors.bgHover} transition-colors`}>
+                                {getFolderIcon(folder.name, 'md')}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
+                                  {folder.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-1">System Folder</p>
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate group-hover:text-cyan-600 transition-colors">
-                                {folder.name}
-                              </h3>
-                              <p className="text-xs text-gray-500 mt-1">System Folder</p>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        )
+                      })}
                     </div>
 
                     {/* User-Created Folders Section */}
@@ -494,123 +514,9 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                   </div>
                 </div>
               ) : (
-
                 // All Folders Dashboard
                 <Outlet/>
               )}
-            </div>
-          </div>
-
-          {/* Receipt Preview - Desktop */}
-          <div className="hidden xl:block w-96 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto">
-            <div className="bg-white rounded-md shadow-sm p-4 lg:p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-gray-900">receipt</h3>
-                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-xs font-medium text-gray-600">LOGO</span>
-                </div>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="text-gray-500 text-xs mb-1">RECEIPT #</div>
-                    <div className="font-medium">12345</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500 text-xs mb-1">RECEIPT DATE</div>
-                    <div className="font-medium">1-5-17</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500 text-xs mb-1">TIME</div>
-                    <div className="font-medium">14:35:22</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500 text-xs mb-1">DUE DATE</div>
-                    <div className="font-medium">2/28/2017</div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-200">
-                  <div className="text-gray-500 text-xs mb-1">BILL TO</div>
-                  <div className="text-sm">
-                    <div className="font-medium">ABC Store</div>
-                    <div className="text-gray-600">123 Main Street</div>
-                    <div className="text-gray-600">New York, NY 10001</div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-200">
-                  <div className="text-gray-500 text-xs mb-1">SHIP TO</div>
-                  <div className="text-sm">
-                    <div className="font-medium">ABC Store</div>
-                    <div className="text-gray-600">123 Main Street</div>
-                    <div className="text-gray-600">New York, NY 10001</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 pt-4">
-                <table className="w-full text-sm">
-                  <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 text-xs font-semibold text-gray-600">QTY</th>
-                    <th className="text-left py-2 text-xs font-semibold text-gray-600">DESCRIPTION</th>
-                    <th className="text-right py-2 text-xs font-semibold text-gray-600">UNIT PRICE
-                    </th>
-                    <th className="text-right py-2 text-xs font-semibold text-gray-600">AMOUNT</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {receiptDetail.items.map((item, idx) => (
-                    <tr key={idx} className="border-b border-gray-100">
-                      <td className="py-2">{item.qty}</td>
-                      <td className="py-2 text-gray-700">{item.name}</td>
-                      <td className="py-2 text-right">{item.price.toFixed(2)}</td>
-                      <td className="py-2 text-right">{item.amount.toFixed(2)}</td>
-                    </tr>
-                  ))}
-                  </tbody>
-                </table>
-
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">${receiptDetail.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Sales Tax 5.875%</span>
-                    <span className="font-medium">${receiptDetail.salesTax.toFixed(2)}</span>
-                  </div>
-                  <div
-                    className="flex justify-between text-lg font-bold border-t-2 border-gray-900 pt-2">
-                    <span>TOTAL</span>
-                    <span>${receiptDetail.total.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 text-center">
-                  <div className="text-2xl font-bold mb-2">Auth-Smith</div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="font-semibold text-sm mb-3">TERMS & CONDITIONS</div>
-                <div className="space-y-3 text-xs text-gray-600">
-                  <div>
-                    <div className="font-semibold mb-1">A Subtitle</div>
-                    <div>Some text</div>
-                  </div>
-                  <div>
-                    <div className="font-semibold mb-1">A Subtitle</div>
-                    <div>
-                      A paragraph of text with an <span className="text-cyan-600 underline">unsupported link</span>.
-                      A second row of text with a <span className="text-cyan-600 underline">web link</span>.
-                      An icon of a <span className="text-cyan-600">profile</span> with info.
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -630,8 +536,8 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
 
       {/* Edit Folder Modal */}
       {editingFolder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Rename Folder</h2>
             <div className="mb-6">
               <label htmlFor="folder-name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -649,7 +555,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
                     handleCancelEdit()
                   }
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 placeholder="Enter folder name"
                 autoFocus
               />
@@ -657,14 +563,14 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleCancelEdit}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveFolderName}
                 disabled={!editFolderName.trim()}
-                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+                className="px-4 py-2 text-white bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-md transition-colors font-medium"
               >
                 Save
               </button>
@@ -685,7 +591,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               <button
                 aria-label="Close preview"
                 onClick={() => setPreviewOpen(false)}
-                className="p-2 rounded-lg hover:cursor-pointer hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-md hover:cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>

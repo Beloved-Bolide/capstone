@@ -69,7 +69,7 @@ export function ErrorDisplay({
   }[type]
 
   return (
-    <div className={`${bgColor} border ${borderColor} rounded-lg p-4`}>
+    <div className={`${bgColor} border ${borderColor} rounded-md p-4`}>
       <div className="flex items-start gap-3">
         <AlertCircle className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} />
         <div className="flex-1 min-w-0">

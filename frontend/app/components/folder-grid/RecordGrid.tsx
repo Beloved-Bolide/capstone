@@ -32,6 +32,7 @@ export function RecordGrid({
   isDeleting = false,
   isRecentFolder = false
 }: RecordGridProps) {
+
   // Helper function to format dates
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
@@ -80,30 +81,31 @@ export function RecordGrid({
   // Success state with records
   return (
     <div>
+      <h2 className="block text-sm mb-3 font-semibold text-gray-900">Records</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {records.map((record) => (
           <div key={record.id} className="relative">
             <Link
               to={`./record/${record.id}`}
-              className="group flex bg-white border border-gray-200 rounded-xl p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200"
+              className="group flex bg-white border border-gray-200 rounded-lg p-5 hover:border-cyan-300 hover:shadow-md transition-all duration-200 h-[230px]"
             >
-              <div className="flex flex-col h-full">
+              <div className="pr-32 h-full flex flex-col">
                 {/* Header with a star */}
                 <div className="flex items-start justify-between mb-3">
                   {record.isStarred && !isTrashFolder ? (
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   ) : (
-                    <div />
+                    <div className="mb-4"/>
                   )}
                 </div>
 
                 {/* Title */}
-                <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-cyan-600 transition-colors">
+                <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-cyan-600 transition-colors">
                   {record.name || 'Untitled Document'}
                 </h3>
 
                 {/* Metadata */}
-                <div className="mt-auto space-y-2">
+                <div className="mt-2 lg:mt-4 space-y-2">
                   {record.companyName && (
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <Building2 className="w-3.5 h-3.5" />
@@ -175,7 +177,7 @@ export function RecordGrid({
               <Link
                 to={`./record/${record.id}`}
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                className="cursor-default p-2 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
                 title="View details"
               >
                 <FileText className="w-4 h-4 text-green-600" />
@@ -186,7 +188,7 @@ export function RecordGrid({
                 <Link
                   to={`/new-file-record?recordId=${record.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="p-2 bg-cyan-50 hover:bg-cyan-100 rounded-lg transition-colors"
+                  className="cursor-default p-2 bg-cyan-50 hover:bg-cyan-100 rounded-md transition-colors"
                   title="Edit record"
                 >
                   <Pencil className="w-4 h-4 text-cyan-600" />
@@ -198,7 +200,7 @@ export function RecordGrid({
                 <button
                   onClick={(e) => onRestoreRecord(record, e)}
                   disabled={isDeleting}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-md transition-colors ${
                     isDeleting
                       ? 'bg-gray-200 cursor-not-allowed'
                       : 'bg-amber-50 hover:bg-amber-100'
@@ -218,7 +220,7 @@ export function RecordGrid({
                 <button
                   onClick={(e) => onDeleteRecord(record, e)}
                   disabled={isDeleting}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-md transition-colors ${
                     isDeleting
                       ? 'bg-gray-200 cursor-not-allowed'
                       : isTrashFolder

@@ -49,7 +49,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
           <Link to="/" className="flex items-center gap-2">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center">
                   <img src="/logo-croppy.png" alt="FileWise logo"/>
                 </div>
                 <span
@@ -68,7 +68,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => searchQuery && setShowSearchResults(true)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
               />
             </div>
           )}
@@ -90,7 +90,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
                 {currentPath !== '/sign-up' && (
                   <Link
                     to="/sign-up"
-                    className="px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:bg-cyan-800 transition-colors text-sm font-medium"
+                    className="px-4 py-2.5 bg-cyan-700 text-white rounded-md hover:bg-cyan-800 transition-colors text-sm font-medium"
                   >
                     Sign Up
                   </Link>
@@ -103,7 +103,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
                 <Link
                   aria-label="Add new file"
                   to="/new-file-record"
-                  className="flex items-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-lg hover:bg-cyan-800 transition-colors focus:outline-none text-sm font-medium"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-cyan-700 text-white rounded-md hover:bg-cyan-800 transition-colors focus:outline-none text-sm font-medium"
                 >
                   <Plus className="w-4 h-4"/>
                   <span className="hidden sm:inline">New File</span>
@@ -111,7 +111,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
 
                 {/* Mobile Dropdown Menu Button */}
                 <button
-                  className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+                  className="lg:hidden p-2 hover:bg-gray-100 rounded-md"
                   onClick={() => setShowMobileMenu(!showMobileMenu)}
                 >
                   {showMobileMenu ? (
@@ -153,7 +153,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
                 <Form method="post" action="/sign-out" className="hidden lg:block">
                   <button
                     type="submit"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="cursor-pointer flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                     title="Sign Out"
                   >
                     <LogOut className="w-4 h-4"/>
@@ -172,7 +172,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
         {currentPath !== '/' && (
           <Link
             to="/"
-            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
             onClick={() => setShowMobileMenu(false)}
           >
             Home
@@ -181,7 +181,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
         {currentPath !== '/dashboard' && !currentPath.startsWith('/dashboard/') && (
           <Link
             to="/dashboard"
-            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
             onClick={() => setShowMobileMenu(false)}
           >
             Dashboard
@@ -190,7 +190,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
         {currentPath !== '/expenses' && (
           <Link
             to="/expenses"
-            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
             onClick={() => setShowMobileMenu(false)}
           >
             Expenses
@@ -204,7 +204,7 @@ export function Navbar ({ onMenuClick, userEmail }: NavbarProps) {
             <Form method="post" action="/sign-out" className="block">
               <button
                 type="submit"
-                className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4"/>
                 Sign Out

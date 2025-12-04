@@ -70,7 +70,7 @@ export default function SignUpPage () {
   } = useRemixForm<SignUp>({ mode: 'onSubmit', resolver })
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-[calc(100vh-4.5rem)] bg-gray-50">
       <div className="w-full max-w-md">
 
         {/* Logo */}
@@ -78,12 +78,12 @@ export default function SignUpPage () {
           <div className="w-10 h-10 rounded-md flex items-center justify-center">
             <img src="/logo-croppy.png" alt="FileWise logo"/>
           </div>
-          <span className="text-2xl font-bold text-gray-800">FileWise</span>
+          <span className="text-2xl font-bold text-cyan-700">FileWise</span>
         </div>
 
         {/* Card */}
         <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
+          <h2 className="text-2xl font-bold text-cyan-700 text-center mb-6">
             Create Account
           </h2>
 
@@ -195,8 +195,7 @@ export default function SignUpPage () {
             {/*Submit Button*/}
             <button
             type="submit"
-
-            className="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6"
+            className="cursor-pointer w-full bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-4 rounded-md transition-colors mt-6"
             >
               Sign Up
             </button>
@@ -209,7 +208,7 @@ export default function SignUpPage () {
           <div className="mt-6 text-center">
             <Link
             to="/sign-in"
-            className="text-sm text-gray-600 hover:text-gray-900 underline"
+            className="text-sm text-gray-600 hover:text-cyan-700 underline"
             >
               Already have an account? Sign In
             </Link>
