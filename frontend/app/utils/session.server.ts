@@ -19,7 +19,7 @@ const { getSession, commitSession, destroySession } =
       cookie: {
         name: 'earl-grey',
         httpOnly: true,
-        maxAge: 60 * 60 * 1000, // Session expires after 1 hour of inactivity
+        maxAge: 2 * 60 * 60 * 1000, // Session expires after 1 hour of inactivity
         path: '/',
         sameSite: 'strict',
         secrets: [process.env.SESSION_SECRET_1 as string],
