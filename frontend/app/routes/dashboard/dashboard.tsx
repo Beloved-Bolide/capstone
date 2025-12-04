@@ -318,11 +318,10 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   }, [searchQuery])
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-[calc(100vh-4rem)] bg-gray-50 overflow-hidden">
 
       {/* Sidebar */}
-      <div
-        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out`}>
 
         {/* Close Sidebar Button - Mobile Only */}
         <div className="lg:hidden px-4 py-3 border-b border-gray-200">
@@ -409,8 +408,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
       </div>
 
       {/* Main Content */}
-      <div
-        className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
+      <div className={`flex-1 flex flex-col min-w-0 bg-gray-50 transition-opacity duration-300 ${sidebarOpen ? 'opacity-50 lg:opacity-100' : 'opacity-100'}`}>
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
@@ -423,7 +421,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               {isBaseDashboard ? (
 
                 // Main Dashboard
-                <div className="min-h-full p-4 lg:p-6">
+                <div className="p-4 lg:p-6">
 
                   {/* New Folder Button - Mobile Only */}
                   <button
