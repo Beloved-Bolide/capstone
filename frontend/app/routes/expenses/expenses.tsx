@@ -57,17 +57,6 @@ export default function ExpensesPage () {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 relative">
 
-        {/* Coming Soon Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-          <h2 className="text-8xl font-black text-cyan-600 opacity-30 transform -rotate-45 select-none whitespace-nowrap">
-            COMING SOON
-          </h2>
-        </div>
-
-        {/* Navbar */}
-
-        {/* insert navbar here */}
-
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-6">
 
@@ -309,5 +298,5 @@ export default function ExpensesPage () {
         </div>
       </div>
     </div>
-  );
+  )
 }

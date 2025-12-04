@@ -177,7 +177,7 @@ export function RecordGrid({
               <Link
                 to={`./record/${record.id}`}
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
+                className="cursor-default p-2 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
                 title="View details"
               >
                 <FileText className="w-4 h-4 text-green-600" />
@@ -188,7 +188,7 @@ export function RecordGrid({
                 <Link
                   to={`/new-file-record?recordId=${record.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="p-2 bg-cyan-50 hover:bg-cyan-100 rounded-md transition-colors"
+                  className="cursor-default p-2 bg-cyan-50 hover:bg-cyan-100 rounded-md transition-colors"
                   title="Edit record"
                 >
                   <Pencil className="w-4 h-4 text-cyan-600" />
