@@ -53,8 +53,7 @@ Our Solution: FileWise
 - Styled and polished the frontend
 - Added features that were not necessary for MVP
 
-### Demo (ALL)
-Demo (5 minutes) (All)
+### Demo (ALL - 5 minutse)
 
 0. Demo / Landing Page (Jijo)
 
