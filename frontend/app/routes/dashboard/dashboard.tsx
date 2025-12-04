@@ -205,7 +205,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
   const isBaseDashboard = location.pathname === '/dashboard' || location.pathname === '/dashboard/'
 
   // Define the order of default folders
-  const defaultFolderOrder = ['Expiring', 'Recent', 'Starred', 'Trash']
+  const defaultFolderOrder = ['Recent', 'Starred', 'Expiring', 'Trash']
 
   // Separate default folders and user-created folders
   const defaultFolders = defaultFolderOrder
@@ -423,7 +423,7 @@ export default function Dashboard ({ loaderData, actionData }: Route.ComponentPr
               {isBaseDashboard ? (
 
                 // Main Dashboard
-                <div className="p-4 lg:p-6">
+                <div className="min-h-full p-4 lg:p-6">
 
                   {/* New Folder Button - Mobile Only */}
                   <button
