@@ -19,7 +19,7 @@ const { getSession, commitSession, destroySession } =
       cookie: {
         name: 'earl-grey',
         httpOnly: true,
-        maxAge: 900, // 15 minutes (to match backend session timeout)
+        maxAge: 60 * 60 * 1000, // Session expires after 1 hour of inactivity
         path: '/',
         sameSite: 'strict',
         secrets: [process.env.SESSION_SECRET_1 as string],
