@@ -55,31 +55,31 @@ Our Solution: FileWise
 
 ### Demo (ALL - 5 minutes)
 
-0. Demo / Landing Page (Jijo)
+GENERAL APP FLOW: user input -> action -> fetch -> backend/api route -> controller -> model -> database -> loader -> frontend
 
-1. Sign-up (Jijo)
-⦁	Demonstrate the sign-up process (talk about the creation of folders during sign-up)
-
-2. Sign-in (Jijo)
-⦁	Directs you to the dashboard; displays all folders (GET HTTP request)
-
-3. Create a folder (Blu)
-⦁	Press Create Folder Button
-⦁	Modal pops up (component)
-⦁	Point out how the dashboard displays it immediately (GET HTTP request)
-
-4. Upload a receipt (Blu)
-⦁	Click the new file button
-⦁	Upload a receipt file
-⦁	Talk about the OCR feature
-⦁	Point out the folder dropdown contains the folder you just created
-⦁	Point out the automatic categorization feature and automatic form population
-
-5. Search for the receipt (Trevor)
-6. View the receipt (Trevor)
-7. Delete the receipt (Denise)
-8. View expenses page (Denise)
-⦁	Point out the dynamic data
+#### Home (Blu)
+#### Sign-up (Blu)
+- user input -> action -> fetch -> backend/api route -> controller -> model -> database -> loader -> frontend
+- Here ZOD validates all the user's inputs so it is the correct format
+- The action function is called when the user clicks the sign up button
+- The action function calls a function that sends a fetch request to the backend to create a new user
+- mailgun
+#### Sign-in (Blu)
+- Here ZOD validates all the user's inputs so it is the correct format
+- The action function is called when the user clicks the sign in button
+- The action function calls a function that sends a fetch request to the backend to authenticate the user and creates a session cookie, jwt token, and authorizes the user
+#### Upload a receipt (Trevor)
+- 
+#### Create a folder (Trevor)
+- 
+#### Search for the receipt (Jijo)
+- If you type any character in the search bar, it will show all the receipts that contain that character in their name
+- FLow: search.tsx -> frontend/record.model.ts -> backend/routes/record.ts -> backend/controllers/record.ts -> backend/models/record.ts -> search-results-modal.tsx
+#### View the receipt (Jijo)
+#### Trash the receipt (Denise)
+trash button action -> frontend model -> backend route -> backend controller -> backend model -> query database -> frontend loader -> frontend
+#### Permanently delete something (Denise)
+#### Restore the receipt (Denise)
 
 ### Conclusion (Denise) (45 seconds)
 - Our Vision for the Future
